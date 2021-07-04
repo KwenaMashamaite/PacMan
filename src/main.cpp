@@ -1,15 +1,8 @@
-#include <IME/core/scene/Scene.h>
-#include <IME/core/engine/Engine.h>
+#include "src/models/game/Game.h"
 
 #ifdef NDEBUG
     #include "windows.h"
 #endif
-
-//
-class EmptyScene : public ime::Scene {
-public:
-    void onEnter() override {}
-};
 
 int main() {
 
@@ -19,10 +12,9 @@ int main() {
     ShowWindow(hwnd, SW_HIDE);
 #endif
 
-    ime::Engine engine{"Pac-Man", "assets/textFiles/settings.txt"};
-    engine.initialize();
-    engine.pushScene(std::make_unique<EmptyScene>());
-    engine.run();
+    pm::Game pacmanGame{};
+    pacmanGame.initialize();
+    pacmanGame.start();
 
     return 0;
 }

@@ -1,4 +1,8 @@
-set(SRC_FILES main.cpp)
+set(SRC_FILES
+        main.cpp
+        models/game/Game.cpp
+        models/scenes/StartUpScene.cpp
+        views/StartUpSceneView.cpp)
 
 # Resource script files
 set(RES_FILES

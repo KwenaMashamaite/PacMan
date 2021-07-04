@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/game/Game.h"
+#include "src/models/scoreboard/Scoreboard.h"
 #include "src/models/scenes/StartUpScene.h"
 
 namespace pm {
@@ -39,13 +40,18 @@ namespace pm {
 
         // Initialize the game engine
         engine_.initialize();
+        ime::PrefContainer& settings = engine_.getConfigs();
+
+        // Initialize data that must be accessible in all states
+        auto scoreboard = std::make_shared<Scoreboard>(settings.getPref("HIGH_SCORES_DIR").getValue<std::string>() + "/highscores.txt");
+        scoreboard->load();
 
         engine_.getPersistentData().addProperty({"SETTINGS_FILENAME", settingsFilename_});
+        engine_.getPersistentData().addProperty({"SCOREBOARD", scoreboard});
 
         // If not found in settings file, player will be prompted for name in StartUpScene
-        if (engine_.getConfigs().hasPref("PLAYER_NAME"))
-            engine_.getPersistentData().addProperty({"PLAYER_NAME",engine_.getConfigs().getPref("PLAYER_NAME").getValue<std::string>()});
-
+        if (settings.hasPref("PLAYER_NAME"))
+            engine_.getPersistentData().addProperty({"PLAYER_NAME",settings.getPref("PLAYER_NAME").getValue<std::string>()});
 
         engine_.pushScene(std::make_unique<StartUpScene>());
     }

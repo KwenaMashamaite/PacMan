@@ -61,3 +61,6 @@ MUSIC_DIR:STRING=assets/music/
 
 # Path to sound effects
 SOUND_EFFECTS_DIR:STRING=assets/sound_effects/
+
+# Path to game scoreboard
+HIGH_SCORES_DIR:STRING=assets/textFiles/

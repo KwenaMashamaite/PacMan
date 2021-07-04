@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/scenes/LoadingScene.h"
+#include "src/models/scenes/MainMenuScene.h"
 #include "src/views/LoadingSceneView.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/ProgressBar.h>
@@ -66,7 +67,7 @@ namespace pm {
         // Transition to next scene after all assets are loaded
         engine().onFrameEnd([this] {
             if (loadingFinished_) {
-                //engine().popScene();
+                engine().popScene();
                 engine().onFrameEnd(nullptr);
             }
         });
@@ -131,14 +132,12 @@ namespace pm {
             "wieu_wieu_slow.ogg", "WakkaWakka.wav"
         });
 
-        // Delay so that we can see the progress bar completing
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
         loadingFinished_ = true;
     }
 
     ///////////////////////////////////////////////////////////////
     void LoadingScene::onExit() {
-        // Transition to main menu
+        engine().pushScene(std::make_unique<MainMenuScene>());
     }
 
 } // namespace pm

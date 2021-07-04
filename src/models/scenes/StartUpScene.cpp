@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/scenes/StartUpScene.h"
+#include "src/models/scenes/LoadingScene.h"
 #include "src/views/StartUpSceneView.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Panel.h>
@@ -36,7 +37,7 @@ namespace pm {
 
         if (cache().hasProperty("PLAYER_NAME")) {
             startCountdown();
-            //enableSceneSkip();
+            enableSceneSkip();
         } else
             promptName();
     }
@@ -50,7 +51,7 @@ namespace pm {
         timer().setTimeout(ime::seconds(13), [this, pnlContainer] {
             pnlContainer->hideWithEffect(ime::ShowAnimationType::Fade, ime::seconds(2));
             pnlContainer->on("animationFinish", ime::Callback<>([this] {
-                //engine().popScene();
+                engine().popScene();
             }));
         });
     }
@@ -87,7 +88,7 @@ namespace pm {
             gui().getWidget<Panel>("pnlContainer")->setVisible(true);
             gui().getWidget<Panel>("pnlNamePrompt")->setVisible(false);
             startCountdown();
-            //enableSceneSkip();
+            enableSceneSkip();
         }));
     }
 
@@ -101,7 +102,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::onExit() {
-        // Transition to loading scene
+        engine().pushScene(std::make_unique<LoadingScene>());
     }
 
 } // namespace pm

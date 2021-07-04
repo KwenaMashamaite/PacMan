@@ -2,7 +2,9 @@ set(SRC_FILES
         main.cpp
         models/game/Game.cpp
         models/scenes/StartUpScene.cpp
-        views/StartUpSceneView.cpp)
+        models/scenes/LoadingScene.cpp
+        views/StartUpSceneView.cpp
+        views/LoadingSceneView.cpp)
 
 # Resource script files
 set(RES_FILES

@@ -60,4 +60,4 @@ TEXTURES_DIR:STRING=assets/images/
 MUSIC_DIR:STRING=assets/music/
 
 # Path to sound effects
-SOUND_EFFECTS_DIR:STRING=assets/sfx/
+SOUND_EFFECTS_DIR:STRING=assets/sound_effects/

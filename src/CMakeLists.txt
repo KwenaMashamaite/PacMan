@@ -3,6 +3,8 @@ set(SRC_FILES
         models/game/Game.cpp
         models/scenes/StartUpScene.cpp
         models/scenes/LoadingScene.cpp
+        models/scoreboard/Score.cpp
+        models/scoreboard/Scoreboard.cpp
         views/StartUpSceneView.cpp
         views/LoadingSceneView.cpp)
 

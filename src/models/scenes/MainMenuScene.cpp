@@ -39,6 +39,7 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::onEnter() {
         engine().getWindow().onClose(nullptr); // Let window be closed with exit button only
+        engine().getWindow().setMouseCursorVisible(true);
 
         view_.init();
         initLeaderboard();

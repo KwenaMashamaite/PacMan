@@ -35,6 +35,7 @@ namespace pm {
     void PauseMenuScene::onEnter() {
         PauseMenuSceneView::init(gui());
         initEventHandlers();
+        engine().getWindow().setMouseCursorVisible(true);
     }
 
     ///////////////////////////////////////////////////////////////
@@ -90,6 +91,11 @@ namespace pm {
             if (key == ime::Keyboard::Key::Escape)
                 engine().popScene();
         });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void PauseMenuScene::onExit() {
+        engine().getWindow().setMouseCursorVisible(false);
     }
 
 } // namespace pm

@@ -113,6 +113,11 @@ namespace pm {
         void initEngineEvents();
 
         /**
+         * @brief Initialize movable actors collision responses
+         */
+        void initCollisionResponses();
+
+        /**
          * @brief Start the level start countdown
          */
         void startCountDown();

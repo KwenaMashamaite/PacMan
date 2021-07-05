@@ -22,34 +22,19 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/utils/ObjectCreator.h"
-#include "src/models/actors/Actors.h"
+#include "src/models/actors/Sensor.h"
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    void ObjectCreator::createObjects(ime::PhysicsWorld& physicsWorld, Grid &grid) {
-        grid.forEachCell([&physicsWorld, &grid](const ime::Tile& tile) {
-            ime::GameObject::Ptr actor;
+    Sensor::Sensor(ime::Scene &scene) :
+        ime::GameObject(scene)
+    {
+        setCollisionGroup("sensors");
+    }
 
-            if (tile.getId() == 'P') {
-                actor = std::make_unique<PacMan>(grid.getScene());
-                actor->attachRigidBody(physicsWorld.createBody(ime::RigidBody::Type::Kinematic));
-            } else if (tile.getId() == '|' || tile.getId() == '#') {
-                actor = std::make_unique<Wall>(grid.getScene());
-            } else if (tile.getId() == 'T') {
-                actor = std::make_unique<Sensor>(grid.getScene());
-                actor->setTag("tunnelExitSensor");
-                actor->setCollisionGroup("tunnelExitSensor");
-            } else if (tile.getId() == 'E')
-                actor = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Energizer);
-            else if (tile.getId() == 'D')
-                actor = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Dot);
-            else
-                return;
-
-            actor->getUserData().addProperty({"scene", std::ref(grid.getScene())});
-            grid.addActor(std::move(actor), tile.getIndex());
-        });
+    ///////////////////////////////////////////////////////////////
+    std::string Sensor::getClassName() const {
+        return "Sensor";
     }
 
 } // namespace pm

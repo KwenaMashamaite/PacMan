@@ -45,6 +45,7 @@ namespace pm {
         initGui();
         createActors();
         createGridMovers();
+        initCollisionResponses();
         initEngineEvents();
         intiGameEvents();
         startCountDown();
@@ -119,6 +120,32 @@ namespace pm {
         // Pause game menu when user requests to close game window
         engine().getWindow().onClose([this] {
             pauseGame();
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::initCollisionResponses() {
+        ///@brief Teleports an actor to the other side of the tunnel
+        ///@param gridMover The grid mover of the actor that triggered the sensor
+        ///@param sensorTrigger The actor that triggered the sensor
+        auto onTunnelExitSensorTrigger = [](ime::GridMover* gridMover, ime::GameObject* sensorTrigger) {
+            ime::TileMap& grid = gridMover->getGrid();
+            auto prevTile = grid.getTileOccupiedByChild(sensorTrigger);
+            grid.removeChild(sensorTrigger);
+            if (prevTile.getIndex().colm == 0) { // Triggered the left-hand side sensor
+                grid.addChild(sensorTrigger,ime::Index{prevTile.getIndex().row, static_cast<int>(grid.getSizeInTiles().x - 1)});
+            } else
+                grid.addChild(sensorTrigger, {prevTile.getIndex().row, 0});
+
+            gridMover->resetTargetTile();
+            gridMover->requestDirectionChange(gridMover->getDirection());
+        };
+
+        ime::GridMover* pacmanGridMover = gridMovers().findByTag("pacmanGridMover");
+
+        pacmanGridMover->onGameObjectCollision([=](ime::GameObject* pacman, ime::GameObject* other) {
+            if (other->getTag() == "tunnelExitSensor")
+                onTunnelExitSensorTrigger(pacmanGridMover, pacman);
         });
     }
 

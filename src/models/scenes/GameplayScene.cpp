@@ -25,6 +25,7 @@
 #include "src/models/scenes/GameplayScene.h"
 #include "src/models/scenes/PauseMenuScene.h"
 #include "src/utils/ObjectCreator.h"
+#include "src/models/actors/Actors.h"
 #include "src/common/Constants.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
@@ -83,6 +84,11 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::createActors() {
         ObjectCreator::createObjects(*grid_);
+
+        grid_->forEachActor([this](ime::GameObject* actor) {
+            if (actor->getClassName() == "PacMan")
+                static_cast<PacMan*>(actor)->setLivesCount(cache().getValue<int>("PLAYER_LIVES"));
+        });
     }
 
     ///////////////////////////////////////////////////////////////

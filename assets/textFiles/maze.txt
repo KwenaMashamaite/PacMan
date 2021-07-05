@@ -10,6 +10,7 @@
 #   . = Empty tile
 #   E = Energizer or Power pellet
 #   D = Dot
+#   P = Pacman
 ###########################################
 
 .........................
@@ -34,7 +35,7 @@
 ..|###|D|.|###|.|D|###|..
 ..|DDDDDDDDD|DDDDDDDDD|..
 ..|D|#|D|#|D|D|#|D|#|D|..
-..|EDD|DDDDD.DDDDD|DDE|..
+..|EDD|DDDDDPDDDDD|DDE|..
 ..|#|D|D|D|###|D|D|D|#|..
 ..|#|D|D|D|###|D|D|D|#|..
 ..|DDDDD|DDD|DDD|DDDDD|..

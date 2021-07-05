@@ -22,40 +22,42 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/actors/Pellet.h"
-#include "src/animations/PelletAnimations.h"
+#include "src/animations/PacManAnimations.h"
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    Pellet::Pellet(ime::Scene& scene, Type type) :
-        ime::GameObject(scene),
-        type_{type}
-    {
-        setCollisionGroup(type == Type::Energizer ? "energizers" : "dots");
+    PacManAnimations::PacManAnimations() :
+        movementSpritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {0, 0, 52, 69}},
+        deathSpritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {0, 0, 239, 18}}
+    {}
 
-        ime::Sprite& sprite = getSprite();
-        if (type == Type::Energizer) {
-            ime::Animation::Ptr blinkAnimation = PelletAnimations().get();
-            sprite = blinkAnimation->getSpriteSheet().getSprite(ime::Index{0, 0});
-            sprite.getAnimator().addAnimation(std::move(blinkAnimation));
-            sprite.getAnimator().startAnimation("blink");
-        } else {
-            sprite.setTexture("spritesheet.png");
-            sprite.setTextureRect(ime::UIntRect{137, 210, 16, 16});
-        }
+    ///////////////////////////////////////////////////////////////
+    void PacManAnimations::create() {
+        // Movement animations
+        createAnimation("goingLeft", {0, 0});
+        createAnimation("goingUp", {1, 0});
+        createAnimation("goingRight", {2, 0});
+        createAnimation("goingDown", {3, 0});
 
-        getSprite().scale(2.0f, 2.0f);
-        resetSpriteOrigin(); // Set sprite origin as the centre
+        // Death animation
+        auto deathAnimation = ime::Animation::create("dying", deathSpritesheet_, ime::seconds(2));
+        deathAnimation->addFrames({0, 0}, 14);
+        animations_.push_back(std::move(deathAnimation));
     }
 
     ///////////////////////////////////////////////////////////////
-    std::string Pellet::getClassName() const {
-        return "Pellet";
+    const std::vector<ime::Animation::Ptr> &PacManAnimations::getAll() const {
+        return animations_;
     }
 
     ///////////////////////////////////////////////////////////////
-    Pellet::Type Pellet::getPelletType() const {
-        return type_;
+    void PacManAnimations::createAnimation(const std::string &name, ime::Index index) {
+        auto movementAnimDuration = ime::milliseconds(150);
+        ime::Animation::Ptr animation = ime::Animation::create(name, movementSpritesheet_, movementAnimDuration);
+        animation->addFrames(index, 3);
+        animation->showTargetOnStart(false);
+        animation->setRepeatCount(-1);
+        animations_.push_back(std::move(animation));
     }
 
 } // namespace pm

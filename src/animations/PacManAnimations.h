@@ -22,30 +22,47 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_CONSTANTS_H
-#define PACMAN_CONSTANTS_H
+#ifndef PACMAN_PACMANANIMATIONS_H
+#define PACMAN_PACMANANIMATIONS_H
 
-#include <IME/core/tilemap/Index.h>
+#include <IME/core/animation/Animation.h>
+#include <vector>
 
 namespace pm {
     /**
-     * @brief Stores data that doesn't change throughout the game
+     * @brief Constructs all the pacman animations
      */
-    struct Constants {
-        // 1. Non-gameplay constants
-        static constexpr auto MAX_NUM_LEVEL_RESTARTS = 2;  //!< The number of times the player can restart a level before being forced to start from level 1
+    class PacManAnimations {
+    public:
+        /**
+         * @brief Constructor
+         */
+        PacManAnimations();
 
-        // 2. Grid positions
-        static inline const auto READY_TEXT_POSITION = ime::Index{17, 12}; // The position of the text shown during gameplay delay
+        /**
+         * @brief Create the pacman animations
+         */
+        void create();
 
-        // 3. Player
-        static constexpr auto PLAYER_LiVES = 3;     // The initial number of player lives
-        static constexpr auto PACMAN_SPEED = 100;   // The pacmans speed when moving in the grid
+        /**
+         * @brief Get all of the created animations
+         * @return A list of all the pacman animations
+         */
+        const std::vector<ime::Animation::Ptr>& getAll() const;
 
-        // 4. Misc
-        static constexpr auto GRID_TILE_SIZE = 20; // The size of each grid cell
+    private:
+        /**
+         * @brief Create a movement animation animation
+         * @param name Name of the animation
+         * @param index Index of the frame in the spritesheet
+         */
+        void createAnimation(const std::string& name, ime::Index index);
 
-    }; // struct Constants
-} // namespace pm
+    private:
+        std::vector<ime::Animation::Ptr> animations_;
+        ime::SpriteSheet movementSpritesheet_;
+        ime::SpriteSheet deathSpritesheet_;
+    };
+}
 
 #endif

@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/utils/ObjectCreator.h"
-#include "src/models/actors/Pellet.h"
+#include "src/models/actors/Actors.h"
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
@@ -31,7 +31,9 @@ namespace pm {
         grid.forEachCell([&grid](const ime::Tile& tile) {
             ime::GameObject::Ptr actor;
 
-            if (tile.getId() == 'E')
+            if (tile.getId() == 'P') {
+                actor = std::make_unique<PacMan>(grid.getScene());
+            } else if (tile.getId() == 'E')
                 actor = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Energizer);
             else if (tile.getId() == 'D')
                 actor = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Dot);

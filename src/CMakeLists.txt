@@ -1,6 +1,7 @@
 set(SRC_FILES
         main.cpp
         models/actors/Pellet.cpp
+        models/actors/PacMan.cpp
         models/game/Game.cpp
         models/scenes/StartUpScene.cpp
         models/scenes/LoadingScene.cpp
@@ -17,7 +18,9 @@ set(SRC_FILES
         views/PauseMenuSceneView.cpp
         animations/GridAnimation.cpp
         animations/PelletAnimations.cpp
-        utils/ObjectCreator.cpp)
+        animations/PacManAnimations.cpp
+        utils/ObjectCreator.cpp
+        utils/Utils.cpp)
 
 # Resource script files
 set(RES_FILES

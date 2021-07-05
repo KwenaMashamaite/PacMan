@@ -25,12 +25,20 @@
 #include "src/models/scenes/GameplayScene.h"
 #include "src/models/scenes/PauseMenuScene.h"
 #include "src/utils/ObjectCreator.h"
+#include "src/common/Constants.h"
 #include <IME/core/engine/Engine.h>
+#include <IME/ui/widgets/Label.h>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
+    GameplayScene::GameplayScene() :
+        view_{gui()}
+    {}
+
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::onEnter() {
         createGrid();
+        initGui();
         createActors();
         initEngineEvents();
         intiGameEvents();
@@ -38,7 +46,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::createGrid() {
-        createTilemap(20, 20);
+        createTilemap(Constants::GRID_TILE_SIZE, Constants::GRID_TILE_SIZE);
         grid_ = std::make_unique<Grid>(tilemap(), *this, gameObjects());
         grid_->loadFromFile(engine().getConfigs().getPref("MAZE_DIR").getValue<std::string>() + "maze.txt");
         grid_->setPosition({-42, 0});
@@ -52,6 +60,24 @@ namespace pm {
 #else
         grid_->setVisible(false);
 #endif
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::initGui() {
+        // Update view placeholder text with current level data
+        view_.init(cache().getValue<int>("CURRENT_LEVEL"), cache().getValue<int>("PLAYER_LIVES"));
+        view_.setHighScore(cache().getValue<int>("HIGH_SCORE"));
+        view_.setScore(cache().getValue<int>("CURRENT_SCORE"));
+
+        // Create get ready text (Displayed before level start countdown)
+        auto lblGetReady = ime::ui::Label::create("Ready!");
+        lblGetReady->setTextSize(15.0f);
+        lblGetReady->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Center);
+        lblGetReady->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
+        lblGetReady->getRenderer()->setTextColour(ime::Colour::Yellow);
+        lblGetReady->setOrigin(0.5f, 0.5f);
+        lblGetReady->setPosition(tilemap().getTile(Constants::READY_TEXT_POSITION).getWorldCentre());
+        gui().addWidget(std::move(lblGetReady), "lblReady");
     }
 
     ///////////////////////////////////////////////////////////////
@@ -96,6 +122,12 @@ namespace pm {
         setOnPauseAction(ime::Scene::OnPauseAction::Default);
         audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
         audio().playAll();
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::update(ime::Time deltaTime) {
+        view_.update(deltaTime);
+        grid_->update(deltaTime);
     }
 
 } // namespace pm

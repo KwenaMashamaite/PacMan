@@ -10,6 +10,7 @@ set(SRC_FILES
         models/scoreboard/Score.cpp
         models/scoreboard/Scoreboard.cpp
         models/world/Grid.cpp
+        views/GameplaySceneView.cpp
         views/StartUpSceneView.cpp
         views/LoadingSceneView.cpp
         views/MainMenuSceneView.cpp

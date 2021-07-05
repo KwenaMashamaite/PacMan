@@ -27,6 +27,7 @@
 
 #include <IME/core/scene/Scene.h>
 #include "src/models/world/Grid.h"
+#include "src/views/GameplaySceneView.h"
 
 namespace pm {
     /**
@@ -34,6 +35,11 @@ namespace pm {
      */
     class GameplayScene : public ime::Scene {
     public:
+        /**
+         * @brief Constructor
+         */
+        GameplayScene();
+
         /**
          * @brief Enter the scene
          *
@@ -58,7 +64,21 @@ namespace pm {
          */
         void onResume() override;
 
+        /**
+         * @brief Update the scene
+         * @param deltaTime Time passed since last update
+         *
+         * This function is called by the game engine when it is time to
+         * update. Note that @a deltaTime is frame rate dependent
+         */
+        void update(ime::Time deltaTime) override;
+
     private:
+        /**
+         * @brief Initialize the gui
+         */
+        void initGui();
+
         /**
          * @brief Create the gameplay grid
          */
@@ -85,6 +105,7 @@ namespace pm {
         void pauseGame();
 
     private:
+        GameplaySceneView view_;     //!< Scene view without the gameplay grid
         std::unique_ptr<Grid> grid_; //!< Gameplay grid view
     };
 }

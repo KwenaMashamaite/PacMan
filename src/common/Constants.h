@@ -25,6 +25,8 @@
 #ifndef PACMAN_CONSTANTS_H
 #define PACMAN_CONSTANTS_H
 
+#include <IME/core/tilemap/Index.h>
+
 namespace pm {
     /**
      * @brief Stores data that doesn't change throughout the game
@@ -32,6 +34,15 @@ namespace pm {
     struct Constants {
         // 1. Non-gameplay constants
         static constexpr auto MAX_NUM_LEVEL_RESTARTS = 2;  //!< The number of times the player can restart a level before being forced to start from level 1
+
+        // 2. Grid positions
+        static inline const auto READY_TEXT_POSITION = ime::Index{17, 12}; // The position of the text shown during gameplay delay
+
+        // 3. Player
+        static constexpr auto PLAYER_LiVES = 3; // The initial number of player lives
+
+        // 4. Misc
+        static constexpr auto GRID_TILE_SIZE = 20; // The size of each grid cell
 
     }; // struct Constants
 } // namespace pm

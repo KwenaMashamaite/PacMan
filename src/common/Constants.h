@@ -46,6 +46,14 @@ namespace pm {
         static constexpr auto GRID_TILE_SIZE = 20;      // The size of each grid cell
         static constexpr auto LEVEL_START_DELAY = 2.0f; //!< The time (in seconds) the player must wait before they can control pacman
 
+        /**
+         * @brief Points awarded to the player when pacman eats another actor
+         */
+        struct Points {
+            static constexpr int DOT = 10;         //!< Points awarded to the player when they eat a dot
+            static constexpr int ENERGIZER = 50;   //!< Points awarded to the player when they eat an energizer
+        }; // struct Points
+
     }; // struct Constants
 } // namespace pm
 

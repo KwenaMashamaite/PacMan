@@ -121,6 +121,14 @@ namespace pm {
         engine().getWindow().onClose([this] {
             pauseGame();
         });
+
+        // Post frame handler
+        engine().onFrameEnd([this] {
+            // Remove inactive objects from the scene at the end of each frame
+            gameObjects().removeIf([](const ime::GameObject* actor) {
+                return !actor->isActive();
+            });
+        });
     }
 
     ///////////////////////////////////////////////////////////////
@@ -141,11 +149,27 @@ namespace pm {
             gridMover->requestDirectionChange(gridMover->getDirection());
         };
 
+        ///@brief Increase the game score when a pellet is eaten and destroy it
+        ///@param pelletBase The pellet that was eaten
+        auto onPelletCollision = [this](ime::GameObject* pelletBase) {
+            auto pellet = static_cast<Pellet*>(pelletBase);
+            pellet->setActive(false);
+            if (pellet->getPelletType() == Pellet::Type::Energizer) {
+                updateScore(Constants::Points::ENERGIZER);
+                audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
+            } else {
+                updateScore(Constants::Points::DOT);
+                audio().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
+            }
+        };
+
         ime::GridMover* pacmanGridMover = gridMovers().findByTag("pacmanGridMover");
 
         pacmanGridMover->onGameObjectCollision([=](ime::GameObject* pacman, ime::GameObject* other) {
             if (other->getTag() == "tunnelExitSensor")
                 onTunnelExitSensorTrigger(pacmanGridMover, pacman);
+            else if (other->getClassName() == "Pellet")
+                onPelletCollision(other);
         });
     }
 
@@ -191,8 +215,22 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void GameplayScene::updateScore(int points) {
+        auto newScore = cache().getValue<int>("CURRENT_SCORE") + points;
+        cache().setValue("CURRENT_SCORE", newScore);
+        view_.setScore(newScore);
+
+        if (newScore > cache().getValue<int>("HIGH_SCORE")) {
+            cache().setValue("HIGH_SCORE", newScore);
+            view_.setHighScore(newScore);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::onExit() {
         engine().getWindow().setMouseCursorVisible(true);
+        engine().onFrameEnd(nullptr);
+        engine().getWindow().onClose(nullptr);
     }
 
 } // namespace pm

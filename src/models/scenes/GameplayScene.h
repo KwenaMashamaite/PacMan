@@ -127,6 +127,12 @@ namespace pm {
          */
         void pauseGame();
 
+        /**
+         * @brief Update cache and view score values
+         * @param points The points to update the score by
+         */
+        void updateScore(int points);
+
     private:
         GameplaySceneView view_;     //!< Scene view without the gameplay grid
         std::unique_ptr<Grid> grid_; //!< Gameplay grid view

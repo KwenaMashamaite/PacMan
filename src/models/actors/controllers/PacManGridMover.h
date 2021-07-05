@@ -22,28 +22,38 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_OBJECTCREATOR_H
-#define PACMAN_OBJECTCREATOR_H
+#ifndef PACMAN_PACMANGRIDMOVER_H
+#define PACMAN_PACMANGRIDMOVER_H
 
-#include <IME/core/physics/PhysicsWorld.h>
-#include "src/models/world/Grid.h"
+#include <IME/core/physics/grid/KeyboardGridMover.h>
 
 namespace pm {
+    class PacMan;
+
     /**
-     * @brief Create objects in the grid
-     *
-     * This class creates objects in the grid based on the id of the grid cell
+     * @brief Controls the movement of pacman in the grid using the keyboard
      */
-    class ObjectCreator {
+    class PacManGridMover : public ime::KeyboardGridMover {
     public:
         /**
-         * @brief Create objects in the grid
-         * @param physicsWorld Physics simulation
-         * @param grid The grid to create objects in
+         * @brief Constructor
+         * @param grid The grid pacman is to be moved in
+         * @param pacman Pointer to a PacMan instance
+         *
+         * @warning @a pacman must not be a nullptr
          */
-        static void createObjects(ime::PhysicsWorld& physicsWorld, Grid& grid);
+        PacManGridMover(ime::TileMap& grid, PacMan* pacman);
+
+        /**
+         * @brief Initialize the grid mover
+         */
+        void init();
+
+        /**
+         * @brief Destructor
+         */
+        ~PacManGridMover() override;
     };
 }
 
-
-#endif //PACMAN_OBJECTCREATOR_H
+#endif //PACMAN_PACMANGRIDMOVER_H

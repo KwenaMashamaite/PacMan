@@ -1,5 +1,7 @@
 set(SRC_FILES
         main.cpp
+        common/PositionTracker.cpp
+        models/actors/controllers/PacManGridMover.cpp
         models/actors/Pellet.cpp
         models/actors/PacMan.cpp
         models/game/Game.cpp

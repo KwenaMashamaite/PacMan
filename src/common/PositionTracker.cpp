@@ -22,28 +22,27 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_OBJECTCREATOR_H
-#define PACMAN_OBJECTCREATOR_H
-
-#include <IME/core/physics/PhysicsWorld.h>
-#include "src/models/world/Grid.h"
+#include "src/common/PositionTracker.h"
 
 namespace pm {
-    /**
-     * @brief Create objects in the grid
-     *
-     * This class creates objects in the grid based on the id of the grid cell
-     */
-    class ObjectCreator {
-    public:
-        /**
-         * @brief Create objects in the grid
-         * @param physicsWorld Physics simulation
-         * @param grid The grid to create objects in
-         */
-        static void createObjects(ime::PhysicsWorld& physicsWorld, Grid& grid);
-    };
-}
+    ///////////////////////////////////////////////////////////////
+    void PositionTracker::updatePosition(const std::string &tag, const ime::Index& index) {
+        positions_[tag].first = index;
+    }
 
+    ///////////////////////////////////////////////////////////////
+    ime::Index PositionTracker::getPosition(const std::string &tag) {
+        return positions_.at(tag).first;
+    }
 
-#endif //PACMAN_OBJECTCREATOR_H
+    ///////////////////////////////////////////////////////////////
+    void PositionTracker::updateDirection(const std::string &tag, const ime::Vector2i &dir) {
+        positions_[tag].second = dir;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    ime::Vector2i PositionTracker::getDirection(const std::string &tag) {
+        return positions_.at(tag).second;
+    }
+
+} // namespace pm

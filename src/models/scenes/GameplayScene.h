@@ -90,6 +90,11 @@ namespace pm {
         void createActors();
 
         /**
+         * @brief Create movement controllers for pacman and the ghosts
+         */
+        void createGridMovers();
+
+        /**
          * @brief Initialize game events
          */
         void intiGameEvents();

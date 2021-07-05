@@ -26,7 +26,6 @@
 #define PACMAN_PACMAN_H
 
 #include <IME/core/game_object/GameObject.h>
-#include <IME/core/physics/grid/GridMover.h>
 
 namespace pm {
     /**
@@ -35,7 +34,7 @@ namespace pm {
     class PacMan : public ime::GameObject {
     public:
         /**
-         * @brief The state pacman can be in
+         * @brief The different states pacman can be in (one state at a time)
          */
         enum class State {
             Idle,   //!< Pacman ignores all requests to move him (can be eaten by a Ghost)
@@ -70,14 +69,10 @@ namespace pm {
         std::string getClassName() const override;
 
         /**
-         * @brief Set the movement controller of the Pacman
-         * @param gridMover The ghosts movement controller
-         */
-        void setMoveController(ime::GridMover* gridMover);
-
-        /**
          * @brief Change the state of Pacman
          * @param state The new state of pacman
+         *
+         * By default, the state is pm::PacMan::State::Idle
          */
         void setState(State state);
 
@@ -91,8 +86,7 @@ namespace pm {
          * @brief Set current direction
          * @param direction New direction
          *
-         * This function changes pacmans current animation to the one
-         * corresponding to @a direction
+         * By default, the direction is ime::Left
          */
         void setDirection(const ime::Vector2i& direction);
 
@@ -102,15 +96,15 @@ namespace pm {
          */
         ime::Vector2i getDirection() const;
 
+    private:
         /**
          * @brief Change pacmans current animation
          * @param dir Pacmans current direction
          */
-        void switchAnimation(ime::Direction dir);
+        void switchAnimation(ime::Vector2i dir);
 
     private:
         int livesCount_;             //!< The actors current number of lives
-        ime::GridMover* gridMover_;  //!< Controls the movement of pacman in the grid
         ime::Vector2i direction_;    //!< Pacmans current direction
         State state_;                //!< Pacmans current state
     };

@@ -27,6 +27,7 @@
 #include "src/utils/ObjectCreator.h"
 #include "src/models/actors/Actors.h"
 #include "src/common/Constants.h"
+#include "src/models/actors/controllers/PacManGridMover.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
 
@@ -38,9 +39,11 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onEnter() {
+        createPhysWorld({0.0f, 0.0f}); // Since we using grid based physics only, no gravity is needed
         createGrid();
         initGui();
         createActors();
+        createGridMovers();
         initEngineEvents();
         intiGameEvents();
         startCountDown();
@@ -84,12 +87,21 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::createActors() {
-        ObjectCreator::createObjects(*grid_);
+        ObjectCreator::createObjects(physWorld(), *grid_);
 
         grid_->forEachActor([this](ime::GameObject* actor) {
-            if (actor->getClassName() == "PacMan")
+            if (actor->getClassName() == "PacMan") {
+                actor->getSprite().getAnimator().setTimescale(0.0f);
                 static_cast<PacMan*>(actor)->setLivesCount(cache().getValue<int>("PLAYER_LIVES"));
+            }
         });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::createGridMovers() {
+        auto pacmanGridMover = std::make_unique<PacManGridMover>(tilemap(), gameObjects().findByTag<PacMan>("pacman"));
+        pacmanGridMover->init();
+        gridMovers().addObject(std::move(pacmanGridMover));
     }
 
     ///////////////////////////////////////////////////////////////

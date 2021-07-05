@@ -26,14 +26,12 @@
 #include "src/animations/PacManAnimations.h"
 #include "src/utils/Utils.h"
 #include "src/common/Constants.h"
-#include <cassert>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
     PacMan::PacMan(ime::Scene& scene) :
         ime::GameObject(scene),
-        livesCount_{Constants::PLAYER_LiVES},
-        gridMover_{nullptr}
+        livesCount_{Constants::PLAYER_LiVES}
     {
         setTag("pacman");
         setCollisionGroup("pacman");
@@ -46,7 +44,7 @@ namespace pm {
 
         getTransform().scale(2.0f, 2.0f);
         setDirection(ime::Left);
-        state_ = State::Idle;
+        setState(State::Idle);
     }
 
     ///////////////////////////////////////////////////////////////
@@ -61,19 +59,6 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void PacMan::setMoveController(ime::GridMover* gridMover) {
-        assert(gridMover && "Grid mover cannot be a nullptr");
-        gridMover_ = gridMover;
-        gridMover_->setTarget(this);
-        gridMover_->onPropertyChange("direction", [this](const ime::Property& property) {
-            setDirection(property.getValue<ime::Direction>());
-        });
-
-        if (state_ == State::Idle)
-            gridMover_->setMovementRestriction(ime::GridMover::MoveRestriction::All);
-    }
-
-    ///////////////////////////////////////////////////////////////
     void PacMan::switchAnimation(ime::Direction dir) {
         if (state_ != State::Dying) {
             getSprite().getAnimator().startAnimation("going" + utils::convertToString(dir));
@@ -84,29 +69,13 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void PacMan::setState(PacMan::State state) {
         if (state_ != state) {
-            assert(gridMover_ && "Cannot set state without a grid mover");
-
             state_ = state;
             ime::GameObject::setState(static_cast<int>(state));
-            switchAnimation(direction_);
 
-            switch (state_) {
-                case State::Idle:
-                    gridMover_->setMovementRestriction(ime::GridMover::MoveRestriction::All);
-                    break;
-                case State::Moving:
-                    if (gridMover_->getType() == ime::GridMover::Type::Target)
-                        gridMover_->setMovementRestriction(ime::GridMover::MoveRestriction::None);
-                    else
-                        gridMover_->setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
-
-                    gridMover_->setMaxLinearSpeed({Constants::PACMAN_SPEED, Constants::PACMAN_SPEED});
-                    break;
-                case State::Dying:
-                    gridMover_->setMovementRestriction(ime::GridMover::MoveRestriction::All);
-                    getSprite().getAnimator().startAnimation("dying");
-                    break;
-            }
+            if (state_ == State::Dying)
+                getSprite().getAnimator().startAnimation("dying");
+            else
+                switchAnimation(direction_);
         }
     }
 

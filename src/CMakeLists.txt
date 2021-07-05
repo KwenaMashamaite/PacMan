@@ -4,6 +4,7 @@ set(SRC_FILES
         models/actors/controllers/PacManGridMover.cpp
         models/actors/Pellet.cpp
         models/actors/PacMan.cpp
+        models/actors/Wall.cpp
         models/game/Game.cpp
         models/scenes/StartUpScene.cpp
         models/scenes/LoadingScene.cpp

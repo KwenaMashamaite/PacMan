@@ -22,15 +22,24 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_ALLENTITIES_H
-#define PACMAN_ALLENTITIES_H
-
-/*-----------------------------------------------------------------------------
-* Includes all the game actors
------------------------------------------------------------------------------*/
-
-#include "src/models/actors/PacMan.h"
-#include "src/models/actors/Pellet.h"
 #include "src/models/actors/Wall.h"
 
-#endif
+namespace pm {
+    ///////////////////////////////////////////////////////////////
+    Wall::Wall(ime::Scene& scene) :
+        ime::GameObject(scene)
+    {
+        setCollisionGroup("walls");
+        setAsObstacle(true);
+
+        // The wall uses the grid image as its texture. The texture rect is only
+        // set so that the wall sprite has dimensions
+        getSprite().setTextureRect({0, 0, 16, 16});
+    }
+
+    ///////////////////////////////////////////////////////////////
+    std::string Wall::getClassName() const {
+        return "Wall";
+    }
+
+} // namespace pm

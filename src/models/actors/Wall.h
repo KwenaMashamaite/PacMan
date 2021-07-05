@@ -22,15 +22,31 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_ALLENTITIES_H
-#define PACMAN_ALLENTITIES_H
+#ifndef PACMAN_WALL_H
+#define PACMAN_WALL_H
 
-/*-----------------------------------------------------------------------------
-* Includes all the game actors
------------------------------------------------------------------------------*/
+#include <IME/core/game_object/GameObject.h>
 
-#include "src/models/actors/PacMan.h"
-#include "src/models/actors/Pellet.h"
-#include "src/models/actors/Wall.h"
+namespace pm {
+    /**
+     * @brief A wall/obstacle object
+     */
+    class Wall : public ime::GameObject {
+    public:
+        using Ptr = std::shared_ptr<Wall>; //!< Shared actor pointer
+
+        /**
+         * @brief Constrictor
+         * @param scene The scene the object belongs to
+         */
+        explicit Wall(ime::Scene& scene);
+
+        /**
+         * @brief Get the name of the class
+         * @return The name of the class
+         */
+        std::string getClassName() const override;
+    };
+}
 
 #endif

@@ -34,6 +34,8 @@ namespace pm {
             if (tile.getId() == 'P') {
                 actor = std::make_unique<PacMan>(grid.getScene());
                 actor->attachRigidBody(physicsWorld.createBody(ime::RigidBody::Type::Kinematic));
+            } else if (tile.getId() == '|' || tile.getId() == '#') {
+                actor = std::make_unique<Wall>(grid.getScene());
             } else if (tile.getId() == 'E')
                 actor = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Energizer);
             else if (tile.getId() == 'D')

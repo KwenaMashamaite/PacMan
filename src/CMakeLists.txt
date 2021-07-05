@@ -4,11 +4,14 @@ set(SRC_FILES
         models/scenes/StartUpScene.cpp
         models/scenes/LoadingScene.cpp
         models/scenes/MainMenuScene.cpp
+        models/scenes/GameplayScene.cpp
         models/scoreboard/Score.cpp
         models/scoreboard/Scoreboard.cpp
+        models/world/Grid.cpp
         views/StartUpSceneView.cpp
         views/LoadingSceneView.cpp
-        views/MainMenuSceneView.cpp)
+        views/MainMenuSceneView.cpp
+        animations/GridAnimation.cpp)
 
 # Resource script files
 set(RES_FILES

@@ -33,10 +33,10 @@ WINDOW_TITLE:STRING=Pac-Man
 FULLSCREEN:BOOL=0
 
 # Width of the game window
-WINDOW_WIDTH:INT=482
+WINDOW_WIDTH:INT=426
 
 # Height of the game window
-WINDOW_HEIGHT:INT=608
+WINDOW_HEIGHT:INT=652
 
 # Icon of the game window
 WINDOW_ICON:STRING=assets/images/window_icon.png
@@ -64,3 +64,6 @@ SOUND_EFFECTS_DIR:STRING=assets/sound_effects/
 
 # Path to game scoreboard
 HIGH_SCORES_DIR:STRING=assets/textFiles/
+
+# Path to the gameplay maze
+MAZE_DIR:STRING=assets/textFiles/

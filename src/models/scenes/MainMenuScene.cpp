@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/scenes/MainMenuScene.h"
+#include "src/models/scenes/GameplayScene.h"
 #include "src/models/scoreboard/Scoreboard.h"
 #include <IME/ui/widgets/VerticalLayout.h>
 #include <IME/core/engine/Engine.h>
@@ -70,7 +71,8 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::initEventHandlers() {
         gui().getWidget("btnPlay")->on("click", ime::Callback<>([this] {
-            // @todo Transition to gameplay
+            engine().popScene();
+            engine().pushScene(std::make_unique<GameplayScene>());
         }));
 
         gui().getWidget("btnQuit")->on("click", ime::Callback<>([this] {

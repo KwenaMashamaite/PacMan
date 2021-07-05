@@ -27,7 +27,6 @@
 
 #include <IME/graphics/Sprite.h>
 #include <IME/ui/GuiContainer.h>
-#include "src/views/CommonView.h"
 
 namespace pm {
     /**

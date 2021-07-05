@@ -22,66 +22,23 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_GAMEPLAYSCENE_H
-#define PACMAN_GAMEPLAYSCENE_H
+#ifndef PACMAN_PAUSEMENUSCENEVIEW_H
+#define PACMAN_PAUSEMENUSCENEVIEW_H
 
-#include <IME/core/scene/Scene.h>
-#include "src/models/world/Grid.h"
+#include <IME/ui/GuiContainer.h>
 
 namespace pm {
     /**
-     * @brief Defines the playing state of the game
+     * @brief Defines the view for the GamePauseScene
      */
-    class GameplayScene : public ime::Scene {
+    class PauseMenuSceneView {
     public:
         /**
-         * @brief Enter the scene
-         *
-         * This function is called by the game engine when the scene
-         * is entered for the first time
+         * @brief Initialise the pause menu gui
+         * @param gui Container for all pause menu widgets
          */
-        void onEnter() override;
-
-        /**
-         * @brief Pause scene
-         *
-         * This function is called by the game engine when the game transitions
-         * from this scene (without destroying it) to another scene
-         */
-        void onPause() override;
-
-        /**
-         * @brief Resume scene
-         *
-         * This function is called by the game engine when the game returns
-         * to this scene from another one
-         */
-        void onResume() override;
-
-    private:
-        /**
-         * @brief Create the gameplay grid
-         */
-        void createGrid();
-
-        /**
-         * @brief Initialize game events
-         */
-        void intiGameEvents();
-
-        /**
-         * @brief Initialize third party engine events
-         */
-        void initEngineEvents();
-
-        /**
-         * @brief Transition game to pause menu
-         */
-        void pauseGame();
-
-    private:
-        std::unique_ptr<Grid> grid_; //!< Gameplay grid view
+        static void init(ime::ui::GuiContainer& gui);
     };
 }
 
-#endif
+#endif //PACMAN_GAMEPAUSESCENEVIEW_H

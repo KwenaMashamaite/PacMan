@@ -25,6 +25,7 @@
 #include "src/models/game/Game.h"
 #include "src/models/scoreboard/Scoreboard.h"
 #include "src/models/scenes/StartUpScene.h"
+#include "src/common/Constants.h"
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
@@ -48,6 +49,8 @@ namespace pm {
 
         engine_.getPersistentData().addProperty({"SETTINGS_FILENAME", settingsFilename_});
         engine_.getPersistentData().addProperty({"SCOREBOARD", scoreboard});
+        engine_.getPersistentData().addProperty({"MASTER_VOLUME", 100.0f});
+        engine_.getPersistentData().addProperty({"LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS});
 
         // If not found in settings file, player will be prompted for name in StartUpScene
         if (settings.hasPref("PLAYER_NAME"))

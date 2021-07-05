@@ -22,17 +22,16 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_GAMEPLAYSCENE_H
-#define PACMAN_GAMEPLAYSCENE_H
+#ifndef PACMAN_PAUSEMENUSCENE_H
+#define PACMAN_PAUSEMENUSCENE_H
 
 #include <IME/core/scene/Scene.h>
-#include "src/models/world/Grid.h"
 
 namespace pm {
     /**
-     * @brief Defines the playing state of the game
+     * @brief Defines the pause state of the game
      */
-    class GameplayScene : public ime::Scene {
+    class PauseMenuScene : public ime::Scene {
     public:
         /**
          * @brief Enter the scene
@@ -42,46 +41,12 @@ namespace pm {
          */
         void onEnter() override;
 
-        /**
-         * @brief Pause scene
-         *
-         * This function is called by the game engine when the game transitions
-         * from this scene (without destroying it) to another scene
-         */
-        void onPause() override;
-
-        /**
-         * @brief Resume scene
-         *
-         * This function is called by the game engine when the game returns
-         * to this scene from another one
-         */
-        void onResume() override;
-
     private:
         /**
-         * @brief Create the gameplay grid
+         * @brief Initialize event handlers
          */
-        void createGrid();
-
-        /**
-         * @brief Initialize game events
-         */
-        void intiGameEvents();
-
-        /**
-         * @brief Initialize third party engine events
-         */
-        void initEngineEvents();
-
-        /**
-         * @brief Transition game to pause menu
-         */
-        void pauseGame();
-
-    private:
-        std::unique_ptr<Grid> grid_; //!< Gameplay grid view
+        void initEventHandlers();
     };
 }
 
-#endif
+#endif //PACMAN_GAMEPAUSESCENE_H

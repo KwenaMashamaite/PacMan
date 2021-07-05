@@ -4,6 +4,7 @@ set(SRC_FILES
         models/scenes/StartUpScene.cpp
         models/scenes/LoadingScene.cpp
         models/scenes/MainMenuScene.cpp
+        models/scenes/PauseMenuScene.cpp
         models/scenes/GameplayScene.cpp
         models/scoreboard/Score.cpp
         models/scoreboard/Scoreboard.cpp
@@ -11,6 +12,7 @@ set(SRC_FILES
         views/StartUpSceneView.cpp
         views/LoadingSceneView.cpp
         views/MainMenuSceneView.cpp
+        views/PauseMenuSceneView.cpp
         animations/GridAnimation.cpp)
 
 # Resource script files

@@ -23,16 +23,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/scenes/GameplayScene.h"
+#include "src/models/scenes/PauseMenuScene.h"
 #include <IME/core/engine/Engine.h>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onEnter() {
         createGrid();
-
-        engine().getWindow().onClose([this] {
-            engine().quit();
-        });
+        initEngineEvents();
+        intiGameEvents();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -52,6 +51,45 @@ namespace pm {
 #else
         grid_->setVisible(false);
 #endif
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::intiGameEvents() {
+        // 1. Display pause menu when P or Esc is pressed
+        input().onKeyUp([this](ime::Keyboard::Key key) {
+            if ((key == ime::Keyboard::Key::P || key == ime::Keyboard::Key::Escape))
+                pauseGame();
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::initEngineEvents() {
+        // Pause game menu when user requests to close game window
+        engine().getWindow().onClose([this] {
+            pauseGame();
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::pauseGame() {
+        setOnPauseAction(ime::Scene::OnPauseAction::Show);
+        audio().pauseAll();
+        engine().pushScene(std::make_unique<PauseMenuScene>());
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::onPause() {
+        audio().pauseAll();
+        engine().onFrameEnd(nullptr);
+        engine().getWindow().onClose(nullptr);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::onResume() {
+        initEngineEvents();
+        setOnPauseAction(ime::Scene::OnPauseAction::Default);
+        audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
+        audio().playAll();
     }
 
 } // namespace pm

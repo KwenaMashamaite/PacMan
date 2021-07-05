@@ -43,6 +43,7 @@ namespace pm {
         createActors();
         initEngineEvents();
         intiGameEvents();
+        startCountDown();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -105,6 +106,19 @@ namespace pm {
         // Pause game menu when user requests to close game window
         engine().getWindow().onClose([this] {
             pauseGame();
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::startCountDown() {
+        timer().setTimeout(ime::seconds(Constants::LEVEL_START_DELAY), [this] {
+            gui().getWidget("lblReady")->setVisible(false);
+            auto* pacman = gameObjects().findByTag<PacMan>("pacman");
+            pacman->getSprite().getAnimator().setTimescale(1.0f);
+            pacman->setState(PacMan::State::Moving);
+
+            auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
+            soundEffect->setLoop(true);
         });
     }
 

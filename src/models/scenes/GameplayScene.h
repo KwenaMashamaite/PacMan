@@ -100,6 +100,11 @@ namespace pm {
         void initEngineEvents();
 
         /**
+         * @brief Start the level start countdown
+         */
+        void startCountDown();
+
+        /**
          * @brief Transition game to pause menu
          */
         void pauseGame();

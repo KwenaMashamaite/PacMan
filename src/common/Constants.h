@@ -43,7 +43,8 @@ namespace pm {
         static constexpr auto PACMAN_SPEED = 100;   // The pacmans speed when moving in the grid
 
         // 4. Misc
-        static constexpr auto GRID_TILE_SIZE = 20; // The size of each grid cell
+        static constexpr auto GRID_TILE_SIZE = 20;      // The size of each grid cell
+        static constexpr auto LEVEL_START_DELAY = 2.0f; //!< The time (in seconds) the player must wait before they can control pacman
 
     }; // struct Constants
 } // namespace pm

@@ -22,70 +22,46 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_GAMEPLAYSCENE_H
-#define PACMAN_GAMEPLAYSCENE_H
+#ifndef PACMAN_PELLET_H
+#define PACMAN_PELLET_H
 
-#include <IME/core/scene/Scene.h>
-#include "src/models/world/Grid.h"
+#include <IME/core/game_object/GameObject.h>
 
 namespace pm {
     /**
-     * @brief Defines the playing state of the game
+     * @brief A pellet that can be eaten by Pacman
      */
-    class GameplayScene : public ime::Scene {
+    class Pellet : public ime::GameObject {
     public:
         /**
-         * @brief Enter the scene
-         *
-         * This function is called by the game engine when the scene
-         * is entered for the first time
+         * @brief Pellet type
          */
-        void onEnter() override;
+        enum class Type {
+            Dot,       //!< Only affects pacman score when eaten
+            Energizer  //!< Makes ghosts vulnerable when eaten
+        };
 
         /**
-         * @brief Pause scene
-         *
-         * This function is called by the game engine when the game transitions
-         * from this scene (without destroying it) to another scene
+         * @brief Constructor
+         * @param scene The scene the object is in
+         * @param type The type of the pellet
          */
-        void onPause() override;
+        explicit Pellet(ime::Scene& scene, Type type);
 
         /**
-         * @brief Resume scene
-         *
-         * This function is called by the game engine when the game returns
-         * to this scene from another one
+         * @brief Get the class type
+         * @return Name of the concrete class the pellet belongs to
          */
-        void onResume() override;
+        std::string getClassName() const override;
+
+        /**
+         * @brief Get the type of the pellet
+         * @return The type of the pellet
+         */
+        Type getPelletType() const;
 
     private:
-        /**
-         * @brief Create the gameplay grid
-         */
-        void createGrid();
-
-        /**
-         * @brief Add actors to the grid
-         */
-        void createActors();
-
-        /**
-         * @brief Initialize game events
-         */
-        void intiGameEvents();
-
-        /**
-         * @brief Initialize third party engine events
-         */
-        void initEngineEvents();
-
-        /**
-         * @brief Transition game to pause menu
-         */
-        void pauseGame();
-
-    private:
-        std::unique_ptr<Grid> grid_; //!< Gameplay grid view
+        Type type_;
     };
 }
 

@@ -22,70 +22,32 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_GAMEPLAYSCENE_H
-#define PACMAN_GAMEPLAYSCENE_H
+#ifndef PACMAN_PELLETANIMATIONS_H
+#define PACMAN_PELLETANIMATIONS_H
 
-#include <IME/core/scene/Scene.h>
-#include "src/models/world/Grid.h"
+#include <IME/core/animation/Animation.h>
+#include <vector>
 
 namespace pm {
     /**
-     * @brief Defines the playing state of the game
+     * @brief Constructs all the pellet animations
      */
-    class GameplayScene : public ime::Scene {
+    class PelletAnimations {
     public:
         /**
-         * @brief Enter the scene
-         *
-         * This function is called by the game engine when the scene
-         * is entered for the first time
+         * @brief Default constructor
          */
-        void onEnter() override;
+        PelletAnimations();
 
         /**
-         * @brief Pause scene
-         *
-         * This function is called by the game engine when the game transitions
-         * from this scene (without destroying it) to another scene
+         * @brief Get the pellet animation
+         * @return The blinking pellet animation
          */
-        void onPause() override;
-
-        /**
-         * @brief Resume scene
-         *
-         * This function is called by the game engine when the game returns
-         * to this scene from another one
-         */
-        void onResume() override;
+        ime::Animation::Ptr get() const;
 
     private:
-        /**
-         * @brief Create the gameplay grid
-         */
-        void createGrid();
-
-        /**
-         * @brief Add actors to the grid
-         */
-        void createActors();
-
-        /**
-         * @brief Initialize game events
-         */
-        void intiGameEvents();
-
-        /**
-         * @brief Initialize third party engine events
-         */
-        void initEngineEvents();
-
-        /**
-         * @brief Transition game to pause menu
-         */
-        void pauseGame();
-
-    private:
-        std::unique_ptr<Grid> grid_; //!< Gameplay grid view
+        ime::Animation::Ptr animation_;
+        ime::SpriteSheet spritesheet_;
     };
 }
 

@@ -24,19 +24,20 @@
 
 #include "src/models/scenes/GameplayScene.h"
 #include "src/models/scenes/PauseMenuScene.h"
+#include "src/utils/ObjectCreator.h"
 #include <IME/core/engine/Engine.h>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onEnter() {
         createGrid();
+        createActors();
         initEngineEvents();
         intiGameEvents();
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::createGrid() {
-        createPhysWorld({0, 0});
         createTilemap(20, 20);
         grid_ = std::make_unique<Grid>(tilemap(), *this, gameObjects());
         grid_->loadFromFile(engine().getConfigs().getPref("MAZE_DIR").getValue<std::string>() + "maze.txt");
@@ -51,6 +52,11 @@ namespace pm {
 #else
         grid_->setVisible(false);
 #endif
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::createActors() {
+        ObjectCreator::createObjects(*grid_);
     }
 
     ///////////////////////////////////////////////////////////////

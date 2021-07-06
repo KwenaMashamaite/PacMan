@@ -11,7 +11,7 @@ The only major difference between the two is the gameplay maze and the actual ga
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.1.0)
+1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.2.0)
    the latest game version
 2. Extract the zip archive
 3. Run _PacMan.exe_

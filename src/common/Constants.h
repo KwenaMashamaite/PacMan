@@ -36,13 +36,27 @@ namespace pm {
         static constexpr auto MAX_NUM_LEVEL_RESTARTS = 2;  //!< The number of times the player can restart a level before being forced to start from level 1
 
         // 2. Grid positions
-        static inline const auto READY_TEXT_POSITION = ime::Index{17, 12}; // The position of the text shown during gameplay delay
+        static inline const auto READY_TEXT_POSITION = ime::Index{17, 12}; //!< The position of the text shown during gameplay delay
+        static inline auto PACMAN_SPAWN_TILE = ime::Index{22, 12};         //!< Pacman's spawn position when a level starts or restarts
+        static inline auto BLINKY_SPAWN_TILE = ime::Index{12, 12};         //!< Blinky's spawn position when a level starts or restarts
+        static inline auto PINKY_SPAWN_TILE = ime::Index{15, 12};          //!< Pinky's spawn position when a level starts or restarts
+        static inline auto INKY_SPAWN_TILE = ime::Index{15, 11};           //!< Inky's spawn position when a level starts or restarts
+        static inline auto CLYDE_SPAWN_TILE = ime::Index{15, 13};          //!< Clyde's spawn position when a level starts or restarts
+        static inline auto EATEN_GHOST_RESPAWN_TILE = ime::Index{15, 12};  //!< The tile a ghost targets after it is eaten (Once it reaches this tile, it gets revived)
 
         // 3. Player
         static constexpr auto PLAYER_LiVES = 3;     // The initial number of player lives
         static constexpr auto PACMAN_SPEED = 100;   // The pacmans speed when moving in the grid
 
-        // 4. Misc
+        // 4. Ghost
+        static constexpr auto ENERGIZE_MODE_DURATION = 7.0f;           //!< Initial duration of energizer effects on ghosts
+        static constexpr auto SCATTER_MODE_DURATION = 7.0f;            //!< The initial duration of a ghosts scatter mode
+        static constexpr auto CHASE_MODE_DURATION = 7.0f;              //!< The initial duration of a ghosts chase mode
+        static constexpr auto PINKY_HOUSE_ARREST_DURATION = 7.0f;      //!< Time spent by pinky in the ghost house before entering the maze
+        static constexpr auto INKY_HOUSE_ARREST_DURATION = 14.0f;      //!< Time spent by inky in the ghost house before entering the maze
+        static constexpr auto CLYDE_HOUSE_ARREST_DURATION = 21.0f;     //!< Time spent by clyde in the ghost house before entering the maze
+
+        // 5. Misc
         static constexpr auto GRID_TILE_SIZE = 20;      // The size of each grid cell
         static constexpr auto LEVEL_START_DELAY = 2.0f; //!< The time (in seconds) the player must wait before they can control pacman
 

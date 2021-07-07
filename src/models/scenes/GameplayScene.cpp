@@ -35,11 +35,15 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     GameplayScene::GameplayScene() :
+        currentLevel_{-1},
         view_{gui()}
     {}
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onEnter() {
+        currentLevel_ = cache().getValue<int>("CURRENT_LEVEL");
+        audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
+
         createPhysWorld({0.0f, 0.0f}); // Since we using grid based physics only, no gravity is needed
         createGrid();
         initGui();
@@ -95,6 +99,11 @@ namespace pm {
             if (actor->getClassName() == "PacMan") {
                 actor->getSprite().getAnimator().setTimescale(0.0f);
                 static_cast<PacMan*>(actor)->setLivesCount(cache().getValue<int>("PLAYER_LIVES"));
+            } else if (actor->getClassName() == "Ghost") {
+                if (actor->getTag() == "blinky")
+                    actor->getUserData().addProperty({"is_locked_in_ghost_house", false});
+                else
+                    actor->getUserData().addProperty({"is_locked_in_ghost_house", true});
             }
         });
     }
@@ -109,12 +118,14 @@ namespace pm {
         gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghostBase) {
             auto* ghost = static_cast<Ghost*>(ghostBase);
             auto ghostMover = std::make_unique<GhostGridMover>(tilemap(), ghost);
+            setGhostSpeed(ghostMover.get());
+            ghost->initFSM(ghostMover.get());
+            ghostMover->setTag(ghost->getTag() + "GridMover");
 
 #ifndef NDEBUG
             ghostMover->setPathViewEnable(true);
 #endif
 
-            ghost->initFSM(ghostMover.get());
             gridMovers().addObject(std::move(ghostMover), "GhostMovers");
         });
     }
@@ -196,6 +207,7 @@ namespace pm {
 
             auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
             soundEffect->setLoop(true);
+            emit(GameEvent::LevelStarted);
         });
     }
 
@@ -237,6 +249,35 @@ namespace pm {
             cache().setValue("HIGH_SCORE", newScore);
             view_.setHighScore(newScore);
         }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::emit(GameEvent event) {
+        ime::PropertyContainer args;
+        switch (event) {
+            case GameEvent::LevelStarted:
+                args.addProperty({"level", currentLevel_});
+                break;
+            default:
+                break;
+        }
+
+        gameObjects().forEachInGroup("Ghost", [event, &args](ime::GameObject* ghost) {
+            static_cast<Ghost*>(ghost)->handleEvent(event, args);
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::setGhostSpeed(ime::GridMover *gridMover) const {
+        float speed;
+        if (currentLevel_ == 1)
+            speed = 0.75 * Constants::PACMAN_SPEED;
+        else if (currentLevel_ >= 2 && currentLevel_ <= 4)
+            speed = 0.85f * Constants::PACMAN_SPEED;
+        else
+            speed = 0.95 * Constants::PACMAN_SPEED;
+
+        gridMover->setMaxLinearSpeed(ime::Vector2f{speed, speed});
     }
 
     ///////////////////////////////////////////////////////////////

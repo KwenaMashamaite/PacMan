@@ -88,6 +88,8 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void Ghost::setDirection(ime::Vector2i dir) {
         if (direction_ != dir) {
+            direction_ = dir;
+
             // Frightened animation is the same in all directions
             if (getState() == State::Frightened)
                 return;

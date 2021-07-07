@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/states/ghost/GIdleState.h"
+#include "src/models/actors/states/ghost/ScatterState.h"
 #include "src/models/actors/Ghost.h"
 
 namespace pm {
@@ -50,7 +51,10 @@ namespace pm {
     void GIdleState::onExit() {
         ghostMover_->setMovementRestriction(ime::GridMover::MoveRestriction::None);
 
-        //@todo Transition to next state
+        auto nextState = std::make_unique<ScatterState>(fsm_, level_);
+        nextState->setTarget(ghost_);
+        nextState->setGridMover(ghostMover_);
+        fsm_->push(std::move(nextState));
     }
 
 } // namespace pm

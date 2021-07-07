@@ -46,7 +46,7 @@ namespace pm {
         });
 
         // Make the ghost position accessible to interested parties
-        PositionTracker::updatePosition(ghost->getTag(), getTargetTileIndex());
+        PositionTracker::updatePosition(ghost->getTag(), getGrid().getTileOccupiedByChild(ghost).getIndex());
         PositionTracker::updateDirection(ghost->getTag(), ghost->getDirection());
 
         // Update the position when ghost moves to another tile

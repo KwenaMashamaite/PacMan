@@ -26,6 +26,7 @@
 #define PACMAN_GAMEPLAYSCENE_H
 
 #include <IME/core/scene/Scene.h>
+#include "src/common/GameEvents.h"
 #include "src/models/world/Grid.h"
 #include "src/views/GameplaySceneView.h"
 
@@ -133,7 +134,20 @@ namespace pm {
          */
         void updateScore(int points);
 
+        /**
+         * @brief Emit a game event
+         * @param event The event to be emitted
+         */
+        void emit(GameEvent event);
+
+        /**
+         * @brief Set the speed of a ghost
+         * @param gridMover The ghosts grid mover
+         */
+        void setGhostSpeed(ime::GridMover* gridMover) const;
+
     private:
+        int currentLevel_;           //!< Current game level
         GameplaySceneView view_;     //!< Scene view without the gameplay grid
         std::unique_ptr<Grid> grid_; //!< Gameplay grid view
     };

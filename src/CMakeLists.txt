@@ -7,6 +7,7 @@ set(SRC_FILES
         models/actors/controllers/PacManGridMover.cpp
         models/actors/states/ghost/GhostState.cpp
         models/actors/states/ghost/GIdleState.cpp
+        models/actors/states/ghost/ScatterState.cpp
         models/actors/Ghost.cpp
         models/actors/Pellet.cpp
         models/actors/PacMan.cpp

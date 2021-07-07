@@ -29,6 +29,7 @@
 * Includes all the game actors
 -----------------------------------------------------------------------------*/
 
+#include "src/models/actors/Ghost.h"
 #include "src/models/actors/PacMan.h"
 #include "src/models/actors/Pellet.h"
 #include "src/models/actors/Wall.h"

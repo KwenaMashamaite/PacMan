@@ -31,7 +31,7 @@ namespace pm {
         grid.forEachCell([&physicsWorld, &grid](const ime::Tile& tile) {
             ime::GameObject::Ptr actor;
 
-            if (tile.getId() == 'P') {
+            if (tile.getId() == 'X') {
                 actor = std::make_unique<PacMan>(grid.getScene());
                 actor->attachRigidBody(physicsWorld.createBody(ime::RigidBody::Type::Kinematic));
             } else if (tile.getId() == '|' || tile.getId() == '#') {
@@ -44,8 +44,20 @@ namespace pm {
                 actor = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Energizer);
             else if (tile.getId() == 'D')
                 actor = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Dot);
-            else
-                return;
+            else {
+                if (tile.getId() == 'B')
+                    actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Red);
+                else if (tile.getId() == 'P')
+                    actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Pink);
+                else if (tile.getId() == 'I')
+                    actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Cyan);
+                else if (tile.getId() == 'C')
+                    actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Orange);
+                else
+                    return;
+
+                actor->attachRigidBody(physicsWorld.createBody(ime::RigidBody::Type::Kinematic));
+            }
 
             actor->getUserData().addProperty({"scene", std::ref(grid.getScene())});
             grid.addActor(std::move(actor), tile.getIndex());

@@ -10,7 +10,11 @@
 #   . = Empty tile
 #   E = Energizer or Power pellet
 #   D = Dot
-#   P = Pacman
+#   X = Pacman
+#   B = Blinky (red ghost)
+#   P = Pinky (pinky ghost)
+#   I = Inky (cyan ghost)
+#   C = Clyde (orange ghost)
 #   T = Tunnel exit sensor
 ###########################################
 
@@ -26,17 +30,17 @@
 ..|D|#|D|D|###|D|D|#|D|..
 ..|DDDDD|DDD|DDD|DDDDD|..
 ..|###|D|##.|.##|D|###|..
-......|D|.......|D|......
+......|D|...B...|D|......
 ......|D|.|#.#|.|D|......
 |#####|D|.|...|.|D|#####|
-T......D..|...|..D......T
+T......D..|IPC|..D......T
 |#####|D|.|###|.|D|#####|
 ......|D|.......|D|......
 ......|D|.|###|.|D|......
 ..|###|D|.|###|.|D|###|..
 ..|DDDDDDDDD|DDDDDDDDD|..
 ..|D|#|D|#|D|D|#|D|#|D|..
-..|EDD|DDDDDPDDDDD|DDE|..
+..|EDD|DDDDDXDDDDD|DDE|..
 ..|#|D|D|D|###|D|D|D|#|..
 ..|#|D|D|D|###|D|D|D|#|..
 ..|DDDDD|DDD|DDD|DDDDD|..

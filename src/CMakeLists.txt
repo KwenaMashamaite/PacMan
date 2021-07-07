@@ -2,6 +2,7 @@ set(SRC_FILES
         main.cpp
         common/PositionTracker.cpp
         models/actors/controllers/PacManGridMover.cpp
+        models/actors/Ghost.cpp
         models/actors/Pellet.cpp
         models/actors/PacMan.cpp
         models/actors/Wall.cpp
@@ -20,6 +21,7 @@ set(SRC_FILES
         views/LoadingSceneView.cpp
         views/MainMenuSceneView.cpp
         views/PauseMenuSceneView.cpp
+        animations/GhostAnimations.cpp
         animations/GridAnimation.cpp
         animations/PelletAnimations.cpp
         animations/PacManAnimations.cpp

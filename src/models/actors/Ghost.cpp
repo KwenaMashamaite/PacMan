@@ -24,7 +24,10 @@
 
 #include "src/models/actors/Ghost.h"
 #include "src/utils/Utils.h"
+#include "src/models/actors/states/ghost/GIdleState.h"
 #include "src/animations/GhostAnimations.h"
+#include <memory>
+#include <cassert>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
@@ -63,6 +66,16 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void Ghost::initFSM(GhostGridMover* gridMover) {
+        fsm_.clear();
+        auto initialState = std::make_unique<GIdleState>(&fsm_);
+        initialState->setTarget(this);
+        initialState->setGridMover(gridMover);
+        fsm_.push(std::move(initialState));
+        fsm_.start();
+    }
+
+    ///////////////////////////////////////////////////////////////
     std::string Ghost::getClassName() const {
         return "Ghost";
     }
@@ -91,6 +104,19 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     ime::Vector2i Ghost::getDirection() const {
         return direction_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void Ghost::update(ime::Time deltaTime) {
+        assert(fsm_.top() && "A ghost FSM must have at least one state before an updated");
+        ime::GameObject::update(deltaTime);
+        fsm_.top()->update(deltaTime);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void Ghost::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+        assert(fsm_.top() && "A ghost FSM must have at least one state before handling an event");
+        fsm_.top()->handleEvent(event, args);
     }
 
     ///////////////////////////////////////////////////////////////

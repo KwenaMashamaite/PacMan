@@ -25,9 +25,12 @@
 #ifndef PACMAN_GHOST_H
 #define PACMAN_GHOST_H
 
+#include "src/models/actors/states/ActorStateFSM.h"
 #include <IME/core/game_object/GameObject.h>
 
 namespace pm {
+    class GhostGridMover;
+
     /**
      * @brief Ghost actor
      */
@@ -64,6 +67,15 @@ namespace pm {
         Ghost(ime::Scene& scene, Colour colour);
 
         /**
+         * @brief Initialize the ghosts Finite State Machine
+         * @param gridMover The ghosts movement controller
+         *
+         * @note This function will replace all states present in the FSM with
+         * the default ghost state
+         */
+        void initFSM(GhostGridMover* gridMover);
+
+        /**
          * @brief Get the name of this class
          * @return The name of this class
          */
@@ -93,11 +105,25 @@ namespace pm {
         ime::Vector2i getDirection() const;
 
         /**
+         * @brief Update the ghost
+         * @param deltaTime Time passed since last update
+         */
+        void update(ime::Time deltaTime) override;
+
+        /**
+         * @brief Handle a game event
+         * @param event The event to be handled
+         * @param args Arguments associated with the event
+         */
+        virtual void handleEvent(GameEvent event, const ime::PropertyContainer& args);
+
+        /**
          * @brief Destructor
          */
         ~Ghost() override;
 
     private:
+        ActorStateFSM fsm_;          //!< Ghosts finite state machine
         ime::Vector2i direction_;    //!< The direction of the ghost
     };
 }

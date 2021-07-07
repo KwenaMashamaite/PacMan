@@ -28,6 +28,7 @@
 #include "src/models/actors/Actors.h"
 #include "src/common/Constants.h"
 #include "src/models/actors/controllers/PacManGridMover.h"
+#include "src/models/actors/controllers/GhostGridMover.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
 
@@ -104,6 +105,19 @@ namespace pm {
         auto pacmanGridMover = std::make_unique<PacManGridMover>(tilemap(), gameObjects().findByTag<PacMan>("pacman"));
         pacmanGridMover->init();
         gridMovers().addObject(std::move(pacmanGridMover));
+
+        // 2. Create movement controllers for all ghost
+        gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghostBase) {
+            auto* ghost = static_cast<Ghost*>(ghostBase);
+            auto ghostMover = std::make_unique<GhostGridMover>(tilemap(), ghost);
+
+#ifndef NDEBUG
+            ghostMover->setPathViewEnable(true);
+#endif
+
+            ghost->initFSM(ghostMover.get());
+            gridMovers().addObject(std::move(ghostMover), "GhostMovers");
+        });
     }
 
     ///////////////////////////////////////////////////////////////

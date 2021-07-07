@@ -39,7 +39,6 @@ namespace pm {
         isRandomMove_{false}
     {
         assert(ghost && "spm::GhostGridMover target must not be a nullptr");
-        setPathFinder(std::make_unique<ForwardDirectionalBFS>(tileMap.getSizeInTiles(), ghost));
 
         // Update the ghosts direction when the grid mover turns it
         onPropertyChange("direction", [ghost](const ime::Property& property) {
@@ -61,6 +60,8 @@ namespace pm {
             PositionTracker::updatePosition(ghost->getTag(), index);
             PositionTracker::updateDirection(ghost->getTag(), getDirection());
         });
+
+        setPathFinder(std::make_unique<ForwardDirectionalBFS>(tileMap.getSizeInTiles(), ghost));
     }
 
     ///////////////////////////////////////////////////////////////

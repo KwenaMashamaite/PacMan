@@ -40,7 +40,6 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onEnter() {
-        engine().getWindow().setMouseCursorVisible(false);
         createPhysWorld({0.0f, 0.0f}); // Since we using grid based physics only, no gravity is needed
         createGrid();
         initGui();
@@ -242,7 +241,6 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onExit() {
-        engine().getWindow().setMouseCursorVisible(true);
         engine().onFrameEnd(nullptr);
         engine().getWindow().onClose(nullptr);
     }

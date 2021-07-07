@@ -41,14 +41,6 @@ namespace pm {
          */
         void onEnter() override;
 
-        /**
-         * @brief Pre-scene destruction handler
-         *
-         * This function is called by the game engine before the scene is
-         * destroyed
-         */
-        void onExit() override;
-
     private:
         /**
          * @brief Initialize event handlers

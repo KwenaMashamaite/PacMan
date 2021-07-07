@@ -55,3 +55,7 @@ folder
 ## Platform
 
 This game only runs on the Windows platform. It was tested on Windows 10.
+
+## License
+
+Pac-Man clone falls under the [MIT](LICENSE) license.

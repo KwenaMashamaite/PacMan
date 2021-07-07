@@ -81,6 +81,12 @@ namespace pm {
         State getState() const;
 
         /**
+         * @brief Set the direction of the ghost
+         * @param dir The new direction of the ghost
+         */
+        void setDirection(ime::Vector2i dir);
+
+        /**
          * @brief Get the current direction
          * @return The current direction
          */

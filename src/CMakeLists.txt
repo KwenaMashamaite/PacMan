@@ -2,6 +2,8 @@ set(SRC_FILES
         main.cpp
         common/PositionTracker.cpp
         models/actors/states/ActorStateFSM.cpp
+        models/actors/controllers/GhostGridMover.cpp
+        models/actors/controllers/ForwardDirectionalBFS.cpp
         models/actors/controllers/PacManGridMover.cpp
         models/actors/Ghost.cpp
         models/actors/Pellet.cpp

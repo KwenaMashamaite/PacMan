@@ -73,6 +73,22 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void Ghost::setDirection(ime::Vector2i dir) {
+        if (direction_ != dir) {
+            // Frightened animation is the same in all directions
+            if (getState() == State::Frightened)
+                return;
+
+            std::string newAnimation = "going" + utils::convertToString(direction_);
+
+            if (getState() == State::Eaten)
+                newAnimation += "Eaten";
+
+            getSprite().getAnimator().startAnimation(newAnimation);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
     ime::Vector2i Ghost::getDirection() const {
         return direction_;
     }

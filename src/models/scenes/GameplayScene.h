@@ -146,8 +146,25 @@ namespace pm {
          */
         void setGhostSpeed(ime::GridMover* gridMover) const;
 
+        /**
+         * @brief Spawn a fruit
+         *
+         * The type of fruit spawned depends on the current level of the game.
+         * If left uneaten for some time, the fruit will disappear
+         */
+        void spawnFruit();
+
+        /**
+         * @brief Replace a fruit texture with a corresponding score texture
+         * @param fruit The fruit to be replaced with a score texture
+         *
+         * The fruit will remain on the screen for some time before it disappears
+         */
+        void replaceFruitWithScore(ime::GameObject* fruit);
+
     private:
         int currentLevel_;           //!< Current game level
+        int eatenPelletsCount_;      //!< Keeps track of the number of pellets pacman has eaten
         GameplaySceneView view_;     //!< Scene view without the gameplay grid
         std::unique_ptr<Grid> grid_; //!< Gameplay grid view
     };

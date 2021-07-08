@@ -36,13 +36,13 @@ namespace pm {
         static constexpr auto MAX_NUM_LEVEL_RESTARTS = 2;  //!< The number of times the player can restart a level before being forced to start from level 1
 
         // 2. Grid positions
-        static inline const auto READY_TEXT_POSITION = ime::Index{17, 12}; //!< The position of the text shown during gameplay delay
-        static inline auto PACMAN_SPAWN_TILE = ime::Index{22, 12};         //!< Pacman's spawn position when a level starts or restarts
-        static inline auto BLINKY_SPAWN_TILE = ime::Index{12, 12};         //!< Blinky's spawn position when a level starts or restarts
-        static inline auto PINKY_SPAWN_TILE = ime::Index{15, 12};          //!< Pinky's spawn position when a level starts or restarts
-        static inline auto INKY_SPAWN_TILE = ime::Index{15, 11};           //!< Inky's spawn position when a level starts or restarts
-        static inline auto CLYDE_SPAWN_TILE = ime::Index{15, 13};          //!< Clyde's spawn position when a level starts or restarts
-        static inline auto EATEN_GHOST_RESPAWN_TILE = ime::Index{15, 12};  //!< The tile a ghost targets after it is eaten (Once it reaches this tile, it gets revived)
+        static inline const auto FRUIT_SPAWN_POSITION = ime::Index{17, 12};      //!< The spawn position of a fruit when it appears
+        static inline const auto PACMAN_SPAWN_TILE = ime::Index{22, 12};         //!< Pacman's spawn position when a level starts or restarts
+        static inline const auto BLINKY_SPAWN_TILE = ime::Index{12, 12};         //!< Blinky's spawn position when a level starts or restarts
+        static inline const auto PINKY_SPAWN_TILE = ime::Index{15, 12};          //!< Pinky's spawn position when a level starts or restarts
+        static inline const auto INKY_SPAWN_TILE = ime::Index{15, 11};           //!< Inky's spawn position when a level starts or restarts
+        static inline const auto CLYDE_SPAWN_TILE = ime::Index{15, 13};          //!< Clyde's spawn position when a level starts or restarts
+        static inline const auto EATEN_GHOST_RESPAWN_TILE = ime::Index{15, 12};  //!< The tile a ghost targets after it is eaten (Once it reaches this tile, it gets revived)
 
         // 3. Player
         static constexpr auto PLAYER_LiVES = 3;     // The initial number of player lives
@@ -56,7 +56,13 @@ namespace pm {
         static constexpr auto INKY_HOUSE_ARREST_DURATION = 14.0f;      //!< Time spent by inky in the ghost house before entering the maze
         static constexpr auto CLYDE_HOUSE_ARREST_DURATION = 21.0f;     //!< Time spent by clyde in the ghost house before entering the maze
 
-        // 5. Misc
+        // 5. Fruit
+        static constexpr auto UNEATEN_FRUIT_DESTRUCTION_DELAY = 10.0f;    //!< The time (in seconds) an uneaten fruit remains on the screen before being destroyed
+        static constexpr auto EATEN_FRUIT_DESTRUCTION_DELAY = 2.0f;       //!< The time (in seconds) an eaten fruit remains on the screen before being destroyed
+        static constexpr auto FIRST_FRUIT_APPEARANCE_PELLET_COUNT = 56;   //!< The number of pellets pacman must eat before the first fruit appears in the current level
+        static constexpr auto SECOND_FRUIT_APPEARANCE_PELLET_COUNT = 134; //!< The number of pellets pacman must eat before the second fruit appears in the current level
+
+        // 6. Misc
         static constexpr auto GRID_TILE_SIZE = 20;      // The size of each grid cell
         static constexpr auto LEVEL_START_DELAY = 2.0f; //!< The time (in seconds) the player must wait before they can control pacman
 
@@ -66,6 +72,14 @@ namespace pm {
         struct Points {
             static constexpr int DOT = 10;         //!< Points awarded to the player when they eat a dot
             static constexpr int ENERGIZER = 50;   //!< Points awarded to the player when they eat an energizer
+            static constexpr int CHERRY = 100;     //!< Point awarded to the player when they eat a cherry
+            static constexpr int STRAWBERRY = 300; //!< Point awarded to the player when they eat a strawberry
+            static constexpr int PEACH = 500;      //!< Point awarded to the player when they eat a peach
+            static constexpr int APPLE = 700;      //!< Point awarded to the player when they eat an apple
+            static constexpr int MELON = 1000;     //!< Point awarded to the player when they eat a melon
+            static constexpr int GALAXIAN = 2000;  //!< Point awarded to the player when they eat a galaxian
+            static constexpr int BELL = 3000;      //!< Point awarded to the player when they eat a bell
+            static constexpr int KEY = 5000;       //!< Point awarded to the player when they eat a key
         }; // struct Points
 
     }; // struct Constants

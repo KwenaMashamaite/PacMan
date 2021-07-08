@@ -36,6 +36,7 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     GameplayScene::GameplayScene() :
         currentLevel_{-1},
+        eatenPelletsCount_{0},
         view_{gui()}
     {}
 
@@ -87,7 +88,7 @@ namespace pm {
         lblGetReady->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
         lblGetReady->getRenderer()->setTextColour(ime::Colour::Yellow);
         lblGetReady->setOrigin(0.5f, 0.5f);
-        lblGetReady->setPosition(tilemap().getTile(Constants::READY_TEXT_POSITION).getWorldCentre());
+        lblGetReady->setPosition(tilemap().getTile(Constants::FRUIT_SPAWN_POSITION).getWorldCentre());
         gui().addWidget(std::move(lblGetReady), "lblReady");
     }
 
@@ -176,6 +177,8 @@ namespace pm {
         ///@brief Increase the game score when a pellet is eaten and destroy it
         ///@param pelletBase The pellet that was eaten
         auto onPelletCollision = [this](ime::GameObject* pelletBase) {
+            eatenPelletsCount_ += 1;
+
             auto pellet = static_cast<Pellet*>(pelletBase);
             pellet->setActive(false);
             if (pellet->getPelletType() == Pellet::Type::Energizer) {
@@ -185,6 +188,36 @@ namespace pm {
                 updateScore(Constants::Points::DOT);
                 audio().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
             }
+
+            if (eatenPelletsCount_ == Constants::FIRST_FRUIT_APPEARANCE_PELLET_COUNT ||
+                eatenPelletsCount_ == Constants::SECOND_FRUIT_APPEARANCE_PELLET_COUNT)
+            {
+                spawnFruit();
+            }
+        };
+
+        ///@brief Increase the game score when a fruit is eaten and replace it's texture with a score value
+        ///@param pelletBase The fruit that was eaten
+        auto onFruitCollision = [this](ime::GameObject* fruit) {
+            if (fruit->getTag() == "cherry")
+                updateScore(Constants::Points::CHERRY);
+            else if (fruit->getTag() == "strawberry")
+                updateScore(Constants::Points::STRAWBERRY);
+            else if (fruit->getTag() == "peach")
+                updateScore(Constants::Points::PEACH);
+            else if (fruit->getTag() == "apple")
+                updateScore(Constants::Points::APPLE);
+            else if (fruit->getTag() == "melon")
+                updateScore(Constants::Points::MELON);
+            else if (fruit->getTag() == "galaxian")
+                updateScore(Constants::Points::GALAXIAN);
+            else if (fruit->getTag() == "bell")
+                updateScore(Constants::Points::BELL);
+            else if (fruit->getTag() == "key")
+                updateScore(Constants::Points::KEY);
+
+            replaceFruitWithScore(fruit);
+            audio().play(ime::audio::Type::Sfx, "fruitEaten.wav");
         };
 
         ime::GridMover* pacmanGridMover = gridMovers().findByTag("pacmanGridMover");
@@ -194,6 +227,8 @@ namespace pm {
                 onTunnelExitSensorTrigger(pacmanGridMover, pacman);
             else if (other->getClassName() == "Pellet")
                 onPelletCollision(other);
+            else if (other->getClassName() == "Fruit")
+                onFruitCollision(other);
         });
     }
 
@@ -278,6 +313,64 @@ namespace pm {
             speed = 0.95 * Constants::PACMAN_SPEED;
 
         gridMover->setMaxLinearSpeed(ime::Vector2f{speed, speed});
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::spawnFruit() {
+        Fruit::Type fruitType;
+        if (currentLevel_ == 1)
+            fruitType = Fruit::Type::Cherry;
+        else if (currentLevel_ == 2)
+            fruitType = Fruit::Type::Strawberry;
+        else if (currentLevel_ == 3)
+            fruitType = Fruit::Type::Peach;
+        else if (currentLevel_ == 4)
+            fruitType = Fruit::Type::Apple;
+        else if (currentLevel_ == 5)
+            fruitType = Fruit::Type::Melon;
+        else if (currentLevel_ == 6)
+            fruitType = Fruit::Type::Galaxian;
+        else if (currentLevel_ == 7)
+            fruitType = Fruit::Type::Bell;
+        else
+            fruitType = Fruit::Type::Key;
+
+        auto fruit = std::make_unique<Fruit>(*this, fruitType);
+
+        // Destroy fruit if left uneaten for some time
+        timer().setTimeout(ime::seconds(Constants::UNEATEN_FRUIT_DESTRUCTION_DELAY), [fruitPtr = fruit.get()]{
+            if (fruitPtr)
+                fruitPtr->setActive(false);
+        });
+
+        grid_->addActor(std::move(fruit), Constants::FRUIT_SPAWN_POSITION);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::replaceFruitWithScore(ime::GameObject* fruit) {
+        fruit->getSprite().setTexture("spritesheet.png");
+
+        if (fruit->getTag() == "cherry")
+            fruit->getSprite().setTextureRect(ime::UIntRect{1, 116, 16, 16});  // 100
+        else if (fruit->getTag() == "strawberry")
+            fruit->getSprite().setTextureRect(ime::UIntRect{18, 116, 16, 16}); // 300
+        else if (fruit->getTag() == "peach")
+            fruit->getSprite().setTextureRect(ime::UIntRect{35, 116, 16, 16}); // 500
+        else if (fruit->getTag() == "apple")
+            fruit->getSprite().setTextureRect(ime::UIntRect{52, 116, 16, 16}); // 700
+        else if (fruit->getTag() == "melon")
+            fruit->getSprite().setTextureRect(ime::UIntRect{69, 116, 16, 16}); // 1000
+        else if (fruit->getTag() == "galaxian")
+            fruit->getSprite().setTextureRect(ime::UIntRect{86, 116, 16, 16}); // 2000
+        else if (fruit->getTag() == "bell")
+            fruit->getSprite().setTextureRect(ime::UIntRect{103, 116, 16, 16}); // 3000
+        else if (fruit->getTag() == "key")
+            fruit->getSprite().setTextureRect(ime::UIntRect{120, 116, 16, 16}); // 5000
+
+        // Destroy fruit after some seconds have passed since it was replaced by score texture
+        timer().setTimeout(ime::seconds(Constants::EATEN_FRUIT_DESTRUCTION_DELAY), [fruit] {
+            fruit->setActive(false);
+        });
     }
 
     ///////////////////////////////////////////////////////////////

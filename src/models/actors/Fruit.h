@@ -22,18 +22,45 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_ALLENTITIES_H
-#define PACMAN_ALLENTITIES_H
+#ifndef PACMAN_FRUIT_H
+#define PACMAN_FRUIT_H
 
-/*-----------------------------------------------------------------------------
-* Includes all the game actors
------------------------------------------------------------------------------*/
+#include <IME/core/game_object/GameObject.h>
+#include <IME/graphics/SpriteSheet.h>
 
-#include "src/models/actors/Fruit.h"
-#include "src/models/actors/Ghost.h"
-#include "src/models/actors/PacMan.h"
-#include "src/models/actors/Pellet.h"
-#include "src/models/actors/Wall.h"
-#include "src/models/actors/Sensor.h"
+namespace pm {
+    /**
+     * @brief A fruit that can be eaten by Pacman
+     */
+    class Fruit : public ime::GameObject {
+    public:
+        /**
+         * @brief Fruit type
+         */
+        enum class Type {
+            Cherry,      //!< Cherry
+            Strawberry,  //!< Strawberry
+            Peach,       //!< Peach
+            Apple,       //!< Apple
+            Melon,       //!< Melon
+            Galaxian,    //!< Galaxian
+            Bell,        //!< Bell
+            Key          //!< Key
+        };
+
+        /**
+         * @brief Constructor
+         * @param scene The scene the object belongs to
+         * @param type The type of fruit
+         */
+        Fruit(ime::Scene& scene, Type type);
+
+        /**
+         * @brief Get the name of the class
+         * @return The name of the class
+         */
+        std::string getClassName() const override;
+    };
+}
 
 #endif

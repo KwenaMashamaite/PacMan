@@ -104,7 +104,7 @@ namespace pm {
                 if (actor->getTag() == "blinky")
                     actor->getUserData().addProperty({"is_locked_in_ghost_house", false});
                 else
-                    actor->getUserData().addProperty({"is_locked_in_ghost_house", true});
+                    actor->getUserData().addProperty({"is_locked_in_ghost_house", false});
             }
         });
     }
@@ -113,6 +113,11 @@ namespace pm {
     void GameplayScene::createGridMovers() {
         auto pacmanGridMover = std::make_unique<PacManGridMover>(tilemap(), gameObjects().findByTag<PacMan>("pacman"));
         pacmanGridMover->init();
+
+        pacmanGridMover->onAdjacentMoveBegin([this](ime::Index index) {
+            emit(GameEvent::PacManMoved);
+        });
+
         gridMovers().addObject(std::move(pacmanGridMover));
 
         // 2. Create movement controllers for all ghost

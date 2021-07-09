@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/states/ghost/ScatterState.h"
+#include "src/models/actors/states/ghost/ChaseState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
 #include <cassert>
@@ -194,10 +195,8 @@ namespace pm {
         // of initiating a pacman chase
         if (isLockedInGhostHouse_)
             nextState = std::make_unique<ScatterState>(fsm_, currentLevel_);
-        else {
-            //@todo - transition to chase state
-            nextState = std::make_unique<ScatterState>(fsm_, currentLevel_);
-        }
+        else
+            nextState = std::make_unique<ChaseState>(fsm_, currentLevel_);
 
         nextState->setTarget(ghost_);
         nextState->setGridMover(ghostMover_);

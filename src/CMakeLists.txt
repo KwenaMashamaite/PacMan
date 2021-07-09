@@ -8,6 +8,7 @@ set(SRC_FILES
         models/actors/states/ghost/GhostState.cpp
         models/actors/states/ghost/GIdleState.cpp
         models/actors/states/ghost/ScatterState.cpp
+        models/actors/states/ghost/ChaseState.cpp
         models/actors/Fruit.cpp
         models/actors/Ghost.cpp
         models/actors/Pellet.cpp

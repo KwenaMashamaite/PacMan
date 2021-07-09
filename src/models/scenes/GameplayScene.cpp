@@ -188,6 +188,12 @@ namespace pm {
             pellet->setActive(false);
             if (pellet->getPelletType() == Pellet::Type::Energizer) {
                 updateScore(Constants::Points::ENERGIZER);
+
+                if (currentLevel_ < Constants::GHOST_VULNERABILITY_LEVEL_CUTOFF) {
+                    updateFrightenedStateTimer();
+                    emit(GameEvent::EnergizeModeBegin);
+                }
+
                 audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
             } else {
                 updateScore(Constants::Points::DOT);
@@ -277,6 +283,8 @@ namespace pm {
     void GameplayScene::update(ime::Time deltaTime) {
         view_.update(deltaTime);
         grid_->update(deltaTime);
+        frightenedModeTimer_.update(deltaTime);
+        flashGhosts();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -376,6 +384,58 @@ namespace pm {
         timer().setTimeout(ime::seconds(Constants::EATEN_FRUIT_DESTRUCTION_DELAY), [fruit] {
             fruit->setActive(false);
         });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::updateFrightenedStateTimer() {
+        ime::Time duration;
+
+        if (currentLevel_ == 9 || currentLevel_ == 13 || currentLevel_ == 15 ||
+            currentLevel_ == 16 || currentLevel_ == 17 || currentLevel_ == 18)
+        {
+            duration = ime::seconds(1);
+        }
+        else if (currentLevel_ == 5 || currentLevel_ == 7 || currentLevel_ ||
+                currentLevel_ == 8 || currentLevel_ == 11 || currentLevel_ == 12)
+        {
+            duration = ime::seconds(2);
+        }
+        else if (currentLevel_ == 4 || currentLevel_ == 14)
+            duration = ime::seconds(3);
+        else if (currentLevel_ == 3)
+            duration = ime::seconds(4);
+        else if (currentLevel_ == 6 || currentLevel_ == 10 || currentLevel_ == 2)
+            duration = ime::seconds(5);
+        else if (currentLevel_ == 1)
+            duration = ime::seconds(6);
+
+        if (frightenedModeTimer_.getStatus() == ime::Timer::Status::Running)
+            frightenedModeTimer_.setInterval(frightenedModeTimer_.getRemainingDuration() + duration);
+        else {
+            frightenedModeTimer_.setInterval(duration);
+            frightenedModeTimer_.setTimeoutCallback([this] {
+                emit(GameEvent::EnergizeModeEnd);
+            });
+
+            frightenedModeTimer_.start();
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::flashGhosts() {
+        ime::Time static flashAnimCutoffTime = ime::seconds(2);
+
+        if (frightenedModeTimer_.getStatus() == ime::Timer::Status::Running) {
+            gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghostBase) {
+                auto* ghost = static_cast<Ghost*>(ghostBase);
+                if (ghost->getState() == Ghost::State::Frightened) {
+                    if (!ghost->isFlashAnimationPlaying() && frightenedModeTimer_.getRemainingDuration() <= flashAnimCutoffTime)
+                        ghost->playFlashAnimation(true);
+                    else if (ghost->isFlashAnimationPlaying() && frightenedModeTimer_.getRemainingDuration() > flashAnimCutoffTime)
+                        ghost->playFlashAnimation(false);
+                }
+            });
+        }
     }
 
     ///////////////////////////////////////////////////////////////

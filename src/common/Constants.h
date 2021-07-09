@@ -49,7 +49,6 @@ namespace pm {
         static constexpr auto PACMAN_SPEED = 100;   // The pacmans speed when moving in the grid
 
         // 4. Ghost
-        static constexpr auto ENERGIZE_MODE_DURATION = 7.0f;           //!< Initial duration of energizer effects on ghosts
         static constexpr auto SCATTER_MODE_DURATION = 7.0f;            //!< The initial duration of a ghosts scatter mode
         static constexpr auto CHASE_MODE_DURATION = 20.0f;             //!< The initial duration of a ghosts chase mode
         static constexpr auto PINKY_HOUSE_ARREST_DURATION = 7.0f;      //!< Time spent by pinky in the ghost house before entering the maze
@@ -63,8 +62,9 @@ namespace pm {
         static constexpr auto SECOND_FRUIT_APPEARANCE_PELLET_COUNT = 134; //!< The number of pellets pacman must eat before the second fruit appears in the current level
 
         // 6. Misc
-        static constexpr auto GRID_TILE_SIZE = 20;      // The size of each grid cell
-        static constexpr auto LEVEL_START_DELAY = 2.0f; //!< The time (in seconds) the player must wait before they can control pacman
+        static constexpr auto GRID_TILE_SIZE = 20;                   //!< The size of each grid cell
+        static constexpr auto LEVEL_START_DELAY = 2.0f;              //!< The time (in seconds) the player must wait before they can control pacman
+        static constexpr auto GHOST_VULNERABILITY_LEVEL_CUTOFF = 19; //!< From this level onwards, ghosts can no longer turn blue and be eaten by pacman
 
         /**
          * @brief Points awarded to the player when pacman eats another actor

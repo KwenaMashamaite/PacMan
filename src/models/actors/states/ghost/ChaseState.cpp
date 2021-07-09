@@ -24,6 +24,7 @@
 
 #include "src/models/actors/states/ghost/ChaseState.h"
 #include "src/models/actors/states/ghost/ScatterState.h"
+#include "src/models/actors/states/ghost/FrightenedState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
 #include "src/common/PositionTracker.h"
@@ -107,6 +108,8 @@ namespace pm {
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         if (event == GameEvent::PacManMoved)
             chasePacman();
+        else if (event == GameEvent::EnergizeModeBegin)
+            fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
     }
 
     ///////////////////////////////////////////////////////////////

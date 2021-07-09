@@ -155,6 +155,27 @@ namespace pm {
         void spawnFruit();
 
         /**
+         * @brief Update the frightened mode duration timer
+         *
+         * This function will start the timer if its not running or increase
+         * its expiry time if its already running. When the timer expires it
+         * will emit a pm::GameEvent::EnergizeModeEnd
+         *
+         * Note that this function is not called from level 19 and beyond
+         * because ghosts no longer turn blue
+         */
+        void updateFrightenedStateTimer();
+
+        /**
+         * @brief Make ghosts flash
+         *
+         * Note that a ghost only flashes when in pm::FrightenedState. The
+         * flash is a visual cue to the player that the energizer is about
+         * to expire
+         */
+        void flashGhosts();
+
+        /**
          * @brief Replace a fruit texture with a corresponding score texture
          * @param fruit The fruit to be replaced with a score texture
          *
@@ -163,10 +184,11 @@ namespace pm {
         void replaceFruitWithScore(ime::GameObject* fruit);
 
     private:
-        int currentLevel_;           //!< Current game level
-        int eatenPelletsCount_;      //!< Keeps track of the number of pellets pacman has eaten
-        GameplaySceneView view_;     //!< Scene view without the gameplay grid
-        std::unique_ptr<Grid> grid_; //!< Gameplay grid view
+        int currentLevel_;               //!< Current game level
+        int eatenPelletsCount_;          //!< Keeps track of the number of pellets pacman has eaten
+        GameplaySceneView view_;         //!< Scene view without the gameplay grid
+        std::unique_ptr<Grid> grid_;     //!< Gameplay grid view
+        ime::Timer frightenedModeTimer_; //!< Controls the duration of the ghosts frightened state
     };
 }
 

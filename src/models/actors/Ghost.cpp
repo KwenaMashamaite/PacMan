@@ -109,6 +109,23 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void Ghost::playFlashAnimation(bool flash) {
+        if (flash)
+            getSprite().getAnimator().startAnimation("flash");
+        else {
+            if (getState() == State::Frightened)
+                getSprite().getAnimator().startAnimation("frightened");
+            else
+                getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_));
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    bool Ghost::isFlashAnimationPlaying() const {
+        return getSprite().getAnimator().getActiveAnimation()->getName() == "flash";
+    }
+
+    ///////////////////////////////////////////////////////////////
     void Ghost::update(ime::Time deltaTime) {
         assert(fsm_.top() && "A ghost FSM must have at least one state before an updated");
         ime::GameObject::update(deltaTime);

@@ -105,6 +105,20 @@ namespace pm {
         ime::Vector2i getDirection() const;
 
         /**
+         * @brief Start or stop the flash animation
+         * @param flash True to start the animation or false to stop it
+         *
+         * Note that the flash animation repeats forever
+         */
+        void playFlashAnimation(bool flash);
+
+        /**
+         * @brief Check if the flash animation is playing or not
+         * @return True if playing, otherwise false
+         */
+        bool isFlashAnimationPlaying() const;
+
+        /**
          * @brief Update the ghost
          * @param deltaTime Time passed since last update
          */

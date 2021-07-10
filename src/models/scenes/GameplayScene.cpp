@@ -101,6 +101,8 @@ namespace pm {
                 actor->getSprite().getAnimator().setTimescale(0.0f);
                 static_cast<PacMan*>(actor)->setLivesCount(cache().getValue<int>("PLAYER_LIVES"));
             } else if (actor->getClassName() == "Ghost") {
+                actor->getUserData().addProperty({"is_in_tunnel", false});
+
                 if (actor->getTag() == "blinky")
                     actor->getUserData().addProperty({"is_locked_in_ghost_house", false});
                 else
@@ -113,6 +115,7 @@ namespace pm {
     void GameplayScene::createGridMovers() {
         auto pacmanGridMover = std::make_unique<PacManGridMover>(tilemap(), gameObjects().findByTag<PacMan>("pacman"));
         pacmanGridMover->init();
+        updatePacmanSpeed(pacmanGridMover.get());
 
         pacmanGridMover->onAdjacentMoveBegin([this](ime::Index index) {
             emit(GameEvent::PacManMoved);
@@ -124,7 +127,7 @@ namespace pm {
         gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghostBase) {
             auto* ghost = static_cast<Ghost*>(ghostBase);
             auto ghostMover = std::make_unique<GhostGridMover>(tilemap(), ghost);
-            setGhostSpeed(ghostMover.get());
+            updateGhostSpeed(ghostMover.get());
             ghost->initFSM(ghostMover.get());
             ghostMover->setTag(ghost->getTag() + "GridMover");
 
@@ -316,14 +319,47 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameplayScene::setGhostSpeed(ime::GridMover *gridMover) const {
+    void GameplayScene::updatePacmanSpeed(ime::GridMover *gridMover) const {
         float speed;
         if (currentLevel_ == 1)
-            speed = 0.75 * Constants::PACMAN_SPEED;
+            speed = 0.80f * Constants::PACMAN_SPEED;
         else if (currentLevel_ >= 2 && currentLevel_ <= 4)
-            speed = 0.85f * Constants::PACMAN_SPEED;
+            speed = 0.90f * Constants::PACMAN_SPEED;
+        else if (currentLevel_ >= 5 && currentLevel_ <= 20)
+            speed = Constants::PACMAN_SPEED;
         else
-            speed = 0.95 * Constants::PACMAN_SPEED;
+            speed = 0.90f * Constants::PACMAN_SPEED;
+
+        gridMover->setMaxLinearSpeed(ime::Vector2f{speed, speed});
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::updateGhostSpeed(ime::GridMover *gridMover) const {
+        float speed;
+        auto* ghost = static_cast<Ghost*>(gridMover->getTarget());
+
+        if (currentLevel_ == 1) {
+            if (ghost->getState() == Ghost::State::Frightened)
+                speed = 0.50f * Constants::PACMAN_SPEED;
+            else if (ghost->getUserData().getValue<bool>("is_in_tunnel"))
+                speed = 0.40 * Constants::PACMAN_SPEED;
+            else
+                speed = 0.75 * Constants::PACMAN_SPEED;
+        } else if (currentLevel_ >= 2 && currentLevel_ <= 4) {
+            if (ghost->getState() == Ghost::State::Frightened)
+                speed = 0.55f * Constants::PACMAN_SPEED;
+            else if (ghost->getUserData().getValue<bool>("is_in_tunnel"))
+                speed = 0.45f * Constants::PACMAN_SPEED;
+            else
+                speed = 0.85f * Constants::PACMAN_SPEED;
+        } else {
+            if (ghost->getState() == Ghost::State::Frightened) // Stops triggering from level 21 onwards
+                speed = 0.60f * Constants::PACMAN_SPEED;
+            if (ghost->getUserData().getValue<bool>("is_in_tunnel"))
+                speed = 0.50f * Constants::PACMAN_SPEED;
+            else
+                speed = 0.95f * Constants::PACMAN_SPEED;
+        }
 
         gridMover->setMaxLinearSpeed(ime::Vector2f{speed, speed});
     }

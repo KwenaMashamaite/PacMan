@@ -70,6 +70,7 @@ namespace pm {
          * @brief Points awarded to the player when pacman eats another actor
          */
         struct Points {
+            static constexpr int GHOST = 200;      //!< Points awarded to the player when they eat a ghost (Up to 1600 if ghost eaten in succession)
             static constexpr int DOT = 10;         //!< Points awarded to the player when they eat a dot
             static constexpr int ENERGIZER = 50;   //!< Points awarded to the player when they eat an energizer
             static constexpr int CHERRY = 100;     //!< Point awarded to the player when they eat a cherry

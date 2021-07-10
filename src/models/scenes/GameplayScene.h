@@ -141,10 +141,16 @@ namespace pm {
         void emit(GameEvent event);
 
         /**
+         * @brief Set the speed of pacman
+         * @param gridMover Pacman's grid mover
+         */
+        void updatePacmanSpeed(ime::GridMover* gridMover) const;
+
+        /**
          * @brief Set the speed of a ghost
          * @param gridMover The ghosts grid mover
          */
-        void setGhostSpeed(ime::GridMover* gridMover) const;
+        void updateGhostSpeed(ime::GridMover* gridMover) const;
 
         /**
          * @brief Spawn a fruit

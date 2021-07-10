@@ -184,7 +184,7 @@ namespace pm {
 
         ///@brief Increase the game score when a pellet is eaten and destroy it
         ///@param pelletBase The pellet that was eaten
-        auto onPelletCollision = [this](ime::GameObject* pelletBase) {
+        auto onPelletCollision = [this](ime::GameObject* pelletBase, ime::GridMover* pacmanGridMover) {
             eatenPelletsCount_ += 1;
 
             auto pellet = static_cast<Pellet*>(pelletBase);
@@ -197,9 +197,22 @@ namespace pm {
                     emit(GameEvent::EnergizeModeBegin);
                 }
 
+                // Stop pacman for three frames
+                pacmanGridMover->setMovementFreeze(true);
+                timer().setTimeout(ime::seconds(3.0f / engine().getWindow().getFrameRateLimit()), [pacmanGridMover] {
+                    pacmanGridMover->setMovementFreeze(false);
+                });
+
                 audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
             } else {
                 updateScore(Constants::Points::DOT);
+
+                // Stop pacman for one frame
+                pacmanGridMover->setMovementFreeze(true);
+                timer().setTimeout(ime::seconds(1.0f / engine().getWindow().getFrameRateLimit()), [pacmanGridMover] {
+                    pacmanGridMover->setMovementFreeze(false);
+                });
+
                 audio().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
             }
 
@@ -240,7 +253,7 @@ namespace pm {
             if (other->getTag() == "tunnelExitSensor")
                 onTunnelExitSensorTrigger(pacmanGridMover, pacman);
             else if (other->getClassName() == "Pellet")
-                onPelletCollision(other);
+                onPelletCollision(other, pacmanGridMover);
             else if (other->getClassName() == "Fruit")
                 onFruitCollision(other);
         });

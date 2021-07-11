@@ -7,12 +7,13 @@ that was created in 1980 by [Namco](https://en.wikipedia.org/wiki/Namco).
 
 This project is a Pac-Man clone using my 2D game engine, [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME). 
 The project reuses code from my first game, [Super Pac-Man clone](https://github.com/KwenaMashamaite/SuperPacMan). 
-The only major difference between the two is the gameplay maze and the actual gameplay.
+The only major difference between the two is the gameplay maze and the actual gameplay. This game uses the same
+textures, gameplay mechanics and ghost ai as the [original game](https://www.gamasutra.com/view/feature/3938/the_pacman_dossier.php?print=1).
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.4.0)
-   the latest game version
+1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.5.0)
+   the game
 2. Extract the zip archive
 3. Run _PacMan.exe_
 4. Enjoy :video_game:
@@ -22,8 +23,8 @@ The only major difference between the two is the gameplay maze and the actual ga
 ###### *Read this section if you want to build the game yourself, otherwise you may skip it.*
 
 This project is a CMake project, therefore you must download and install [CMake](https://cmake.org/). 
-You also need to download [Infinite Motion Engine v2.1.0](https://github.com/KwenaMashamaite/IME/releases/tag/v2.1.0). 
-Then:
+You also need to download [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME) _v2.1.0_ or higher,
+then:
 
 1. Clone the repository
 ```git

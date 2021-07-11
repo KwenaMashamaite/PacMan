@@ -389,15 +389,15 @@ namespace pm {
             fruitType = Fruit::Type::Cherry;
         else if (currentLevel_ == 2)
             fruitType = Fruit::Type::Strawberry;
-        else if (currentLevel_ == 3)
+        else if (currentLevel_ == 3 || currentLevel_ == 4)
             fruitType = Fruit::Type::Peach;
-        else if (currentLevel_ == 4)
+        else if (currentLevel_ == 5 || currentLevel_ == 6)
             fruitType = Fruit::Type::Apple;
-        else if (currentLevel_ == 5)
+        else if (currentLevel_ == 7 || currentLevel_ == 8)
             fruitType = Fruit::Type::Melon;
-        else if (currentLevel_ == 6)
+        else if (currentLevel_ == 9 || currentLevel_ == 10)
             fruitType = Fruit::Type::Galaxian;
-        else if (currentLevel_ == 7)
+        else if (currentLevel_ == 11 || currentLevel_ == 12)
             fruitType = Fruit::Type::Bell;
         else
             fruitType = Fruit::Type::Key;

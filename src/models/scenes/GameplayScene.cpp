@@ -194,10 +194,9 @@ namespace pm {
             if (pellet->getPelletType() == Pellet::Type::Energizer) {
                 updateScore(Constants::Points::ENERGIZER);
 
-                if (currentLevel_ < Constants::GHOST_VULNERABILITY_LEVEL_CUTOFF) {
+                // Make ghost vulnerable for selected levels only
+                if (currentLevel_ < Constants::GHOST_VULNERABILITY_LEVEL_CUTOFF && currentLevel_ != 17)
                     updateFrightenedStateTimer();
-                    emit(GameEvent::FrightenedModeBegin);
-                }
 
                 // Stop pacman for three frames
                 pacmanGridMover->setMovementFreeze(true);
@@ -444,8 +443,8 @@ namespace pm {
     void GameplayScene::updateFrightenedStateTimer() {
         ime::Time duration;
 
-        if (currentLevel_ == 9 || currentLevel_ == 13 || currentLevel_ == 15 ||
-            currentLevel_ == 16 || currentLevel_ == 17 || currentLevel_ == 18)
+        if (currentLevel_ == 9 || currentLevel_ == 12 || currentLevel_ == 13 ||
+            currentLevel_ == 15 || currentLevel_ == 16 || currentLevel_ == 18)
         {
             duration = ime::seconds(1);
         }

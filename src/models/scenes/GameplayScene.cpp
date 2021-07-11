@@ -158,26 +158,43 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::intiGameEvents() {
-        // 1. Display pause menu when P or Esc is pressed
         input().onKeyUp([this](ime::Keyboard::Key key) {
             if ((key == ime::Keyboard::Key::P || key == ime::Keyboard::Key::Escape))
                 pauseGame();
         });
+
+        eventEmitter().on("levelComplete", ime::Callback<>([this] {
+            engine().onFrameEnd(nullptr);
+            scatterModeTimer_.stop();
+            chaseModeTimer_.stop();
+            frightenedModeTimer_.stop();
+
+            gameObjects().getGroup("Ghost").removeAll();
+
+            // Momentarily freeze pacman before flashing the grid
+            gameObjects().findByTag("pacman")->getSprite().getAnimator().setTimescale(0);
+            gridMovers().findByTag("pacmanGridMover")->setMovementFreeze(true);
+
+
+            timer().setTimeout(ime::milliseconds(500), [this] {
+                completeLevel();
+            });
+        }));
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initEngineEvents() {
-        // Pause game menu when user requests to close game window
         engine().getWindow().onClose([this] {
             pauseGame();
         });
 
-        // Post frame handler
         engine().onFrameEnd([this] {
-            // Remove inactive objects from the scene at the end of each frame
             gameObjects().removeIf([](const ime::GameObject* actor) {
                 return !actor->isActive();
             });
+
+            if (gameObjects().getGroup("Pellet").getCount() == 0)
+                eventEmitter().emit("levelComplete");
         });
     }
 
@@ -345,6 +362,20 @@ namespace pm {
         setOnPauseAction(ime::Scene::OnPauseAction::Show);
         audio().pauseAll();
         engine().pushScene(std::make_unique<PauseMenuScene>());
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::completeLevel() {
+        audio().stopAll();
+        gameObjects().removeByTag("pacman");
+        cache().setValue("CURRENT_LEVEL", currentLevel_ + 1);
+        ime::Time gridAnimDuration = grid_->playFlashAnimation();
+
+        // Starts a new level shortly after the grid stops flashing
+        timer().setTimeout(gridAnimDuration + ime::seconds(1), [this] {
+            engine().popScene();
+            engine().pushScene(std::make_unique<GameplayScene>());
+        });
     }
 
     ///////////////////////////////////////////////////////////////

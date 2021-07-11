@@ -30,7 +30,7 @@ namespace pm {
         spritesheet_{"spritesheet.png", {164, 212}, {1, 1}, {0, 237, 496, 214}}
     {
         animation_ = ime::Animation::create("flash", spritesheet_, ime::seconds(2.0f));
-        const int MAX_NUM_OF_FRAMES = 10;
+        const int MAX_NUM_OF_FRAMES = 5;
         for (auto i = 0; i <= MAX_NUM_OF_FRAMES; ++i) {
             animation_->addFrame(ime::Index{0, 1});
 

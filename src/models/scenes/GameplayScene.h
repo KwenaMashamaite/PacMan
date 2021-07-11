@@ -129,6 +129,11 @@ namespace pm {
         void pauseGame();
 
         /**
+         * @brief Flash the gameplay grid and advance to the next level
+         */
+        void completeLevel();
+
+        /**
          * @brief Update cache and view score values
          * @param points The points to update the score by
          */

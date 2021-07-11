@@ -15,7 +15,9 @@
 #   P = Pinky (pinky ghost)
 #   I = Inky (cyan ghost)
 #   C = Clyde (orange ghost)
-#   T = Tunnel exit sensor
+#   T = Teleportation sensor
+#   H = Tunnel entry sensor
+#   $ = Tunnel exit sensor + Dot
 ###########################################
 
 .........................
@@ -33,7 +35,7 @@
 ......|D|...B...|D|......
 ......|D|.|#.#|.|D|......
 |#####|D|.|...|.|D|#####|
-T......D..|IPC|..D......T
+T.....H$..|IPC|..$H.....T
 |#####|D|.|###|.|D|#####|
 ......|D|.......|D|......
 ......|D|.|###|.|D|......

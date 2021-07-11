@@ -36,10 +36,23 @@ namespace pm {
                 actor->attachRigidBody(physicsWorld.createBody(ime::RigidBody::Type::Kinematic));
             } else if (tile.getId() == '|' || tile.getId() == '#') {
                 actor = std::make_unique<Wall>(grid.getScene());
-            } else if (tile.getId() == 'T') {
+            } else if (tile.getId() == 'T' || tile.getId() == 'H' || tile.getId() == '$') {
                 actor = std::make_unique<Sensor>(grid.getScene());
-                actor->setTag("tunnelExitSensor");
-                actor->setCollisionGroup("tunnelExitSensor");
+
+                if (tile.getId() == 'T') {
+                    actor->setTag("teleportationSensor");
+                    actor->setCollisionGroup("teleportationSensor");
+                } else if (tile.getId() == 'H') {
+                    actor->setTag("tunnelEntrySensor");
+                    actor->setCollisionGroup("tunnelEntrySensor");
+                } else { // Tunnel exit sensor + Dot
+                    actor->setTag("tunnelExitSensor");
+                    actor->setCollisionGroup("tunnelExitSensor");
+
+                    grid.addActor(std::move(actor), tile.getIndex());
+                    grid.addActor(std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Dot), tile.getIndex());
+                    return;
+                }
             } else if (tile.getId() == 'E')
                 actor = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Energizer);
             else if (tile.getId() == 'D')

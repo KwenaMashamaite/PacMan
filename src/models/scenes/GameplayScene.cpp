@@ -104,6 +104,7 @@ namespace pm {
                 static_cast<PacMan*>(actor)->setLivesCount(cache().getValue<int>("PLAYER_LIVES"));
             } else if (actor->getClassName() == "Ghost") {
                 actor->getUserData().addProperty({"is_in_tunnel", false});
+                actor->getCollisionExcludeList().add("tunnelExitSensor");
 
                 if (actor->getTag() == "blinky")
                     actor->getUserData().addProperty({"is_locked_in_ghost_house", false});
@@ -175,7 +176,7 @@ namespace pm {
         ///@brief Teleports an actor to the other side of the tunnel
         ///@param gridMover The grid mover of the actor that triggered the sensor
         ///@param sensorTrigger The actor that triggered the sensor
-        auto onTunnelExitSensorTrigger = [](ime::GridMover* gridMover, ime::GameObject* sensorTrigger) {
+        auto onTeleportationSensorTrigger = [](ime::GridMover* gridMover, ime::GameObject* sensorTrigger) {
             ime::TileMap& grid = gridMover->getGrid();
             auto prevTile = grid.getTileOccupiedByChild(sensorTrigger);
             grid.removeChild(sensorTrigger);
@@ -255,12 +256,44 @@ namespace pm {
         ime::GridMover* pacmanGridMover = gridMovers().findByTag("pacmanGridMover");
 
         pacmanGridMover->onGameObjectCollision([=](ime::GameObject* pacman, ime::GameObject* other) {
-            if (other->getTag() == "tunnelExitSensor")
-                onTunnelExitSensorTrigger(pacmanGridMover, pacman);
+            if (other->getTag() == "teleportationSensor")
+                onTeleportationSensorTrigger(pacmanGridMover, pacman);
             else if (other->getClassName() == "Pellet")
                 onPelletCollision(other, pacmanGridMover);
             else if (other->getClassName() == "Fruit")
                 onFruitCollision(other);
+        });
+
+        /*-------------- Ghosts collision handlers -----------------------*/
+
+        ///@brief Slow down ghost when it enters a tunnel
+        auto onTunnelEntrySensorTrigger = [this](ime::GridMover* ghostGridMover, ime::GameObject* ghost) {
+            ghost->getCollisionExcludeList().add("tunnelEntrySensor");
+            ghost->getCollisionExcludeList().remove("tunnelExitSensor");
+            ghost->getUserData().setValue("is_in_tunnel", true);
+            updateGhostSpeed(ghostGridMover);
+        };
+
+        ///@brief Revert to normal speed when ghost exits tunnel
+        auto onTunnelExitSensorTrigger = [this](ime::GridMover* ghostGridMover, ime::GameObject* ghost) {
+            ghost->getCollisionExcludeList().add("tunnelExitSensor");
+            ghost->getCollisionExcludeList().remove("tunnelEntrySensor");
+            ghost->getUserData().setValue("is_in_tunnel", false);
+            updateGhostSpeed(ghostGridMover);
+        };
+
+        ///@brief Subscribe collision handlers to ghost grid mover
+        gridMovers().forEachInGroup("GhostMovers", [=] (ime::GridMover* ghostMover){
+            ghostMover->onGameObjectCollision([=](ime::GameObject* ghost, ime::GameObject* other) {
+                if (other->getClassName() == "Sensor") {
+                    if (other->getTag() == "tunnelEntrySensor")
+                        onTunnelEntrySensorTrigger(ghostMover, ghost);
+                    else if (other->getTag() == "tunnelExitSensor")
+                        onTunnelExitSensorTrigger(ghostMover, ghost);
+                    else
+                        onTeleportationSensorTrigger(ghostMover, ghost);
+                }
+            });
         });
     }
 
@@ -374,7 +407,7 @@ namespace pm {
             else
                 speed = 0.85f * Constants::PACMAN_SPEED;
         } else {
-            if (ghost->getState() == Ghost::State::Frightened) // Stops triggering from level 21 onwards
+            if (ghost->getState() == Ghost::State::Frightened) // Stops triggering from level 19 onwards
                 speed = 0.60f * Constants::PACMAN_SPEED;
             if (ghost->getUserData().getValue<bool>("is_in_tunnel"))
                 speed = 0.50f * Constants::PACMAN_SPEED;

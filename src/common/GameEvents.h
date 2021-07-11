@@ -39,6 +39,7 @@ namespace pm {
         PacManDied,          //!< Occurs when pacman collides with a ghost and is not in super mode
         PacManMoved,         //!< Occurs when pacman moves from one tile to another
         GhostEaten,          //!< Occurs when a ghost is eaten by pacman
+        GhostFreed,          //!< Occurs when a ghost is released from the ghost house
         GhostRespawned,      //!< Occurs when an eaten ghost is revived
         LevelStarted,        //!< Fired when a level is started for the first time or when it is restarted
     };

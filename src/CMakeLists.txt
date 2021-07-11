@@ -11,6 +11,7 @@ set(SRC_FILES
         models/actors/states/ghost/ChaseState.cpp
         models/actors/states/ghost/FrightenedState.cpp
         models/actors/states/ghost/EatenState.cpp
+        models/actors/states/ghost/ImprisonedState.cpp
         models/actors/Fruit.cpp
         models/actors/Ghost.cpp
         models/actors/Pellet.cpp

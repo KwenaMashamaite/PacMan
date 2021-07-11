@@ -49,9 +49,9 @@ namespace pm {
         static constexpr auto PACMAN_SPEED = 100;   // The pacmans speed when moving in the grid
 
         // 4. Ghost
-        static constexpr auto PINKY_HOUSE_ARREST_DURATION = 7.0f;      //!< Time spent by pinky in the ghost house before entering the maze
-        static constexpr auto INKY_HOUSE_ARREST_DURATION = 14.0f;      //!< Time spent by inky in the ghost house before entering the maze
-        static constexpr auto CLYDE_HOUSE_ARREST_DURATION = 21.0f;     //!< Time spent by clyde in the ghost house before entering the maze
+        static constexpr auto PINKY_HOUSE_ARREST_DURATION = 5.0f;      //!< Time spent by pinky in the ghost house before entering the maze
+        static constexpr auto INKY_HOUSE_ARREST_DURATION = 10.0f;      //!< Time spent by inky in the ghost house before entering the maze
+        static constexpr auto CLYDE_HOUSE_ARREST_DURATION = 15.0f;     //!< Time spent by clyde in the ghost house before entering the maze
 
         // 5. Fruit
         static constexpr auto UNEATEN_FRUIT_DESTRUCTION_DELAY = 10.0f;    //!< The time (in seconds) an uneaten fruit remains on the screen before being destroyed

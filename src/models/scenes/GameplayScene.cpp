@@ -41,7 +41,8 @@ namespace pm {
         eatenPelletsCount_{0},
         view_{gui()},
         chaseModeWaveLevel_{0},
-        scatterModeWaveLevel_{0}
+        scatterModeWaveLevel_{0},
+        numGhostsInHouse_{0}
     {}
 
     ///////////////////////////////////////////////////////////////
@@ -108,10 +109,17 @@ namespace pm {
                 actor->getUserData().addProperty({"is_in_tunnel", false});
                 actor->getCollisionExcludeList().add("tunnelExitSensor");
 
-                if (actor->getTag() == "blinky")
+                // Lock ghosts in ghost house
+                if (actor->getTag() == "blinky" ||
+                    (actor->getTag() == "pinky" && currentLevel_ > 1) ||
+                    (actor->getTag() == "inky" && currentLevel_ > 2) ||
+                    (actor->getTag() == "clyde" && currentLevel_ > 3))
+                {
                     actor->getUserData().addProperty({"is_locked_in_ghost_house", false});
-                else
-                    actor->getUserData().addProperty({"is_locked_in_ghost_house", false});
+                } else {
+                    actor->getUserData().addProperty({"is_locked_in_ghost_house", true});
+                    numGhostsInHouse_ += 1;
+                }
             }
         });
     }
@@ -323,6 +331,8 @@ namespace pm {
 
             auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
             soundEffect->setLoop(true);
+
+            startGhostHouseTimer();
             startGhostScatterMode();
             emit(GameEvent::LevelStarted);
         });
@@ -354,6 +364,7 @@ namespace pm {
     void GameplayScene::update(ime::Time deltaTime) {
         view_.update(deltaTime);
         grid_->update(deltaTime);
+        ghostHouseTimer_.update(deltaTime);
         chaseModeTimer_.update(deltaTime);
         scatterModeTimer_.update(deltaTime);
         frightenedModeTimer_.update(deltaTime);
@@ -667,6 +678,39 @@ namespace pm {
         chaseModeTimer_.start();
 
         emit(GameEvent::ChaseModeBegin);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::startGhostHouseTimer() {
+        if (numGhostsInHouse_ == 0)
+            return;
+
+        auto freeGhost = [this] {
+            ime::PropertyContainer args;
+
+            if (chaseModeTimer_.getStatus() == ime::Timer::Status::Running || chaseModeTimer_.getStatus() == ime::Timer::Status::Paused)
+                args.addProperty({"nextState", Ghost::State::Chase});
+            else if (scatterModeTimer_.getStatus() == ime::Timer::Status::Running || scatterModeTimer_.getStatus() == ime::Timer::Status::Paused)
+                args.addProperty({"nextState", Ghost::State::Scatter});
+            else
+                assert(false && "Failed to determine next state for released ghost");
+
+            if (numGhostsInHouse_ == 3) { // Release pinky
+                static_cast<Ghost*>(gameObjects().getGroup("Ghost").findByTag("pinky"))->handleEvent(GameEvent::GhostFreed, args);
+                ghostHouseTimer_.setInterval(ime::seconds(Constants::INKY_HOUSE_ARREST_DURATION));
+            } else if (numGhostsInHouse_ == 2) { // Release inky
+                static_cast<Ghost*>(gameObjects().getGroup("Ghost").findByTag("inky"))->handleEvent(GameEvent::GhostFreed, args);
+                ghostHouseTimer_.setInterval(ime::seconds(Constants::CLYDE_HOUSE_ARREST_DURATION));
+            } else // Release clyde
+                static_cast<Ghost*>(gameObjects().getGroup("Ghost").findByTag("clyde"))->handleEvent(GameEvent::GhostFreed, args);
+
+            numGhostsInHouse_ -= 1;
+        };
+
+        ghostHouseTimer_.setInterval(ime::seconds(Constants::PINKY_HOUSE_ARREST_DURATION)); // Pinky is freed first
+        ghostHouseTimer_.setTimeoutCallback(freeGhost);
+        ghostHouseTimer_.setRepeat(2);
+        ghostHouseTimer_.start();
     }
 
     ///////////////////////////////////////////////////////////////

@@ -28,8 +28,8 @@
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    GIdleState::GIdleState(ActorStateFSM* fsm) :
-        GhostState(fsm)
+    GIdleState::GIdleState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover) :
+        GhostState(fsm, target, gridMover)
     {}
 
     ///////////////////////////////////////////////////////////////

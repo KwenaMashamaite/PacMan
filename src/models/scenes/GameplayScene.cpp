@@ -137,6 +137,10 @@ namespace pm {
             ghostMover->setPathViewEnable(true);
 #endif
 
+            ghost->onPropertyChange("state", [this, gridMover = ghostMover.get()](const ime::Property&) {
+                updateGhostSpeed(gridMover);
+            });
+
             gridMovers().addObject(std::move(ghostMover), "GhostMovers");
         });
     }

@@ -266,8 +266,10 @@ namespace pm {
                 replaceGhostWithScore(pacman, ghost);
                 updatePointsMultiplier();
 
+                frightenedModeTimer_.pause();
                 timer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [this] {
                     setMovementFreeze(false);
+                    frightenedModeTimer_.start();
                 });
 
                 audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");

@@ -45,7 +45,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void FrightenedState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
-        if (event == GameEvent::EnergizeModeEnd)
+        if (event == GameEvent::FrightenedModeEnd)
             fsm_->pop();
         else if (event == GameEvent::GhostEaten){
             //@todo - Transition to eaten state

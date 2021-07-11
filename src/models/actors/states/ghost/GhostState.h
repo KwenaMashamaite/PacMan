@@ -69,7 +69,7 @@ namespace pm {
          * @brief Update the state
          * @param deltaTime Time passed since last update
          */
-        void update(ime::Time deltaTime) override;
+        void update(ime::Time deltaTime) override {}
 
         /**
          * @brief Handle an event
@@ -94,32 +94,9 @@ namespace pm {
         void onExit() override {}
 
     protected:
-        /**
-         * @brief Initialize the state timer
-         * @param timeout The time to wait before popping the state
-         *
-         * Note that this function is intended for timed states that control
-         * their own timeout. In addition, when the countdown expires, the state
-         * is popped from the FSM
-         */
-        void initTimer(ime::Time timeout);
-
-        /**
-         * @brief Increment/decrease the current timeout
-         * @param value Value to increment/decrease by
-         *
-         * A positive time value increases the current timeout whilst a
-         * negative time value decreases the timeout
-         */
-        void updateTimeout(ime::Time value);
-
-    protected:
         ActorStateFSM* fsm_;         //!< Ghost state controller
         Ghost* ghost_;               //!< Ghost whose behavior is to be defined by the state
         GhostGridMover* ghostMover_; //!< Ghost movement controller
-
-    private:
-        ime::Timer timer_;           //!< Controls a timed states timeout
     };
 }
 

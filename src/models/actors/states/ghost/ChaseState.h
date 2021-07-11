@@ -36,9 +36,10 @@ namespace pm {
         /**
          * @brief Construct state
          * @param fsm The ghost's Finite State Machine
-         * @param level Current game level
+         * @param target The ghost whose behaviour is to be defined by this state
+         * @param gridMover The ghost's grid mover
          */
-        ChaseState(ActorStateFSM* fsm, int level);
+        ChaseState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover);
 
         /**
          * @brief Initialize the state
@@ -83,9 +84,6 @@ namespace pm {
          * @brief Defines the chase strategy for each ghost
          */
         void chasePacman();
-
-    private:
-        int currentLevel_; //!< The current game level
     };
 }
 

@@ -47,26 +47,4 @@ namespace pm {
         ghostMover_ = gridMover;
     }
 
-    ///////////////////////////////////////////////////////////////
-    void GhostState::update(ime::Time deltaTime) {
-        timer_.update(deltaTime);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GhostState::initTimer(ime::Time timeout) {
-        if (timer_.getStatus() != ime::Timer::Status::Running) {
-            timer_.setTimeoutCallback([this] {
-                fsm_->pop();
-            });
-
-            timer_.setInterval(timeout);
-            timer_.start();
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GhostState::updateTimeout(ime::Time value) {
-        timer_.setInterval(timer_.getRemainingDuration() + value);
-    }
-
 } // namespace pm

@@ -30,13 +30,17 @@ namespace pm {
      * @brief Events that take place during gameplay
      */
     enum class GameEvent {
-        EnergizeModeBegin, //!< Occurs when pacman eats an energizer pellet
-        EnergizeModeEnd,   //!< Occurs when the energizer runs out
-        PacManDied,        //!< Occurs when pacman collides with a ghost and is not in super mode
-        PacManMoved,       //!< Occurs when pacman moves from one tile to another
-        GhostEaten,        //!< Occurs when a ghost is eaten by pacman
-        GhostRespawned,    //!< Occurs when an eaten ghost is revived
-        LevelStarted,      //!< Fired when a level is started for the first time or when it is restarted
+        FrightenedModeBegin, //!< Occurs when pacman eats an energizer pellet
+        FrightenedModeEnd,   //!< Occurs when the frightened mode timesout
+        ChaseModeBegin,      //!< Occurs when scatter mode expires
+        ChaseModeEnd,        //!< Occurs when chase mode expires
+        ScatterModeBegin,    //!< Occurs when chase mode expires
+        ScatterModeEnd,      //!< Occurs when scatter mode expires
+        PacManDied,          //!< Occurs when pacman collides with a ghost and is not in super mode
+        PacManMoved,         //!< Occurs when pacman moves from one tile to another
+        GhostEaten,          //!< Occurs when a ghost is eaten by pacman
+        GhostRespawned,      //!< Occurs when an eaten ghost is revived
+        LevelStarted,        //!< Fired when a level is started for the first time or when it is restarted
     };
 }
 

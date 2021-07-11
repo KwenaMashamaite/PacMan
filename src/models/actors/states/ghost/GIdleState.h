@@ -61,9 +61,6 @@ namespace pm {
          * destroyed
          */
         void onExit() override;
-
-    private:
-        int level_; //!< Current game level
     };
 }
 

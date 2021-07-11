@@ -45,9 +45,8 @@ namespace pm {
         /**
          * @brief Constructor
          * @param fsm The ghost's finite state machine
-         * @param level Current game level
          */
-        ScatterState(ActorStateFSM* fsm, int level);
+        explicit ScatterState(ActorStateFSM* fsm);
 
         /**
          * @brief Initialize the state
@@ -103,7 +102,6 @@ namespace pm {
         std::queue<ime::Index> path_; //!< Cyclic path ghost follows after reaching target position
         int destFoundHandler_;        //!< Handler id for a target destination event
         int valueChangeHandler_;      //!< Handler id for a the "locked in ghost house" state change
-        const int currentLevel_;      //!< Current game level
         bool isLockedInGhostHouse_;   //!< A flag indicating whether or not the ghost is locked inside the ghost house
     };
 }

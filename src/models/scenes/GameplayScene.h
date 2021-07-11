@@ -165,12 +165,28 @@ namespace pm {
          *
          * This function will start the timer if its not running or increase
          * its expiry time if its already running. When the timer expires it
-         * will emit a pm::GameEvent::EnergizeModeEnd
+         * will emit a pm::GameEvent::FrightenedModeEnd
          *
          * Note that this function is not called from level 19 and beyond
          * because ghosts no longer turn blue
          */
         void updateFrightenedStateTimer();
+
+        /**
+         * @brief Start the ghost scatter chase timer
+         *
+         * Note that if the timer is paused, it will simply be resumed instead
+         * of being reset
+         */
+        void startGhostScatterMode();
+
+        /**
+         * @brief Start the ghost chase mode timer
+         *
+         * Note that if the timer is paused, it will simply be resumed instead
+         * of being reset
+         */
+        void startGhostChaseMode();
 
         /**
          * @brief Make ghosts flash
@@ -190,11 +206,15 @@ namespace pm {
         void replaceFruitWithScore(ime::GameObject* fruit);
 
     private:
-        int currentLevel_;               //!< Current game level
-        int eatenPelletsCount_;          //!< Keeps track of the number of pellets pacman has eaten
-        GameplaySceneView view_;         //!< Scene view without the gameplay grid
-        std::unique_ptr<Grid> grid_;     //!< Gameplay grid view
-        ime::Timer frightenedModeTimer_; //!< Controls the duration of the ghosts frightened state
+        int currentLevel_;                  //!< Current game level
+        int eatenPelletsCount_;             //!< Keeps track of the number of pellets pacman has eaten
+        GameplaySceneView view_;            //!< Scene view without the gameplay grid
+        std::unique_ptr<Grid> grid_;        //!< Gameplay grid view
+        ime::Timer frightenedModeTimer_;    //!< Controls the duration of the ghosts frightened state
+        ime::Timer scatterModeTimer_;       //!< Controls the duration of the ghosts scatter state
+        ime::Timer chaseModeTimer_;         //!< Controls the duration of the ghosts chase state
+        unsigned int chaseModeWaveLevel_;   //!< Stores the current ghost chase wave level (up to 5)
+        unsigned int scatterModeWaveLevel_; //!< Stores the current scatter mode level (up to 4)
     };
 }
 

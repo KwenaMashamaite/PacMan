@@ -37,7 +37,9 @@ namespace pm {
     GameplayScene::GameplayScene() :
         currentLevel_{-1},
         eatenPelletsCount_{0},
-        view_{gui()}
+        view_{gui()},
+        chaseModeWaveLevel_{0},
+        scatterModeWaveLevel_{0}
     {}
 
     ///////////////////////////////////////////////////////////////
@@ -194,7 +196,7 @@ namespace pm {
 
                 if (currentLevel_ < Constants::GHOST_VULNERABILITY_LEVEL_CUTOFF) {
                     updateFrightenedStateTimer();
-                    emit(GameEvent::EnergizeModeBegin);
+                    emit(GameEvent::FrightenedModeBegin);
                 }
 
                 // Stop pacman for three frames
@@ -269,6 +271,7 @@ namespace pm {
 
             auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
             soundEffect->setLoop(true);
+            startGhostScatterMode();
             emit(GameEvent::LevelStarted);
         });
     }
@@ -299,6 +302,8 @@ namespace pm {
     void GameplayScene::update(ime::Time deltaTime) {
         view_.update(deltaTime);
         grid_->update(deltaTime);
+        chaseModeTimer_.update(deltaTime);
+        scatterModeTimer_.update(deltaTime);
         frightenedModeTimer_.update(deltaTime);
         flashGhosts();
     }
@@ -444,8 +449,8 @@ namespace pm {
         {
             duration = ime::seconds(1);
         }
-        else if (currentLevel_ == 5 || currentLevel_ == 7 || currentLevel_ ||
-                currentLevel_ == 8 || currentLevel_ == 11 || currentLevel_ == 12)
+        else if (currentLevel_ == 5 || currentLevel_ == 7 || currentLevel_ == 8 ||
+            currentLevel_ == 11 || currentLevel_ == 12)
         {
             duration = ime::seconds(2);
         }
@@ -458,16 +463,113 @@ namespace pm {
         else if (currentLevel_ == 1)
             duration = ime::seconds(6);
 
-        if (frightenedModeTimer_.getStatus() == ime::Timer::Status::Running)
+        if (frightenedModeTimer_.getStatus() == ime::Timer::Status::Running) // Increase frightened mode expiry time
             frightenedModeTimer_.setInterval(frightenedModeTimer_.getRemainingDuration() + duration);
         else {
+            if (scatterModeTimer_.getStatus() == ime::Timer::Status::Running)
+                scatterModeTimer_.pause();
+            else if (chaseModeTimer_.getStatus() == ime::Timer::Status::Running)
+                chaseModeTimer_.pause();
+            else {
+                assert(false && "Ghost entered frightened mode from an invalid state: valid states are scatter and chase");
+            }
+
             frightenedModeTimer_.setInterval(duration);
             frightenedModeTimer_.setTimeoutCallback([this] {
-                emit(GameEvent::EnergizeModeEnd);
+                emit(GameEvent::FrightenedModeEnd);
+
+                // A paused timer implies that the ghost was in the state
+                // controlled by the timer before being frightened
+                if (scatterModeTimer_.getStatus() == ime::Timer::Status::Paused)
+                    startGhostScatterMode();
+                else if (chaseModeTimer_.getStatus() == ime::Timer::Status::Paused)
+                    startGhostChaseMode();
+                else {
+                    assert(false && "Cannot determine the state the ghost was in before it was frightened");
+                }
             });
 
             frightenedModeTimer_.start();
+            emit(GameEvent::FrightenedModeBegin);
         }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::startGhostScatterMode() {
+        if (scatterModeTimer_.getStatus() == ime::Timer::Status::Paused) {
+            scatterModeTimer_.start();
+            return;
+        }
+
+        scatterModeWaveLevel_ += 1;
+        ime::Time duration;
+
+        if (scatterModeWaveLevel_ <= 2) {
+            if (currentLevel_ < 5)
+                duration = ime::seconds(7.0f);
+            else
+                duration = ime::seconds(5.0f);
+        } else if (scatterModeWaveLevel_ == 3)
+            duration = ime::seconds(5);
+        else {
+            if (currentLevel_ == 1)
+                duration = ime::seconds(5.0f);
+            else
+                duration = ime::seconds(1.0f / engine().getWindow().getFrameRateLimit()); // one frame
+        }
+
+        // Transition to chase mode when timer expires
+        scatterModeTimer_.setTimeoutCallback([this] {
+            emit(GameEvent::ScatterModeEnd);
+            startGhostChaseMode();
+        });
+
+        scatterModeTimer_.setInterval(duration);
+        scatterModeTimer_.start();
+        emit(GameEvent::ScatterModeBegin);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::startGhostChaseMode() {
+        if (chaseModeTimer_.getStatus() == ime::Timer::Status::Paused) {
+            chaseModeTimer_.start();
+            return;
+        }
+
+        chaseModeWaveLevel_ += 1;
+        ime::Time duration;
+
+        // 1st and 2nd wave always lasts 20 seconds on all levels
+        if (chaseModeWaveLevel_ <= 2)
+            duration = ime::seconds(20.0f);
+        else if (chaseModeWaveLevel_ == 3) {
+            if (currentLevel_ == 1)
+                duration = ime::seconds(20.0f);
+            else if (currentLevel_ > 1 && currentLevel_ < 5)
+                duration = ime::seconds(1033);
+            else
+                duration = ime::seconds(1037);
+        }
+
+        // After the third chase wave, the ghosts remain in chase mode indefinitely.
+        // Even though the timer is not needed in the fourth chase wave, we keep
+        // it running so that a ghost can know in which state it should be in after
+        // frightened state expires
+        if (chaseModeWaveLevel_ == 4) {
+            chaseModeTimer_.setInterval(ime::hours(24)); // Any duration that is long enough not to timeout
+            chaseModeTimer_.setTimeoutCallback([] {});
+        } else {
+            chaseModeTimer_.setInterval(duration);
+
+            chaseModeTimer_.setTimeoutCallback([this] {
+                emit(GameEvent::ChaseModeEnd);
+                startGhostScatterMode();
+            });
+        }
+
+        chaseModeTimer_.start();
+
+        emit(GameEvent::ChaseModeBegin);
     }
 
     ///////////////////////////////////////////////////////////////

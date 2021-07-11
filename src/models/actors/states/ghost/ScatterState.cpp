@@ -57,12 +57,11 @@ namespace pm {
     } // namespace anonymous
 
     ///////////////////////////////////////////////////////////////
-    ScatterState::ScatterState(ActorStateFSM* fsm, int level) :
+    ScatterState::ScatterState(ActorStateFSM* fsm) :
         GhostState(fsm),
         targetCorner_{UNKNOWN_CORNER},
         destFoundHandler_{-1},
         valueChangeHandler_{-1},
-        currentLevel_{level},
         isLockedInGhostHouse_{false}
     {}
 
@@ -75,7 +74,6 @@ namespace pm {
         isLockedInGhostHouse_ = ghost_->getUserData().getValue<bool>("is_locked_in_ghost_house");
         initEvents();
         setTargetPosition();
-        initTimer(ime::seconds(Constants::SCATTER_MODE_DURATION / currentLevel_));
         ghostMover_->startMovement();
     }
 
@@ -160,8 +158,10 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void ScatterState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
-        if (event == GameEvent::EnergizeModeBegin)
+        if (event == GameEvent::FrightenedModeBegin)
             fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
+        else if (event == GameEvent::ChaseModeBegin)
+            fsm_->pop();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -196,9 +196,9 @@ namespace pm {
         // house when the timer expires, we must remain in scatter mode instead
         // of initiating a pacman chase
         if (isLockedInGhostHouse_)
-            nextState = std::make_unique<ScatterState>(fsm_, currentLevel_);
+            nextState = std::make_unique<ScatterState>(fsm_);
         else
-            nextState = std::make_unique<ChaseState>(fsm_, currentLevel_);
+            nextState = std::make_unique<ChaseState>(fsm_, ghost_, ghostMover_);
 
         nextState->setTarget(ghost_);
         nextState->setGridMover(ghostMover_);

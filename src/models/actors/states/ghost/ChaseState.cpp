@@ -26,16 +26,14 @@
 #include "src/models/actors/states/ghost/ScatterState.h"
 #include "src/models/actors/states/ghost/FrightenedState.h"
 #include "src/models/actors/Ghost.h"
-#include "src/common/Constants.h"
 #include "src/common/PositionTracker.h"
 #include <cassert>
 #include <stack>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    ChaseState::ChaseState(ActorStateFSM* fsm, int level) :
-        GhostState(fsm),
-        currentLevel_{level}
+    ChaseState::ChaseState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover) :
+        GhostState(fsm, target, gridMover)
     {}
 
     ///////////////////////////////////////////////////////////////
@@ -45,7 +43,6 @@ namespace pm {
 
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
         initEvents();
-        initTimer(ime::seconds(Constants::CHASE_MODE_DURATION + currentLevel_));
         chasePacman();
     }
 
@@ -108,8 +105,10 @@ namespace pm {
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         if (event == GameEvent::PacManMoved)
             chasePacman();
-        else if (event == GameEvent::EnergizeModeBegin)
+        else if (event == GameEvent::FrightenedModeBegin)
             fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
+        else if (event == GameEvent::ScatterModeBegin)
+            fsm_->pop();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -134,7 +133,7 @@ namespace pm {
 
         // OnExit is only called when transitioning to ScatterState, for others
         // this state is paused, so there is no need to perform a check
-        auto nextState = std::make_unique<ScatterState>(fsm_, currentLevel_);
+        auto nextState = std::make_unique<ScatterState>(fsm_);
         nextState->setTarget(ghost_);
         nextState->setGridMover(ghostMover_);
         fsm_->push(std::move(nextState));

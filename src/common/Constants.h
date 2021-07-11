@@ -49,8 +49,6 @@ namespace pm {
         static constexpr auto PACMAN_SPEED = 100;   // The pacmans speed when moving in the grid
 
         // 4. Ghost
-        static constexpr auto SCATTER_MODE_DURATION = 7.0f;            //!< The initial duration of a ghosts scatter mode
-        static constexpr auto CHASE_MODE_DURATION = 20.0f;             //!< The initial duration of a ghosts chase mode
         static constexpr auto PINKY_HOUSE_ARREST_DURATION = 7.0f;      //!< Time spent by pinky in the ghost house before entering the maze
         static constexpr auto INKY_HOUSE_ARREST_DURATION = 14.0f;      //!< Time spent by inky in the ghost house before entering the maze
         static constexpr auto CLYDE_HOUSE_ARREST_DURATION = 21.0f;     //!< Time spent by clyde in the ghost house before entering the maze

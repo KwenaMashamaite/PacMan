@@ -22,40 +22,40 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_FRIGHTENEDSTATE_H
-#define PACMAN_FRIGHTENEDSTATE_H
+#ifndef PACMAN_EATENSTATE_H
+#define PACMAN_EATENSTATE_H
 
 #include "src/models/actors/states/ghost/GhostState.h"
 #include "src/models/actors/Ghost.h"
 
 namespace pm {
     /**
-     * @brief Defines the state of a ghost when it is frightened
+     * @brief Defines the behavior of a ghost when it is eaten by pacman
      *
-     * When in this state, the ghost is vulnerable and can be eaten by pacman.
-     * In addition, it changes colour and moves randomly in the grid
+     * In this state the ghost retreats to the ghost house to for a magic
+     * pill that completely heals it
      */
-    class FrightenedState final : public GhostState {
+    class EatenState final : public GhostState {
     public:
         /**
          * @brief Constructor
          * @param fsm The ghosts Finite State Machine
          * @param target The ghost whose behaviour is to be defined by this state
          * @param gridMover The ghost's grid mover
-         * @param nextStateIfEaten The state the ghost should transition to after
-         *        regeneration if it eaten
+         * @param nextState The state the ghost must transition to after it
+         *                  regenerates
          *
-         * @note @a nextStateIfEaten may change if the the state timer corresponding
+         * @note @a nextState may change if the the state timer corresponding
          * to it expires. In this case it will be automatically adjusted to the
          * appropriate state
          */
-        FrightenedState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover,
-            Ghost::State nextStateIfEaten);
+        EatenState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover,
+            Ghost::State nextState);
 
         /**
          * @brief Initialize the state
          *
-         * This function will be called by the FSM when the state is entered
+         * This function will be called by the FSM when a state is entered
          * for the first time
          */
         void onEntry() override;
@@ -76,7 +76,9 @@ namespace pm {
         void onExit() override;
 
     private:
-        Ghost::State nextStateIfEaten_; //!< The state
+        int destFoundHandler_;   //!< Handler id for a target destination event
+        int adjMoveEndHandler_;  //!< Handler id for targets adjacent move event
+        Ghost::State nextState_; //!< The state to transition to after reaching regeneration spot
     };
 }
 

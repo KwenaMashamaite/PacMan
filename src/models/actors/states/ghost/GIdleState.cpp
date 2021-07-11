@@ -47,11 +47,7 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void GIdleState::onExit() {
         ghostMover_->setMovementRestriction(ime::GridMover::MoveRestriction::None);
-
-        auto nextState = std::make_unique<ScatterState>(fsm_);
-        nextState->setTarget(ghost_);
-        nextState->setGridMover(ghostMover_);
-        fsm_->push(std::move(nextState));
+        fsm_->push(std::make_unique<ScatterState>(fsm_, ghost_, ghostMover_));
     }
 
 } // namespace pm

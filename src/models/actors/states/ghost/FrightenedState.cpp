@@ -23,14 +23,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/states/ghost/FrightenedState.h"
+#include "src/models/actors/states/ghost/EatenState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/utils/Utils.h"
 #include <cassert>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    FrightenedState::FrightenedState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover) :
-        GhostState(fsm, target, gridMover)
+    FrightenedState::FrightenedState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover, Ghost::State nextStateIfEaten) :
+        GhostState(fsm, target, gridMover),
+        nextStateIfEaten_{nextStateIfEaten}
     {}
 
     ///////////////////////////////////////////////////////////////
@@ -47,8 +49,9 @@ namespace pm {
     void FrightenedState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         if (event == GameEvent::FrightenedModeEnd)
             fsm_->pop();
-        else if (event == GameEvent::GhostEaten){
-            //@todo - Transition to eaten state
+        else if (event == GameEvent::GhostEaten) {
+            fsm_->clear();
+            fsm_->push(std::make_unique<EatenState>(fsm_, ghost_, ghostMover_, nextStateIfEaten_));
         }
     }
 

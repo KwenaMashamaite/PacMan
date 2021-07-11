@@ -43,10 +43,12 @@ namespace pm {
     class ScatterState final : public GhostState {
     public:
         /**
-         * @brief Constructor
-         * @param fsm The ghost's finite state machine
+         * @brief Construct state
+         * @param fsm The ghost's Finite State Machine
+         * @param target The ghost whose behaviour is to be defined by this state
+         * @param gridMover The ghost's grid mover
          */
-        explicit ScatterState(ActorStateFSM* fsm);
+        ScatterState(ActorStateFSM* fsm, Ghost* ghost, GhostGridMover* gridMover);
 
         /**
          * @brief Initialize the state

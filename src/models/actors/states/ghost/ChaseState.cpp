@@ -106,7 +106,7 @@ namespace pm {
         if (event == GameEvent::PacManMoved)
             chasePacman();
         else if (event == GameEvent::FrightenedModeBegin)
-            fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
+            fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_, Ghost::State::Chase));
         else if (event == GameEvent::ScatterModeBegin)
             fsm_->pop();
     }
@@ -131,12 +131,9 @@ namespace pm {
         ghostMover_->onPathGenFinish(nullptr);
         ghostMover_->setRandomMoveEnable(false);
 
-        // OnExit is only called when transitioning to ScatterState, for others
+        // onExit is only called when transitioning to ScatterState, for others
         // this state is paused, so there is no need to perform a check
-        auto nextState = std::make_unique<ScatterState>(fsm_);
-        nextState->setTarget(ghost_);
-        nextState->setGridMover(ghostMover_);
-        fsm_->push(std::move(nextState));
+        fsm_->push(std::make_unique<ScatterState>(fsm_, ghost_, ghostMover_));
     }
 
 } // namespace pm

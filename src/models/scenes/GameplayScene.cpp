@@ -31,11 +31,13 @@
 #include "src/models/actors/controllers/GhostGridMover.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
+#include <src/utils/Utils.h>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
     GameplayScene::GameplayScene() :
         currentLevel_{-1},
+        pointsMultiplier_{1},
         eatenPelletsCount_{0},
         view_{gui()},
         chaseModeWaveLevel_{0},
@@ -203,22 +205,9 @@ namespace pm {
                 if (currentLevel_ < Constants::GHOST_VULNERABILITY_LEVEL_CUTOFF && currentLevel_ != 17)
                     updateFrightenedStateTimer();
 
-                // Stop pacman for three frames
-                pacmanGridMover->setMovementFreeze(true);
-                timer().setTimeout(ime::seconds(3.0f / engine().getWindow().getFrameRateLimit()), [pacmanGridMover] {
-                    pacmanGridMover->setMovementFreeze(false);
-                });
-
                 audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
             } else {
                 updateScore(Constants::Points::DOT);
-
-                // Stop pacman for one frame
-                pacmanGridMover->setMovementFreeze(true);
-                timer().setTimeout(ime::seconds(1.0f / engine().getWindow().getFrameRateLimit()), [pacmanGridMover] {
-                    pacmanGridMover->setMovementFreeze(false);
-                });
-
                 audio().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
             }
 
@@ -253,6 +242,30 @@ namespace pm {
             audio().play(ime::audio::Type::Sfx, "fruitEaten.wav");
         };
 
+        auto onGhostCollision = [this](ime::GameObject* pacman, ime::GameObject* ghost) {
+            auto pacmanState = static_cast<PacMan*>(pacman)->getState();
+            auto ghostState = static_cast<Ghost*>(ghost)->getState();
+
+            // Prevent pacman from being killed while dying - Happens when at
+            // least two ghosts enters pacmans tile at the same time
+            if (pacmanState == PacMan::State::Dying)
+                return;
+
+            if (ghostState == Ghost::State::Frightened) {
+                updateScore(Constants::Points::GHOST * pointsMultiplier_);
+                setMovementFreeze(true);
+                static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
+                replaceGhostWithScore(pacman, ghost);
+                updatePointsMultiplier();
+
+                timer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [this] {
+                    setMovementFreeze(false);
+                });
+
+                audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
+            }
+        };
+
         ime::GridMover* pacmanGridMover = gridMovers().findByTag("pacmanGridMover");
 
         pacmanGridMover->onGameObjectCollision([=](ime::GameObject* pacman, ime::GameObject* other) {
@@ -262,6 +275,8 @@ namespace pm {
                 onPelletCollision(other, pacmanGridMover);
             else if (other->getClassName() == "Fruit")
                 onFruitCollision(other);
+            else if (other->getClassName() == "Ghost")
+                onGhostCollision(pacman, other);
         });
 
         /*-------------- Ghosts collision handlers -----------------------*/
@@ -292,7 +307,8 @@ namespace pm {
                         onTunnelExitSensorTrigger(ghostMover, ghost);
                     else
                         onTeleportationSensorTrigger(ghostMover, ghost);
-                }
+                } else if (other->getClassName() == "PacMan")
+                    onGhostCollision(other, ghost); // Note order
             });
         });
     }
@@ -477,6 +493,50 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void GameplayScene::replaceGhostWithScore(ime::GameObject *pacman, ime::GameObject *ghost) {
+        // Freeze animations to prevent texture changes while score texture is displayed
+        pacman->getSprite().getAnimator().setTimescale(0.0f);
+        ghost->getSprite().getAnimator().setTimescale(0.0f);
+
+        pacman->getSprite().setVisible(false);
+        ghost->getSprite().setTexture("spritesheet.png");
+
+        if (pointsMultiplier_ == 1)
+            ghost->getSprite().setTextureRect(ime::UIntRect{137, 116, 16, 16}); // 200
+        else if (pointsMultiplier_ == 2)
+            ghost->getSprite().setTextureRect(ime::UIntRect{154, 116, 16, 16}); // 400
+        else if (pointsMultiplier_ == 4)
+            ghost->getSprite().setTextureRect(ime::UIntRect{171, 116, 16, 16}); // 800
+        else
+            ghost->getSprite().setTextureRect(ime::UIntRect{188, 116, 16, 16}); // 1600
+
+        timer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [pacman, ghost] {
+            pacman->getSprite().getAnimator().setTimescale(1.0f);
+            ghost->getSprite().getAnimator().setTimescale(1.0f);
+            ghost->getSprite().getAnimator().startAnimation("going" +
+                utils::convertToString(static_cast<Ghost*>(ghost)->getDirection()) + "Eaten");
+
+            pacman->getSprite().setVisible(true);
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::setMovementFreeze(bool freeze) {
+        gridMovers().findByTag("pacmanGridMover")->setMovementFreeze(freeze);
+
+        gridMovers().forEachInGroup("GhostMovers", [freeze](ime::GridMover* gridMover) {
+            Ghost::State state = static_cast<Ghost*>(gridMover->getTarget())->getState();
+            if ((state == Ghost::State::Eaten && freeze) ||
+                (!freeze && !gridMover->isMovementFrozen()))
+            {
+                return;
+            }
+
+            gridMover->setMovementFreeze(freeze);
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::updateFrightenedStateTimer() {
         ime::Time duration;
 
@@ -512,6 +572,7 @@ namespace pm {
 
             frightenedModeTimer_.setInterval(duration);
             frightenedModeTimer_.setTimeoutCallback([this] {
+                pointsMultiplier_ = 1;
                 emit(GameEvent::FrightenedModeEnd);
 
                 // A paused timer implies that the ghost was in the state
@@ -623,6 +684,14 @@ namespace pm {
                 }
             });
         }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::updatePointsMultiplier() {
+        if (pointsMultiplier_ == 8)
+            pointsMultiplier_ = 1; // Also resets to 1 when power mode timer expires
+        else
+            pointsMultiplier_ *= 2;
     }
 
     ///////////////////////////////////////////////////////////////

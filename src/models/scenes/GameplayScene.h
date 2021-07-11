@@ -205,8 +205,38 @@ namespace pm {
          */
         void replaceFruitWithScore(ime::GameObject* fruit);
 
+        /**
+         * @brief Convert pacman and an eaten ghost into a single score texture
+         * @param pacman Pacman
+         * @param ghost Eaten ghost
+         *
+         * This function is called when pacman collides with a blue ghost,
+         * after the collision, the ghost and pacman textures are momentarily
+         * combined into a single score texture which corresponds to the number
+         * of points the player earned for eating the ghost
+         */
+        void replaceGhostWithScore(ime::GameObject* pacman, ime::GameObject* ghost);
+
+        /**
+         * @brief Freeze or unfreeze the movement of pacman and the ghosts
+         * @param freeze True to freeze or false to unfreeze the movement
+         */
+        void setMovementFreeze(bool freeze);
+
+        /**
+         * @brief Update the ghost point multiplier
+         *
+         * The multiplier increases by a factor of 2 every time the player
+         * eats a ghost. However, since the player cannot eat more than four
+         * ghosts in a single power mode session, the multiplier is capped to
+         * 8. After the player eats the 4th ghost, the multiplier resets
+         * to 1 (default). It also resets to 1 when power mode expires
+         */
+        void updatePointsMultiplier();
+
     private:
         int currentLevel_;                  //!< Current game level
+        int pointsMultiplier_;              //!< Ghost points multiplier when player eats ghosts in succession (in one power mode session)
         int eatenPelletsCount_;             //!< Keeps track of the number of pellets pacman has eaten
         GameplaySceneView view_;            //!< Scene view without the gameplay grid
         std::unique_ptr<Grid> grid_;        //!< Gameplay grid view

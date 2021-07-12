@@ -301,9 +301,17 @@ namespace pm {
                 onTeleportationSensorTrigger(pacmanGridMover, pacman);
             else if (other->getClassName() == "Pellet")
                 onPelletCollision(other, pacmanGridMover);
-            else if (other->getClassName() == "Fruit")
+            else if (other->getClassName() == "Fruit") {
                 onFruitCollision(other);
-            else if (other->getClassName() == "Ghost")
+
+                // The fruit is destroyed after a delay, prevent subsequent collisions in the mean-time
+                pacman->getCollisionExcludeList().add("fruits");
+
+                // Restore pacman-fruit collision
+                timer().setTimeout(ime::seconds(Constants::EATEN_FRUIT_DESTRUCTION_DELAY), [pacman] {
+                    pacman->getCollisionExcludeList().remove("fruits");
+                });
+            } else if (other->getClassName() == "Ghost")
                 onGhostCollision(pacman, other);
         });
 

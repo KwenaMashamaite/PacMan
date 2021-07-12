@@ -280,14 +280,15 @@ namespace pm {
             if (ghostState == Ghost::State::Frightened) {
                 updateScore(Constants::Points::GHOST * pointsMultiplier_);
                 setMovementFreeze(true);
-                static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
+
                 replaceGhostWithScore(pacman, ghost);
                 updatePointsMultiplier();
 
                 frightenedModeTimer_.pause();
-                timer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [this] {
+                timer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [this, ghost] {
                     setMovementFreeze(false);
                     frightenedModeTimer_.start();
+                    static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
                 });
 
                 audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
@@ -566,8 +567,6 @@ namespace pm {
         timer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [pacman, ghost] {
             pacman->getSprite().getAnimator().setTimescale(1.0f);
             ghost->getSprite().getAnimator().setTimescale(1.0f);
-            ghost->getSprite().getAnimator().startAnimation("going" +
-                utils::convertToString(static_cast<Ghost*>(ghost)->getDirection()) + "Eaten");
 
             pacman->getSprite().setVisible(true);
         });

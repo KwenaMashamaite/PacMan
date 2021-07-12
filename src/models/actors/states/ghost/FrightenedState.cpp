@@ -63,7 +63,6 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void FrightenedState::onExit() {
-        ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()));
         ghostMover_->setRandomMoveEnable(false);
     }
 

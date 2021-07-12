@@ -27,6 +27,7 @@
 #include "src/models/actors/states/ghost/FrightenedState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
+#include "src/utils/Utils.h"
 #include <cassert>
 #include <queue>
 
@@ -59,6 +60,7 @@ namespace pm {
         assert(ghostMover_ && "Cannot enter scatter state without a ghost grid mover");
 
         ghost_->setState(static_cast<int>(Ghost::State::Scatter));
+        ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()));
         initEvents();
         setTargetPosition();
         ghostMover_->startMovement();

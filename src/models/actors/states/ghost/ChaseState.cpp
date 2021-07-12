@@ -27,6 +27,7 @@
 #include "src/models/actors/states/ghost/FrightenedState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/PositionTracker.h"
+#include "src/utils/Utils.h"
 #include <cassert>
 #include <stack>
 
@@ -42,6 +43,7 @@ namespace pm {
         assert(ghostMover_ && "Cannot enter chase state without a ghost grid mover");
 
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
+        ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()));
         initEvents();
         chasePacman();
     }

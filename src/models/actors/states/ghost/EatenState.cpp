@@ -50,6 +50,7 @@ namespace pm {
         assert(ghostMover_ && "Cannot enter Eaten state without a ghost grid mover");
 
         ghost_->setState(static_cast<int>(Ghost::State::Eaten));
+        ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()) + "Eaten");
 
         if (ghostMover_->isTargetMoving()) {
             adjMoveEndHandler_ = ghostMover_->onAdjacentMoveEnd([this] (ime::Index) {

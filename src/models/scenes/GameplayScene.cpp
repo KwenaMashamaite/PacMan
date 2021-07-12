@@ -458,7 +458,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::updateGhostSpeed(ime::GridMover *gridMover) const {
-        float speed;
+        float speed = 0.0f;
         auto* ghost = static_cast<Ghost*>(gridMover->getTarget());
 
         if (currentLevel_ == 1) {
@@ -478,7 +478,7 @@ namespace pm {
         } else {
             if (ghost->getState() == Ghost::State::Frightened) // Stops triggering from level 19 onwards
                 speed = 0.60f * Constants::PACMAN_SPEED;
-            if (ghost->getUserData().getValue<bool>("is_in_tunnel"))
+            else if (ghost->getUserData().getValue<bool>("is_in_tunnel"))
                 speed = 0.50f * Constants::PACMAN_SPEED;
             else
                 speed = 0.95f * Constants::PACMAN_SPEED;

@@ -106,23 +106,9 @@ namespace pm {
         if (event == GameEvent::PacManMoved)
             chasePacman();
         else if (event == GameEvent::FrightenedModeBegin)
-            fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_, Ghost::State::Chase));
+            fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_, Ghost::State::Chase));
         else if (event == GameEvent::ScatterModeBegin)
-            fsm_->pop();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void ChaseState::onPause() {
-        ghostMover_->clearPath();
-        ghostMover_->onPathGenFinish(nullptr);
-        ghostMover_->setRandomMoveEnable(false);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void ChaseState::onResume() {
-        ghost_->setState(static_cast<int>(Ghost::State::Chase));
-        initEvents();
-        chasePacman();
+            fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_, ghostMover_));
     }
 
     ///////////////////////////////////////////////////////////////
@@ -131,9 +117,14 @@ namespace pm {
         ghostMover_->onPathGenFinish(nullptr);
         ghostMover_->setRandomMoveEnable(false);
 
-        // onExit is only called when transitioning to ScatterState, for others
-        // this state is paused, so there is no need to perform a check
-        fsm_->push(std::make_unique<ScatterState>(fsm_, ghost_, ghostMover_));
+        // ime::TargetGridMover::clearPath() does not reset the destination and
+        // there is no other way to reset it --> IME v2.1.0. Since the tile that
+        // is targeted in scatter mode is static, when the we transition to scatter
+        // state from another state that did not change the destination, the
+        // target will not move since the destination we are trying to set is
+        // already set. A workaround is to set the destination to an unreachable
+        // tile. This will cause the destination to change without generating a path
+        ghostMover_->setDestination(ime::Index{0, 0});
     }
 
 } // namespace pm

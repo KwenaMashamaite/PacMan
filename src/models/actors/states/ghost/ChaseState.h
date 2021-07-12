@@ -57,16 +57,6 @@ namespace pm {
         void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
 
         /**
-         * @brief Pause the state
-         */
-        void onPause() override;
-
-        /**
-         * @brief Resume the state
-         */
-        void onResume() override;
-
-        /**
          * @brief Exit a state
          *
          * This function will be called by the FSM before the state is

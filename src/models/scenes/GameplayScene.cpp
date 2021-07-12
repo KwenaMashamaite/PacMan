@@ -229,7 +229,7 @@ namespace pm {
 
                 // Make ghost vulnerable for selected levels only
                 if (currentLevel_ < Constants::GHOST_VULNERABILITY_LEVEL_CUTOFF && currentLevel_ != 17)
-                    updateFrightenedStateTimer();
+                    startGhostFrightenedMode();
 
                 audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
             } else {
@@ -590,7 +590,7 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameplayScene::updateFrightenedStateTimer() {
+    void GameplayScene::startGhostFrightenedMode() {
         ime::Time duration;
 
         if (currentLevel_ == 9 || currentLevel_ == 12 || currentLevel_ == 13 ||

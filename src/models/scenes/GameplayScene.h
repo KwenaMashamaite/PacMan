@@ -166,16 +166,12 @@ namespace pm {
         void spawnFruit();
 
         /**
-         * @brief Update the frightened mode duration timer
+         * @brief Start the ghost frightened mode timer
          *
-         * This function will start the timer if its not running or increase
-         * its expiry time if its already running. When the timer expires it
-         * will emit a pm::GameEvent::FrightenedModeEnd
-         *
-         * Note that this function is not called from level 19 and beyond
-         * because ghosts no longer turn blue
+         * Note that if the timer is paused, it will be resumed instead
+         * of being reset
          */
-        void updateFrightenedStateTimer();
+        void startGhostFrightenedMode();
 
         /**
          * @brief Start the ghost scatter chase timer

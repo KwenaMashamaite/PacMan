@@ -66,16 +66,6 @@ namespace pm {
         void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
 
         /**
-         * @brief Pause the state
-         */
-        void onPause() override;
-
-        /**
-         * @brief Resume the state
-         */
-        void onResume() override;
-
-        /**
          * @brief Initialize the state
          *
          * This function will be called by the FSM before a state is entered
@@ -88,11 +78,6 @@ namespace pm {
          * @brief Sets the position of the corner the ghost must go to
          */
         void setTargetPosition();
-
-        /**
-         * @brief Clear the current scatter path
-         */
-        void clearPath();
 
         /**
          * @brief Initialize on destination reached handler

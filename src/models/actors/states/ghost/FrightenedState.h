@@ -42,15 +42,11 @@ namespace pm {
          * @param fsm The ghosts Finite State Machine
          * @param target The ghost whose behaviour is to be defined by this state
          * @param gridMover The ghost's grid mover
-         * @param nextStateIfEaten The state the ghost should transition to after
-         *        regeneration if it eaten
-         *
-         * @note @a nextStateIfEaten may change if the the state timer corresponding
-         * to it expires. In this case it will be automatically adjusted to the
-         * appropriate state
+         * @param nextState The state the ghost must transition to when frightened
+         *                  mode expires
          */
         FrightenedState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover,
-            Ghost::State nextStateIfEaten);
+            Ghost::State nextState);
 
         /**
          * @brief Initialize the state
@@ -76,7 +72,7 @@ namespace pm {
         void onExit() override;
 
     private:
-        Ghost::State nextStateIfEaten_; //!< The state
+        Ghost::State nextState_; //!< The state
     };
 }
 

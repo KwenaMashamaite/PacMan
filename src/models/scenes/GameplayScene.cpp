@@ -32,6 +32,7 @@
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
 #include <src/utils/Utils.h>
+#include <cassert>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////

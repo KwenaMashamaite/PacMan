@@ -5,14 +5,15 @@ that was created in 1980 by [Namco](https://en.wikipedia.org/wiki/Namco).
 
 ## Overview
 
-This project is a Pac-Man clone using my 2D game engine, [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME). 
-The project reuses code from my first game, [Super Pac-Man clone](https://github.com/KwenaMashamaite/SuperPacMan). 
-The only major difference between the two is the gameplay maze and the actual gameplay. This game uses the same
-textures, gameplay mechanics and ghost ai as the [original game](https://www.gamasutra.com/view/feature/3938/the_pacman_dossier.php?print=1).
+This project is a clone of the 1980 Pac-Man arcade game using my 2D game engine, [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME). 
+Some parts of this project reuses code from my first game, [Super Pac-Man clone](https://github.com/KwenaMashamaite/SuperPacMan). 
+The only major difference between the two is the gameplay. I tried to make the ghost AI and gameplay mechanics
+as close to the [original game](https://www.gamasutra.com/view/feature/3938/the_pacman_dossier.php?print=1) as 
+possible.
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.5.0)
+1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.6.0)
    the game
 2. Extract the zip archive
 3. Run _PacMan.exe_

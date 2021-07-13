@@ -471,7 +471,9 @@ namespace pm {
         float speed = 0.0f;
         auto* ghost = static_cast<Ghost*>(gridMover->getTarget());
 
-        if (currentLevel_ == 1) {
+        if (ghost->getState() == Ghost::State::Eaten)
+            speed = 2.0f * Constants::PACMAN_SPEED;
+        else if (currentLevel_ == 1) {
             if (ghost->getState() == Ghost::State::Frightened)
                 speed = 0.50f * Constants::PACMAN_SPEED;
             else if (ghost->getUserData().getValue<bool>("is_in_tunnel"))

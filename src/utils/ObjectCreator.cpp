@@ -36,7 +36,7 @@ namespace pm {
                 actor->attachRigidBody(physicsWorld.createBody(ime::RigidBody::Type::Kinematic));
             } else if (tile.getId() == '|' || tile.getId() == '#') {
                 actor = std::make_unique<Wall>(grid.getScene());
-            } else if (tile.getId() == 'T' || tile.getId() == 'H' || tile.getId() == '$') {
+            } else if (tile.getId() == 'T' || tile.getId() == 'H' || tile.getId() == '$' || tile.getId() == '-') {
                 actor = std::make_unique<Sensor>(grid.getScene());
 
                 if (tile.getId() == 'T') {
@@ -45,6 +45,9 @@ namespace pm {
                 } else if (tile.getId() == 'H') {
                     actor->setTag("tunnelEntrySensor");
                     actor->setCollisionGroup("tunnelEntrySensor");
+                } else if (tile.getId() == '-') {
+                    actor->setTag("ghostHouseGateSensor");
+                    actor->setCollisionGroup("ghostHouseGateSensor");
                 } else { // Tunnel exit sensor + Dot
                     actor->setTag("tunnelExitSensor");
                     actor->setCollisionGroup("tunnelExitSensor");

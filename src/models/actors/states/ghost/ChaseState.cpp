@@ -107,7 +107,7 @@ namespace pm {
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         if (event == GameEvent::PacManMoved)
             chasePacman();
-        else if (event == GameEvent::FrightenedModeBegin)
+        else if (event == GameEvent::FrightenedModeBegin && !ghost_->getUserData().getValue<bool>("is_in_ghost_house"))
             fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_, Ghost::State::Chase));
         else if (event == GameEvent::ScatterModeBegin)
             fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_, ghostMover_));

@@ -110,7 +110,13 @@ namespace pm {
                 actor->getUserData().addProperty({"is_in_tunnel", false});
                 actor->getCollisionExcludeList().add("tunnelExitSensor");
 
-                // Lock ghosts in ghost house
+                // Flag ghost as inside ghost house - Can leave at any time
+                if (actor->getTag() == "blinky")
+                    actor->getUserData().addProperty({"is_in_ghost_house", false});
+                else
+                    actor->getUserData().addProperty({"is_in_ghost_house", true});
+
+                // Lock ghosts in ghost house - Can't leave until it's locked sentence expires
                 if (actor->getTag() == "blinky" ||
                     (actor->getTag() == "pinky" && currentLevel_ > 1) ||
                     (actor->getTag() == "inky" && currentLevel_ > 2) ||
@@ -342,7 +348,10 @@ namespace pm {
                         onTunnelEntrySensorTrigger(ghostMover, ghost);
                     else if (other->getTag() == "tunnelExitSensor")
                         onTunnelExitSensorTrigger(ghostMover, ghost);
-                    else
+                    else if (other->getTag() == "ghostHouseGateSensor") {
+                        // Flag ghost as being inside or outside the ghost house
+                        ghost->getUserData().setValue("is_in_ghost_house", !ghost->getUserData().getValue<bool>("is_in_ghost_house"));
+                    } else if (other->getTag() == "teleportationSensor")
                         onTeleportationSensorTrigger(ghostMover, ghost);
                 } else if (other->getClassName() == "PacMan")
                     onGhostCollision(other, ghost); // Note order

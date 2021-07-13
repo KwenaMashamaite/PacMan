@@ -49,6 +49,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void ImprisonedState::onEntry() {
+        ghost_->setState(static_cast<int>(Ghost::State::Imprisoned));
         ghostMover_->setReverseDirEnable(true);
         ime::Index position = PositionTracker::getPosition(ghost_->getTag());
         ghostMover_->setDestination(ime::Index{position.row - 1, position.colm});

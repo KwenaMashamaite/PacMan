@@ -34,12 +34,13 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     Ghost::Ghost(ime::Scene& scene, Colour colour) :
         ime::GameObject(scene),
-        direction_{ime::Left}
+        direction_{ime::Up}
     {
         setCollisionGroup("ghosts");
 
         int spriteSheetRow;
         if (colour == Colour::Red) {
+            direction_ = ime::Left;
             setTag("blinky");
             spriteSheetRow = 0;
         } else if (colour == Colour::Pink) {

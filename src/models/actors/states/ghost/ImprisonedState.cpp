@@ -68,12 +68,31 @@ namespace pm {
         else if (event == GameEvent::GhostFreed) {
             auto newState = args.getValue<Ghost::State>("nextState");
 
-            if (newState == Ghost::State::Scatter)
-                fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_, ghostMover_));
-            else if (newState == Ghost::State::Chase)
-                fsm_->pop(std::make_unique<ChaseState>(fsm_, ghost_, ghostMover_));
-            else {
-                assert(false && "Ghost can only transition to chase or scatter state after being released from the ghost house");
+            auto switchState = [this, newState] {
+                if (newState == Ghost::State::Scatter)
+                    fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_, ghostMover_));
+                else if (newState == Ghost::State::Chase)
+                    fsm_->pop(std::make_unique<ChaseState>(fsm_, ghost_, ghostMover_));
+                else {
+                    assert(false && "Ghost can only transition to chase or scatter state after being released from the ghost house");
+                }
+            };
+
+            ghostMover_->unsubscribe(destFoundHandler_);
+
+            if (ghostMover_->isTargetMoving()) {
+                destFoundHandler_ = ghostMover_->onDestinationReached([this, switchState](ime::Index) {
+                    ghostMover_->unsubscribe(destFoundHandler_);
+                    ghostMover_->setDestination(ime::Index{Constants::BLINKY_SPAWN_TILE.row + 1, Constants::BLINKY_SPAWN_TILE.colm});
+                    destFoundHandler_ = ghostMover_->onDestinationReached([switchState](ime::Index) {
+                        switchState();
+                    });
+                });
+            } else {
+                ghostMover_->setDestination(ime::Index{Constants::BLINKY_SPAWN_TILE.row + 1, Constants::BLINKY_SPAWN_TILE.colm});
+                destFoundHandler_ = ghostMover_->onDestinationReached([switchState](ime::Index) {
+                    switchState();
+                });
             }
         }
     }
@@ -82,5 +101,6 @@ namespace pm {
     void ImprisonedState::onExit() {
         ghostMover_->unsubscribe(destFoundHandler_);
         ghostMover_->setReverseDirEnable(false);
+        ghost_->getUserData().setValue("is_locked_in_ghost_house", false);
     }
 }

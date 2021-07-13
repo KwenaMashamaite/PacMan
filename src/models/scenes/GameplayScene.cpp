@@ -232,10 +232,7 @@ namespace pm {
             pellet->setActive(false);
             if (pellet->getPelletType() == Pellet::Type::Energizer) {
                 updateScore(Constants::Points::ENERGIZER);
-
-                // Make ghost vulnerable for selected levels only
-                if (currentLevel_ < Constants::GHOST_VULNERABILITY_LEVEL_CUTOFF && currentLevel_ != 17)
-                    startGhostFrightenedMode();
+                startGhostFrightenedMode();
 
                 audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
             } else {
@@ -602,8 +599,9 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::startGhostFrightenedMode() {
         ime::Time duration;
-
-        if (currentLevel_ == 9 || currentLevel_ == 12 || currentLevel_ == 13 ||
+        if (currentLevel_ > Constants::GHOST_VULNERABILITY_LEVEL_CUTOFF)
+            duration = ime::seconds(0);
+        else if (currentLevel_ == 9 || currentLevel_ == 12 || currentLevel_ == 13 ||
             currentLevel_ == 15 || currentLevel_ == 16 || currentLevel_ == 18)
         {
             duration = ime::seconds(1);

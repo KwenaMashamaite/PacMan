@@ -67,6 +67,14 @@ namespace pm {
             requestDirectionChange(pacman->getDirection());
         });
 
+        // Prevent pacmam from moving down when above the ghost house gate
+        onAdjacentMoveBegin([this](ime::Index index) {
+            if (index == Constants::BLINKY_SPAWN_TILE)
+                setMovementRestriction(ime::GridMover::MoveRestriction::Horizontal);
+            else
+                setMovementRestriction(ime::GridMover::MoveRestriction::None);
+        });
+
         // Move or stop pacman depending on his current state
         pacman->onPropertyChange("state", [this, pacman](const ime::Property& property) {
             switch (static_cast<PacMan::State>(property.getValue<int>())) {

@@ -94,22 +94,50 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void GameplaySceneView::createLevelIndicatorSprites(unsigned int level) {
         auto* pnlContainer = gui_.getWidget<Panel>("pnlContainer");
-        auto static frameSize = ime::Vector2u{16, 16};
-        auto static startPos = ime::Vector2u{52, 52}; //Top-left position of the first frame on the spritesheet
 
-        for (auto i = 0u; i < level; ++i) {
-            auto picFruit = Picture::create("spritesheet.png", {startPos.x + (i * (frameSize.x + 1)), startPos.y, frameSize.x, frameSize.y});
+        static auto levelFruits = std::vector{"cherry", "strawberry", "peach", "peach",
+            "apple", "apple", "melon", "melon", "galaxian", "galaxian", "bell", "bell", "key"};
+
+        std::unordered_map<std::string, ime::UIntRect> textureRect = {
+            {"cherry", {52, 52, 16, 16}},
+            {"strawberry", {69, 52, 16, 16}},
+            {"peach", {86, 52, 16, 16}},
+            {"apple", {103, 52, 16, 16}},
+            {"melon", {120, 52, 16, 16}},
+            {"galaxian", {137, 52, 16, 16}},
+            {"bell", {154, 52, 16, 16}},
+            {"key", {171, 52, 16, 16}},
+        };
+
+        if (level > levelFruits.size()) {
+            auto picFruit = Picture::create("spritesheet.png", textureRect["key"]);
             picFruit->setOrigin(1.0f, 1.0f);
             picFruit->scale(0.4f, 0.4f);
-            if (i == 0) {
-                ime::Vector2f pnlContainerSize = pnlContainer->getSize();
-                picFruit->setPosition({pnlContainerSize.x - 2 * Constants::GRID_TILE_SIZE, pnlContainerSize.y - Constants::GRID_TILE_SIZE});
-            } else {
-                auto pivPrevFruit = pnlContainer->getWidget("picFruit" + std::to_string(i - 1));
-                picFruit->setPosition(ime::bindLeft(pivPrevFruit).append("-1%"), std::to_string(pivPrevFruit->getPosition().y));
-            }
+            ime::Vector2f pnlContainerSize = pnlContainer->getSize();
+            picFruit->setPosition({pnlContainerSize.x - 2 * Constants::GRID_TILE_SIZE, pnlContainerSize.y - Constants::GRID_TILE_SIZE});
+            pnlContainer->addWidget(std::move(picFruit), "picFruit");
 
-            pnlContainer->addWidget(std::move(picFruit), "picFruit" + std::to_string(i));
+            auto lblLevel = Label::create("LEVEL " + std::to_string(level));
+            lblLevel->getRenderer()->setTextColour(ime::Colour::White);
+            lblLevel->setTextSize(12);
+            lblLevel->setOrigin(1.0f, 1.0f);
+            lblLevel->setPosition("82%", std::to_string(pnlContainerSize.y - 1.2 * Constants::GRID_TILE_SIZE));
+            pnlContainer->addWidget(std::move(lblLevel), "lblLevel");
+        } else {
+            for (auto i = 0u; i < level; ++i) {
+                auto picFruit = Picture::create("spritesheet.png", textureRect[levelFruits[i]]);
+                picFruit->setOrigin(1.0f, 1.0f);
+                picFruit->scale(0.4f, 0.4f);
+                if (i == 0) {
+                    ime::Vector2f pnlContainerSize = pnlContainer->getSize();
+                    picFruit->setPosition({pnlContainerSize.x - 2 * Constants::GRID_TILE_SIZE, pnlContainerSize.y - Constants::GRID_TILE_SIZE});
+                } else {
+                    auto pivPrevFruit = pnlContainer->getWidget("picFruit" + std::to_string(i - 1));
+                    picFruit->setPosition(ime::bindLeft(pivPrevFruit).append("-1%"), std::to_string(pivPrevFruit->getPosition().y));
+                }
+
+                pnlContainer->addWidget(std::move(picFruit), "picFruit" + std::to_string(i));
+            }
         }
     }
 

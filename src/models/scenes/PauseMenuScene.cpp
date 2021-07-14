@@ -60,6 +60,9 @@ namespace pm {
         // 3. Main menu button click handler
         gui().getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
             cache().setValue("LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS);
+            cache().setValue("PLAYER_LIVES", Constants::PLAYER_LiVES);
+            cache().setValue("CURRENT_LEVEL", 1);
+            cache().setValue("CURRENT_SCORE", 0);
             engine().removeAllScenesExceptActive();
             engine().popScene();
             engine().pushScene(std::make_unique<MainMenuScene>());

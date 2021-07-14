@@ -254,6 +254,7 @@ namespace pm {
         ime::Timer scatterModeTimer_;       //!< Controls the duration of the ghosts scatter state
         ime::Timer chaseModeTimer_;         //!< Controls the duration of the ghosts chase state
         ime::Timer ghostHouseTimer_;        //!< Controls when a ghost should leave the ghost house
+        ime::Timer uneatenFruitTimer_;      //!< Controls how long an uneaten fruit remains on the screen before being destroyed
         unsigned int chaseModeWaveLevel_;   //!< Stores the current ghost chase wave level (up to 5)
         unsigned int scatterModeWaveLevel_; //!< Stores the current scatter mode level (up to 4)
         unsigned int numGhostsInHouse_;     //!< The number of ghosts currently in the ghost house

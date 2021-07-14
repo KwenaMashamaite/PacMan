@@ -250,6 +250,8 @@ namespace pm {
         ///@brief Increase the game score when a fruit is eaten and replace it's texture with a score value
         ///@param pelletBase The fruit that was eaten
         auto onFruitCollision = [this](ime::GameObject* fruit) {
+            uneatenFruitTimer_.stop();
+
             if (fruit->getTag() == "cherry")
                 updateScore(Constants::Points::CHERRY);
             else if (fruit->getTag() == "strawberry")
@@ -417,6 +419,7 @@ namespace pm {
         chaseModeTimer_.update(deltaTime);
         scatterModeTimer_.update(deltaTime);
         frightenedModeTimer_.update(deltaTime);
+        uneatenFruitTimer_.update(deltaTime);
         flashGhosts();
     }
 
@@ -519,10 +522,12 @@ namespace pm {
         auto fruit = std::make_unique<Fruit>(*this, fruitType);
 
         // Destroy fruit if left uneaten for some time
-        timer().setTimeout(ime::seconds(Constants::UNEATEN_FRUIT_DESTRUCTION_DELAY), [fruitPtr = fruit.get()]{
-            if (fruitPtr)
-                fruitPtr->setActive(false);
+        uneatenFruitTimer_.setTimeoutCallback([fruitPtr = fruit.get()] {
+            fruitPtr->setActive(false);
         });
+
+        uneatenFruitTimer_.setInterval(ime::seconds(Constants::UNEATEN_FRUIT_DESTRUCTION_DELAY));
+        uneatenFruitTimer_.start();
 
         grid_->addActor(std::move(fruit), Constants::FRUIT_SPAWN_POSITION);
     }

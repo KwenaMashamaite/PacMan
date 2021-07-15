@@ -75,6 +75,19 @@ namespace pm {
                 setMovementRestriction(ime::GridMover::MoveRestriction::None);
         });
 
+        // Prevent pacman from turning into a direction that causes a collision with an obstacle
+        onInput([this](ime::Keyboard::Key key) {
+            if ((key == getTriggerKeys().rightKey && !isBlockedInDirection(ime::Right)) ||
+                (key == getTriggerKeys().leftKey && !isBlockedInDirection(ime::Left)) ||
+                (key == getTriggerKeys().upKey && !isBlockedInDirection(ime::Up)) ||
+                (key == getTriggerKeys().downKey && !isBlockedInDirection(ime::Down)))
+            {
+                return true;
+            }
+
+            return false;
+        });
+
         // Move or stop pacman depending on his current state
         pacman->onPropertyChange("state", [this, pacman](const ime::Property& property) {
             switch (static_cast<PacMan::State>(property.getValue<int>())) {

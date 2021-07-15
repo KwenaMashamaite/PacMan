@@ -29,6 +29,7 @@
 #include "src/common/Constants.h"
 #include "src/models/actors/controllers/PacManGridMover.h"
 #include "src/models/actors/controllers/GhostGridMover.h"
+#include "src/models/scenes/GameOverScene.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
 #include <src/utils/Utils.h>
@@ -480,7 +481,8 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::endGameplay() {
-        //@todo - Transition to game over scene
+        engine().popScene();
+        engine().pushScene(std::make_unique<GameOverScene>());
     }
 
     ///////////////////////////////////////////////////////////////

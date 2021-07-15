@@ -24,6 +24,7 @@ set(SRC_FILES
         models/scenes/MainMenuScene.cpp
         models/scenes/PauseMenuScene.cpp
         models/scenes/GameplayScene.cpp
+        models/scenes/GameOverScene.cpp
         models/scoreboard/Score.cpp
         models/scoreboard/Scoreboard.cpp
         models/world/Grid.cpp
@@ -32,6 +33,7 @@ set(SRC_FILES
         views/LoadingSceneView.cpp
         views/MainMenuSceneView.cpp
         views/PauseMenuSceneView.cpp
+        views/GameOverSceneView.cpp
         animations/GhostAnimations.cpp
         animations/GridAnimation.cpp
         animations/PelletAnimations.cpp

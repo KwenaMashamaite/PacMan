@@ -45,7 +45,7 @@ namespace pm {
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()));
         initEvents();
-        chasePacman();
+        ghostMover_->setDestination(PositionTracker::getPosition("pacman"));
     }
 
     ///////////////////////////////////////////////////////////////

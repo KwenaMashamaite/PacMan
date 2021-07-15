@@ -53,7 +53,7 @@ add_executable(PacMan ${SRC_FILES} ${RES_FILES})
 # Find third party dependency
 set(IME_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME/lib/cmake/IME")
 set(IME_BIN_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME/bin")
-find_package(IME 2.1.0 REQUIRED)
+find_package(IME 2.2.0 REQUIRED)
 
 # Link third party dependency to executable
 target_link_libraries (PacMan PRIVATE ime)

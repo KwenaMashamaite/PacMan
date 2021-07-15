@@ -100,6 +100,7 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void ImprisonedState::onExit() {
         ghostMover_->unsubscribe(destFoundHandler_);
+        ghostMover_->resetDestination();
         ghostMover_->setReverseDirEnable(false);
         ghost_->getUserData().setValue("is_locked_in_ghost_house", false);
     }

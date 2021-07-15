@@ -117,16 +117,7 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void ScatterState::onExit() {
         ghostMover_->unsubscribe(destFoundHandler_);
-        ghostMover_->clearPath();
-
-        // ime::TargetGridMover::clearPath() does not reset the destination and
-        // there is no other way to reset it --> IME v2.1.0. Since the tile that
-        // is targeted in scatter mode is static, when the we transition to scatter
-        // state from another state that did not change the destination, the
-        // target will not move since the destination we are trying to set is
-        // already set. A workaround is to set the destination to an unreachable
-        // tile. This will cause the destination to change without generating a path
-        ghostMover_->setDestination(ime::Index{0, 0});
+        ghostMover_->resetDestination();
     }
 
 } // namespace pm

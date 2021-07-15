@@ -39,7 +39,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void PacManGridMover::init() {
-        setKeys(ime::Key::A, ime::Key::D, ime::Key::W, ime::Key::S);
+        setKeys(ime::TriggerKeys{ime::Key::A, ime::Key::D, ime::Key::W, ime::Key::S});
         setMaxLinearSpeed({Constants::PACMAN_SPEED, Constants::PACMAN_SPEED});
 
         auto* pacman = static_cast<PacMan*>(getTarget());

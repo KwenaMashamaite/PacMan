@@ -13,7 +13,7 @@ possible.
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.6.0)
+1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.7.0)
    the game
 2. Extract the zip archive
 3. Run _PacMan.exe_

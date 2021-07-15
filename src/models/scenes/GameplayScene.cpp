@@ -111,10 +111,7 @@ namespace pm {
                 actor->getCollisionExcludeList().add("tunnelExitSensor");
 
                 // Flag ghost as inside ghost house - Can leave at any time
-                if (actor->getTag() == "blinky")
-                    actor->getUserData().addProperty({"is_in_ghost_house", false});
-                else
-                    actor->getUserData().addProperty({"is_in_ghost_house", true});
+                actor->getUserData().addProperty({"is_in_ghost_house", !(actor->getTag() == "blinky")});
 
                 // Lock ghosts in ghost house - Can't leave until it's locked sentence expires
                 if (actor->getTag() == "blinky" ||
@@ -155,8 +152,13 @@ namespace pm {
             ghostMover->setPathViewEnable(true);
 #endif
 
-            ghost->onPropertyChange("state", [this, gridMover = ghostMover.get()](const ime::Property&) {
+            int stateChangeId = ghost->onPropertyChange("state", [this, gridMover = ghostMover.get()](const ime::Property&) {
                 updateGhostSpeed(gridMover);
+            });
+
+            ghostMover->onDestruction([gridMover = ghostMover.get(), stateChangeId] {
+                if (auto* pGhost = gridMover->getTarget())
+                    pGhost->unsubscribe("state", stateChangeId);
             });
 
             gridMovers().addObject(std::move(ghostMover), "GhostMovers");
@@ -175,8 +177,14 @@ namespace pm {
             scatterModeTimer_.stop();
             chaseModeTimer_.stop();
             frightenedModeTimer_.stop();
+            ghostHouseTimer_.stop();
+            uneatenFruitTimer_.stop();
+
+            if (gameObjects().hasGroup("Fruit"))
+                gameObjects().getGroup("Fruit").removeAll();
 
             gameObjects().getGroup("Ghost").removeAll();
+            gridMovers().getGroup("GhostMovers").removeAll();
 
             // Momentarily freeze pacman before flashing the grid
             gameObjects().findByTag("pacman")->getSprite().getAnimator().setTimescale(0);
@@ -297,6 +305,28 @@ namespace pm {
                 });
 
                 audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
+            } else if ((pacmanState == PacMan::State::Idle || pacmanState == PacMan::State::Moving) &&
+                        (ghostState != Ghost::State::Eaten))
+            {
+                static_cast<PacMan*>(pacman)->setState(PacMan::State::Dying);
+
+                onPrePacmanDeathAnim();
+
+                ime::Animator& pacmanAnimator = pacman->getSprite().getAnimator();
+                pacmanAnimator.startAnimation("dying");
+                auto deathAnimDuration = pacmanAnimator.getActiveAnimation()->getDuration();
+
+                pacmanAnimator.on(ime::Animator::Event::AnimationStart, "dying", [=] {
+                    gameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
+                        gameObject->getSprite().setVisible(false);
+                    });
+
+                    timer().setTimeout(deathAnimDuration + ime::milliseconds(400), [this] {
+                        onPostPacmanDeathAnim();
+                    });
+                }, true);
+
+                audio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
             }
         };
 
@@ -394,6 +424,96 @@ namespace pm {
             engine().popScene();
             engine().pushScene(std::make_unique<GameplayScene>());
         });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::resetLevel() {
+        resetActors();
+        startCountDown();
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::resetActors() {
+        gridMovers().removeAll();
+
+        // Reset pacmans position in the grid
+        auto pacman = gameObjects().findByTag("pacman");
+        tilemap().removeChild(pacman);
+        tilemap().addChild(pacman, Constants::PACMAN_SPAWN_TILE);
+        static_cast<PacMan*>(pacman)->setState(PacMan::State::Idle);
+        static_cast<PacMan*>(pacman)->setDirection(ime::Left);
+
+        // Reset ghosts
+        gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
+            ghost->getSprite().setVisible(true);
+
+            // Reset ghost positions in the grid
+            tilemap().removeChild(ghost);
+            if (ghost->getTag() == "blinky")
+                tilemap().addChild(ghost, Constants::BLINKY_SPAWN_TILE);
+            else if (ghost->getTag() == "pinky")
+                tilemap().addChild(ghost, Constants::PINKY_SPAWN_TILE);
+            else if (ghost->getTag() == "inky")
+                tilemap().addChild(ghost, Constants::INKY_SPAWN_TILE);
+            else
+                tilemap().addChild(ghost, Constants::CLYDE_SPAWN_TILE);
+
+            // Reset ghost house properties
+            numGhostsInHouse_ = 0;
+            ghost->getUserData().setValue("is_in_ghost_house", !(ghost->getTag() == "blinky"));
+
+            if (ghost->getTag() == "blinky" ||
+                (ghost->getTag() == "pinky" && currentLevel_ > 1) ||
+                (ghost->getTag() == "inky" && currentLevel_ > 2) ||
+                (ghost->getTag() == "clyde" && currentLevel_ > 3))
+            {
+                ghost->getUserData().addProperty({"is_locked_in_ghost_house", false});
+            } else {
+                ghost->getUserData().addProperty({"is_locked_in_ghost_house", true});
+                numGhostsInHouse_ += 1;
+            }
+        });
+
+        createGridMovers();
+        initCollisionResponses();
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::endGameplay() {
+        //@todo - Transition to game over scene
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::onPrePacmanDeathAnim() {
+        audio().stopAll();
+
+        chaseModeTimer_.stop();
+        frightenedModeTimer_.stop();
+        scatterModeTimer_.stop();
+        uneatenFruitTimer_.stop();
+        ghostHouseTimer_.stop();
+
+        auto pacman = gameObjects().findByTag<PacMan>("pacman");
+        pacman->setLivesCount(pacman->getLivesCount() - 1);
+        cache().setValue("PLAYER_LIVES", pacman->getLivesCount());
+        view_.updateLives(pacman->getLivesCount());
+
+        // Destroy fruit if it was spawned
+        gameObjects().forEachInGroup("Fruit", [](ime::GameObject* fruit) {
+            fruit->setActive(false);
+        });
+
+        gridMovers().forEach([](ime::GridMover* gridMover) {
+            gridMover->setMovementFreeze(true);
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::onPostPacmanDeathAnim() {
+        if (gameObjects().findByTag<PacMan>("pacman")->getLivesCount() <= 0)
+            endGameplay();
+        else
+            resetLevel();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -554,8 +674,9 @@ namespace pm {
             fruit->getSprite().setTextureRect(ime::UIntRect{120, 116, 16, 16}); // 5000
 
         // Destroy fruit after some seconds have passed since it was replaced by score texture
-        timer().setTimeout(ime::seconds(Constants::EATEN_FRUIT_DESTRUCTION_DELAY), [fruit] {
-            fruit->setActive(false);
+        timer().setTimeout(ime::seconds(Constants::EATEN_FRUIT_DESTRUCTION_DELAY), [this, id = fruit->getObjectId()] {
+            if (auto* fruit = gameObjects().findById(id))
+                fruit->setActive(false);
         });
     }
 

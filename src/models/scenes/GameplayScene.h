@@ -134,6 +134,33 @@ namespace pm {
         void completeLevel();
 
         /**
+         * @brief Restarts the game level without restoring eaten pellets
+         */
+        void resetLevel();
+
+        /**
+         * @brief Reset pacman and the ghosts to their respective spawn tiles
+         */
+        void resetActors();
+
+        /**
+         * @brief End the gameplay
+         *
+         * This function is called when the player loses all lives
+         */
+        void endGameplay();
+
+        /**
+         * @brief Update the game world before playing death animation
+         */
+        void onPrePacmanDeathAnim();
+
+        /**
+         * @brief Update the game world after death animation finished playing
+         */
+        void onPostPacmanDeathAnim();
+
+        /**
          * @brief Update cache and view score values
          * @param points The points to update the score by
          */

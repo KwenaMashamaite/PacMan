@@ -31,7 +31,8 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     PacManGridMover::PacManGridMover(ime::TileMap &grid, PacMan* pacman) :
-        ime::KeyboardGridMover(grid, pacman)
+        ime::KeyboardGridMover(grid, pacman),
+        pacmanStateChangeId_{-1}
     {
         assert(pacman && "Cannot create pacman's grid mover with a nullptr");
         setTag("pacmanGridMover");
@@ -89,7 +90,7 @@ namespace pm {
         });
 
         // Move or stop pacman depending on his current state
-        pacman->onPropertyChange("state", [this, pacman](const ime::Property& property) {
+        pacmanStateChangeId_ = pacman->onPropertyChange("state", [this, pacman](const ime::Property& property) {
             switch (static_cast<PacMan::State>(property.getValue<int>())) {
                 case PacMan::State::Idle:
                     setMovementRestriction(ime::GridMover::MoveRestriction::All);
@@ -114,5 +115,8 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    PacManGridMover::~PacManGridMover() = default;
+    PacManGridMover::~PacManGridMover() {
+        if (getTarget())
+            getTarget()->unsubscribe("state", pacmanStateChangeId_);
+    }
 }

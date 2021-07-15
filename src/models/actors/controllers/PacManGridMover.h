@@ -53,6 +53,9 @@ namespace pm {
          * @brief Destructor
          */
         ~PacManGridMover() override;
+
+    private:
+        int pacmanStateChangeId_;
     };
 }
 

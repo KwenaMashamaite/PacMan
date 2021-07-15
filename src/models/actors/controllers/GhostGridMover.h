@@ -106,6 +106,7 @@ namespace pm {
 
     private:
         int moveFinishId_;                              //!< Destination reached event handler id
+        int stateChangeId_;                             //!< Ghost state change handler id
         bool reverseDirectionNow_;                      //!< A flag indicating whether or not the ghost must reverse direction before moving
         bool canReverseDirection_;                      //!< A flag indicating whether or not the ghost can reverse directions when moving
         bool isRandomMove_;                             //!< A flag indicating whether or not the ghost is moving randomly

@@ -42,6 +42,7 @@ namespace pm {
         // Death animation
         auto deathAnimation = ime::Animation::create("dying", deathSpritesheet_, ime::seconds(2));
         deathAnimation->addFrames({0, 0}, 14);
+        deathAnimation->setStartDelay(ime::seconds(1));
         animations_.push_back(std::move(deathAnimation));
     }
 
@@ -57,6 +58,7 @@ namespace pm {
         animation->addFrames(index, 3);
         animation->showTargetOnStart(false);
         animation->setRepeatCount(-1);
+        animation->setCurrentFrameResetOnInterrupt(false);
         animations_.push_back(std::move(animation));
     }
 

@@ -35,6 +35,7 @@ namespace pm {
     GhostGridMover::GhostGridMover(ime::TileMap& tileMap, Ghost* ghost) :
         ime::TargetGridMover(tileMap, ghost),
         moveFinishId_{-1},
+        stateChangeId_{-1},
         reverseDirectionNow_{false},
         canReverseDirection_{false},
         isRandomMove_{false}
@@ -47,7 +48,7 @@ namespace pm {
         });
 
         // Reverse direction when state changes
-        ghost->onPropertyChange("state", [this](const ime::Property& state) {
+        stateChangeId_ = ghost->onPropertyChange("state", [this](const ime::Property& state) {
             auto ghostState = static_cast<Ghost::State>(state.getValue<int>());
             if (ghostState == Ghost::State::Idle || ghostState == Ghost::State::Imprisoned || ghostState == Ghost::State::Eaten)
                 return;
@@ -193,6 +194,9 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    GhostGridMover::~GhostGridMover() = default;
+    GhostGridMover::~GhostGridMover() {
+        if (ime::GameObject* ghost = getTarget(); ghost)
+            ghost->unsubscribe("state", stateChangeId_);
+    }
 
 } // namespace pm

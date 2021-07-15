@@ -31,7 +31,8 @@
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    ForwardDirectionalBFS::ForwardDirectionalBFS(const ime::Vector2u &gridSize, ime::GameObject* actor) :
+    ForwardDirectionalBFS::ForwardDirectionalBFS(const ime::Vector2u &gridSize, ime::GameObject* actor, bool& reverseDir) :
+        reverseDirectionNow_{reverseDir},
         bfs_{gridSize},
         actor_{actor},
         wall_{nullptr}
@@ -54,9 +55,11 @@ namespace pm {
 
         assert(!(actorDirection.x == 0 && actorDirection.y == 0) && "Actor must have a valid direction before generating path");
         ime::Index tileBehindActor = {actorTile.row + (-1) * actorDirection.y, actorTile.colm + (-1) * actorDirection.x};
+        ime::Index tileInFront = {actorTile.row + actorDirection.y, actorTile.colm + actorDirection.x};
 
-        // Flag the tile behind the actor as inaccessible
-        grid.addChild(wall_.get(), tileBehindActor);
+        // Flag the tile behind or in front the actor as inaccessible
+        grid.addChild(wall_.get(), reverseDirectionNow_ ? tileInFront : tileBehindActor);
+        reverseDirectionNow_ = false;
 
         std::stack<ime::Index> path = bfs_.findPath(grid, sourceTile, targetTile);
 

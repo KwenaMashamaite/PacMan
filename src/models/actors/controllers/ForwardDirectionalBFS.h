@@ -53,7 +53,7 @@ namespace pm {
          *
          * @see findPath
          */
-        ForwardDirectionalBFS(const ime::Vector2u& gridSize, ime::GameObject* actor);
+        ForwardDirectionalBFS(const ime::Vector2u& gridSize, ime::GameObject* actor, bool& reverseDir);
 
         /**
          * @brief Generate a path from a source tile to a target tile in a grid
@@ -73,6 +73,7 @@ namespace pm {
         std::string getType() const override;
 
     private:
+        bool& reverseDirectionNow_;
         ime::GameObject* actor_;                 //!< The actor whose path is to be defined
         std::unique_ptr<ime::GameObject> wall_;  //!< Blocks actors reverse path
         ime::BFS bfs_;                           //!< Grid path finder

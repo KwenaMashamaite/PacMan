@@ -35,7 +35,8 @@ namespace pm {
     GhostGridMover::GhostGridMover(ime::TileMap& tileMap, Ghost* ghost) :
         ime::TargetGridMover(tileMap, ghost),
         moveFinishId_{-1},
-        reverseDirection_{false},
+        reverseDirectionNow_{false},
+        canReverseDirection_{false},
         isRandomMove_{false}
     {
         assert(ghost && "spm::GhostGridMover target must not be a nullptr");
@@ -43,6 +44,15 @@ namespace pm {
         // Update the ghosts direction when the grid mover turns it
         onPropertyChange("direction", [ghost](const ime::Property& property) {
             ghost->setDirection(property.getValue<ime::Direction>());
+        });
+
+        // Reverse direction when state changes
+        ghost->onPropertyChange("state", [this](const ime::Property& state) {
+            auto ghostState = static_cast<Ghost::State>(state.getValue<int>());
+            if (ghostState == Ghost::State::Idle || ghostState == Ghost::State::Imprisoned || ghostState == Ghost::State::Eaten)
+                return;
+            else
+                reverseDirectionNow_ = true;
         });
 
         // Make the ghost position accessible to interested parties
@@ -61,7 +71,7 @@ namespace pm {
             PositionTracker::updateDirection(ghost->getTag(), getDirection());
         });
 
-        setPathFinder(std::make_unique<ForwardDirectionalBFS>(tileMap.getSizeInTiles(), ghost));
+        setPathFinder(std::make_unique<ForwardDirectionalBFS>(tileMap.getSizeInTiles(), ghost, reverseDirectionNow_));
     }
 
     ///////////////////////////////////////////////////////////////
@@ -69,10 +79,16 @@ namespace pm {
         ime::Direction reverseGhostDir = PositionTracker::getDirection(getTarget()->getTag()) * -1;
         assert(reverseGhostDir != ime::Unknown && "A ghost must have a valid direction before initiating random movement");
 
+        if (reverseDirectionNow_) {
+            reverseDirectionNow_ = false;
+            requestDirectionChange(reverseGhostDir);
+            return;
+        }
+
         // Ghost only allowed to move non-diagonally
         for (const auto& dir : {ime::Left, ime::Right, ime::Down, ime::Up}) {
             // Prevent ghost from going backwards
-            if (!reverseDirection_ && dir == reverseGhostDir)
+            if (!canReverseDirection_ && dir == reverseGhostDir)
                 continue;
 
             directionAttempts_.emplace_back(dir);
@@ -158,22 +174,22 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GhostGridMover::setReverseDirEnable(bool reverse) {
-        if (reverseDirection_ == reverse)
+        if (canReverseDirection_ == reverse)
             return;
 
-        reverseDirection_ = reverse;
+        canReverseDirection_ = reverse;
 
         if (reverse)
             setPathFinder(std::make_unique<ime::BFS>(getGrid().getSizeInTiles()));
         else
-            setPathFinder(std::make_unique<ForwardDirectionalBFS>(getGrid().getSizeInTiles(), getTarget()));
+            setPathFinder(std::make_unique<ForwardDirectionalBFS>(getGrid().getSizeInTiles(), getTarget(), reverseDirectionNow_));
 
-        emitChange(ime::Property{"reverseDirEnable", reverseDirection_});
+        emitChange(ime::Property{"reverseDirEnable", canReverseDirection_});
     }
 
     ///////////////////////////////////////////////////////////////
     bool GhostGridMover::isReverseDirEnabled() const {
-        return reverseDirection_;
+        return canReverseDirection_;
     }
 
     ///////////////////////////////////////////////////////////////

@@ -106,7 +106,8 @@ namespace pm {
 
     private:
         int moveFinishId_;                              //!< Destination reached event handler id
-        bool reverseDirection_;                         //!< A flag indicating whether or not the ghost can reverse directions4
+        bool reverseDirectionNow_;                      //!< A flag indicating whether or not the ghost must reverse direction before moving
+        bool canReverseDirection_;                      //!< A flag indicating whether or not the ghost can reverse directions when moving
         bool isRandomMove_;                             //!< A flag indicating whether or not the ghost is moving randomly
         std::vector<ime::Direction> directionAttempts_; //!< Stores directions to be attempted by randomly moving ghost
     };

@@ -33,7 +33,7 @@ namespace pm {
      */
     struct Constants {
         // 1. Non-gameplay constants
-        static constexpr auto MAX_NUM_LEVEL_RESTARTS = 2;  //!< The number of times the player can restart a level before being forced to start from level 1
+        static constexpr auto MAX_NUM_LEVEL_RESTARTS = 1;  //!< The number of times the player can restart a level before being forced to start from level 1
 
         // 2. Grid positions
         static inline const auto FRUIT_SPAWN_POSITION = ime::Index{17, 12};      //!< The spawn position of a fruit when it appears
@@ -45,8 +45,8 @@ namespace pm {
         static inline const auto EATEN_GHOST_RESPAWN_TILE = ime::Index{15, 12};  //!< The tile a ghost targets after it is eaten (Once it reaches this tile, it gets revived)
 
         // 3. Player
-        static constexpr auto PLAYER_LiVES = 3;     // The initial number of player lives
-        static constexpr auto PACMAN_SPEED = 100;   // The pacmans speed when moving in the grid
+        static constexpr auto PLAYER_LiVES = 3;      // The initial number of player lives
+        static constexpr auto PACMAN_SPEED = 120.0f; // The pacmans speed when moving in the grid
 
         // 4. Ghost
         static constexpr auto PINKY_HOUSE_ARREST_DURATION = 5.0f;      //!< Time spent by pinky in the ghost house before entering the maze

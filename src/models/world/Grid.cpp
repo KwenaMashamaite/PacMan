@@ -39,11 +39,11 @@ namespace pm {
         grid_.renderLayers().removeByName("default"); // This layer is replaced by the background layer
         grid_.renderLayers().create("background");
         grid_.renderLayers().create("Walls");
+        grid_.renderLayers().create("Sensors");
         grid_.renderLayers().create("Fruits");
         grid_.renderLayers().create("Pellets");
-        grid_.renderLayers().create("Ghosts");
         grid_.renderLayers().create("PacMans");
-        grid_.renderLayers().create("Sensors");
+        grid_.renderLayers().create("Ghosts");
 
         // Instead of creating the visual grid ourself we will use a pre-made one
         // from an image file and render our game objects on top of it.

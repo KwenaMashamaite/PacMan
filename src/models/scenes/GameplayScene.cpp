@@ -105,7 +105,6 @@ namespace pm {
 
         grid_->forEachActor([this](ime::GameObject* actor) {
             if (actor->getClassName() == "PacMan") {
-                actor->getSprite().getAnimator().setTimescale(0.0f);
                 static_cast<PacMan*>(actor)->setLivesCount(cache().getValue<int>("PLAYER_LIVES"));
             } else if (actor->getClassName() == "Ghost") {
                 actor->getUserData().addProperty({"is_in_tunnel", false});
@@ -299,9 +298,14 @@ namespace pm {
                 updatePointsMultiplier();
 
                 frightenedModeTimer_.pause();
+                uneatenFruitTimer_.pause();
                 timer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [this, ghost] {
                     setMovementFreeze(false);
                     frightenedModeTimer_.start();
+
+                    if (uneatenFruitTimer_.getStatus() == ime::Timer::Status::Paused)
+                        uneatenFruitTimer_.start();
+
                     static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
                 });
 
@@ -391,7 +395,16 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::startCountDown() {
+        gui().getWidget("lblReady")->setVisible(true);
+        gameObjects().forEach([] (ime::GameObject* actor) {
+            actor->getSprite().getAnimator().setTimescale(0.0f);
+        });
+
         timer().setTimeout(ime::seconds(Constants::LEVEL_START_DELAY), [this] {
+            gameObjects().forEach([] (ime::GameObject* actor) {
+                actor->getSprite().getAnimator().setTimescale(1.0f);
+            });
+
             gui().getWidget("lblReady")->setVisible(false);
             auto* pacman = gameObjects().findByTag<PacMan>("pacman");
             pacman->getSprite().getAnimator().setTimescale(1.0f);

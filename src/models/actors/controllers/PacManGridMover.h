@@ -55,7 +55,8 @@ namespace pm {
         ~PacManGridMover() override;
 
     private:
-        int pacmanStateChangeId_;
+        int pacmanStateChangeId_;         //!< State chang handler id
+        ime::Direction pendingDirection_; //!< Direction pacman wishes to go in without
     };
 }
 

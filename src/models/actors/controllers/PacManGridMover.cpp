@@ -32,7 +32,8 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     PacManGridMover::PacManGridMover(ime::TileMap &grid, PacMan* pacman) :
         ime::KeyboardGridMover(grid, pacman),
-        pacmanStateChangeId_{-1}
+        pacmanStateChangeId_{-1},
+        pendingDirection_{ime::Unknown}
     {
         assert(pacman && "Cannot create pacman's grid mover with a nullptr");
         setTag("pacmanGridMover");
@@ -65,7 +66,11 @@ namespace pm {
 
         // Keep pacman moving until he collides with a wall
         onAdjacentMoveEnd([this, pacman](ime::Index) {
-            requestDirectionChange(pacman->getDirection());
+            if (pendingDirection_ != ime::Unknown && !isBlockedInDirection(pendingDirection_)) {
+                requestDirectionChange(pendingDirection_);
+                pendingDirection_ = ime::Unknown;
+            } else
+                requestDirectionChange(pacman->getDirection());
         });
 
         // Prevent pacmam from moving down when above the ghost house gate
@@ -78,13 +83,22 @@ namespace pm {
 
         // Prevent pacman from turning into a direction that causes a collision with an obstacle
         onInput([this](ime::Keyboard::Key key) {
-            if ((key == getTriggerKeys().rightKey && !isBlockedInDirection(ime::Right)) ||
-                (key == getTriggerKeys().leftKey && !isBlockedInDirection(ime::Left)) ||
-                (key == getTriggerKeys().upKey && !isBlockedInDirection(ime::Up)) ||
-                (key == getTriggerKeys().downKey && !isBlockedInDirection(ime::Down)))
-            {
+            ime::Direction newDir;
+
+            if (key == getTriggerKeys().rightKey)
+                newDir = ime::Right;
+            else if (key == getTriggerKeys().leftKey)
+                newDir = ime::Left;
+            else if (key == getTriggerKeys().upKey)
+                newDir = ime::Up;
+            else
+                newDir = ime::Down;
+
+            if (!isBlockedInDirection(newDir) && !isTargetMoving()) {
+                pendingDirection_ = ime::Unknown;
                 return true;
-            }
+            } else
+                pendingDirection_ = newDir;
 
             return false;
         });

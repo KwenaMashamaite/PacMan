@@ -31,7 +31,8 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     PacMan::PacMan(ime::Scene& scene) :
         ime::GameObject(scene),
-        livesCount_{Constants::PLAYER_LiVES}
+        livesCount_{Constants::PLAYER_LiVES},
+        state_{State::Unknown}
     {
         setTag("pacman");
         setCollisionGroup("pacman");

@@ -37,9 +37,10 @@ namespace pm {
          * @brief The different states pacman can be in (one state at a time)
          */
         enum class State {
-            Idle,   //!< Pacman ignores all requests to move him (can be eaten by a Ghost)
-            Moving, //!< Pacman is moving around the maze (can be eaten by a Ghost)
-            Dying   //!< Pacman is dying and cannot be moved (cannot be eaten by a ghost)
+            Unknown = -1, //!< Unknown state
+            Idle,         //!< Pacman ignores all requests to move him (can be eaten by a Ghost)
+            Moving,       //!< Pacman is moving around the maze (can be eaten by a Ghost)
+            Dying         //!< Pacman is dying and cannot be moved (cannot be eaten by a ghost)
         };
 
         /**

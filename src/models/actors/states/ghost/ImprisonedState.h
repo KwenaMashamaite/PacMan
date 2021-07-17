@@ -68,7 +68,8 @@ namespace pm {
         void onExit() override;
 
     private:
-        int destFoundHandler_; //!< Handler id for a target destination event
+        int destFoundHandler_;        //!< Handler id for a target destination event
+        std::queue<ime::Index> path_; //!< Cyclic path ghost follows after reaching target position
     };
 }
 

@@ -58,7 +58,7 @@ namespace pm {
         ime::Index tileInFront = {actorTile.row + actorDirection.y, actorTile.colm + actorDirection.x};
 
         // Flag the tile behind or in front the actor as inaccessible
-        grid.addChild(wall_.get(), reverseDirectionNow_ ? tileInFront : tileBehindActor);
+        grid.addChild(wall_.get(), /*reverseDirectionNow_ ? tileInFront :*/ tileBehindActor);
         reverseDirectionNow_ = false;
 
         std::stack<ime::Index> path = bfs_.findPath(grid, sourceTile, targetTile);

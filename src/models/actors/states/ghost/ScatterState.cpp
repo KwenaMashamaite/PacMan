@@ -35,16 +35,16 @@ namespace pm {
     namespace {
         // Starting point of cyclic corner path
         const auto TOP_LEFT_CORNER = ime::Index{3, 5};
-        const auto TOP_RIGHT_CORNER = ime::Index{3, 19};
-        const auto BOTTOM_LEFT_CORNER = ime::Index{23, 7};
-        const auto BOTTOM_RIGHT_CORNER = ime::Index{23, 17};
+        const auto TOP_RIGHT_CORNER = ime::Index{3, 27};
+        const auto BOTTOM_LEFT_CORNER = ime::Index{26, 8};
+        const auto BOTTOM_RIGHT_CORNER = ime::Index{26, 24};
         const auto UNKNOWN_CORNER = ime::Index{-1, -1};
 
         // Cyclic paths at specific corners
         const auto TOP_LEFT_CORNER_PATH = std::queue<ime::Index>({ime::Index{7, 5}, ime::Index{3, 5}});
-        const auto TOP_RIGHT_CORNER_PATH = std::queue<ime::Index>({ime::Index{7, 19}, ime::Index{3, 19}});
-        const auto BOTTOM_LEFT_CORNER_PATH = std::queue<ime::Index>({ime::Index{27, 7}, ime::Index{23, 7}});
-        const auto BOTTOM_RIGHT_CORNER_PATH = std::queue<ime::Index>({ime::Index{27, 17}, ime::Index{23, 17}});
+        const auto TOP_RIGHT_CORNER_PATH = std::queue<ime::Index>({ime::Index{7, 27}, ime::Index{3, 27}});
+        const auto BOTTOM_LEFT_CORNER_PATH = std::queue<ime::Index>({ime::Index{31, 8}, ime::Index{26, 8}});
+        const auto BOTTOM_RIGHT_CORNER_PATH = std::queue<ime::Index>({ime::Index{31, 24}, ime::Index{26, 24}});
     } // namespace anonymous
 
     ///////////////////////////////////////////////////////////////

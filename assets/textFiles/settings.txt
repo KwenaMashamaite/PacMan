@@ -33,10 +33,10 @@ WINDOW_TITLE:STRING=Pac-Man
 FULLSCREEN:BOOL=0
 
 # Width of the game window
-WINDOW_WIDTH:INT=426
+WINDOW_WIDTH:INT=493
 
 # Height of the game window
-WINDOW_HEIGHT:INT=652
+WINDOW_HEIGHT:INT=600
 
 # Icon of the game window
 WINDOW_ICON:STRING=assets/images/window_icon.png

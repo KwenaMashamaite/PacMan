@@ -41,8 +41,9 @@ namespace pm {
         // Create game logo
         auto picPacmanLogo = Picture::create("pacman_logo.png");
         picPacmanLogo->setOrigin(0.5f, 0.0f);
-        picPacmanLogo->setSize("62%", "17%");
+        picPacmanLogo->setSize("70%", "17%");
         picPacmanLogo->setPosition("50%", "10%");
+        picPacmanLogo->rotate(-0.6f);
         pnlContainer->addWidget(std::move(picPacmanLogo), "picPacmanLogo");
 
         auto* lblDisclaimer = pnlContainer->addWidget<Label>(Label::create(), "lblDisclaimer");

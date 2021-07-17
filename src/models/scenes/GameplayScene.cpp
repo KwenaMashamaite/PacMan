@@ -68,11 +68,8 @@ namespace pm {
         createTilemap(Constants::GRID_TILE_SIZE, Constants::GRID_TILE_SIZE);
         grid_ = std::make_unique<Grid>(tilemap(), *this, gameObjects());
         grid_->loadFromFile(engine().getConfigs().getPref("MAZE_DIR").getValue<std::string>() + "maze.txt");
-        grid_->setPosition({-42, 0});
-        grid_->setBackgroundImagePosition({7.0f, 49.0f});
-
-        // Makes the tunnel exits touch the edges of the screen
-        camera().move(8.0f, 0.0f);
+        grid_->setPosition(ime::Vector2f{-34, 0});
+        grid_->setBackgroundImagePosition(ime::Vector2f{246.0f, 298.0f});
 
 #ifndef NDEBUG
         grid_->setVisible(true);
@@ -329,9 +326,9 @@ namespace pm {
                     timer().setTimeout(deathAnimDuration + ime::milliseconds(400), [this] {
                         onPostPacmanDeathAnim();
                     });
-                }, true);
 
-                audio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
+                    audio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
+                }, true);
             }
         };
 

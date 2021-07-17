@@ -48,7 +48,7 @@ namespace pm {
         // Instead of creating the visual grid ourself we will use a pre-made one
         // from an image file and render our game objects on top of it.
         ime::Animation::Ptr animation = GridAnimation().get();
-        background_ = animation.get()->getSpriteSheet().getSprite(ime::Index{0, 1});
+        background_ = animation.get()->getSpriteSheet().getSprite(ime::Index{0, 0});
         grid_.renderLayers().add(background_, 0, "background");
         background_.getAnimator().addAnimation(std::move(animation));
 
@@ -57,7 +57,8 @@ namespace pm {
                 onAnimFinish_();
         });
 
-        background_.scale(2.61f, 2.61f);
+        background_.setOrigin(background_.getLocalBounds().width / 2.0f, background_.getLocalBounds().height / 2.0f);
+        background_.scale(2.14f, 2.1f);
     }
 
     ///////////////////////////////////////////////////////////////

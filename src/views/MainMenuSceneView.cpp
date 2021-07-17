@@ -87,8 +87,9 @@ namespace pm {
 
         auto* picPacmanLogo = pnlContainer->addWidget(Picture::create("pacman_logo.png"), "picPacmanLogo");
         picPacmanLogo->setOrigin(0.5f, 0.0f);
-        picPacmanLogo->setSize("62%", "17%");
+        picPacmanLogo->setSize("70%", "17%");
         picPacmanLogo->setPosition("50%", "10%");
+        picPacmanLogo->rotate(-0.8f);
 
         struct ButtonDetails{std::string name; std::string text;};
         auto navBtns = std::vector<ButtonDetails>{
@@ -97,7 +98,7 @@ namespace pm {
             {"btnQuit", "Quit"}
         };
 
-        auto* vlNavButtons = pnlContainer->addWidget<VerticalLayout>(VerticalLayout::create("40%", "26%"), "vlNavbuttons");
+        auto* vlNavButtons = pnlContainer->addWidget<VerticalLayout>(VerticalLayout::create("40%", "22%"), "vlNavbuttons");
         vlNavButtons->setOrigin(0.5f, 0.0f);
         vlNavButtons->setPosition("50%", ime::bindBottom(picPacmanLogo).append("+8%"));
         vlNavButtons->getRenderer()->setSpaceBetweenWidgets(12);

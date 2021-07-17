@@ -32,14 +32,14 @@
 
 namespace pm {
     // Starting point of cyclic ghost house path
-    const auto PINKY_GHOST_HOUSE_START_POS = ime::Index{Constants::PINKY_SPAWN_TILE.row - 1, Constants::PINKY_SPAWN_TILE.colm};
-    const auto INKY_GHOST_HOUSE_START_POS = ime::Index{Constants::INKY_SPAWN_TILE.row - 1, Constants::INKY_SPAWN_TILE.colm};
-    const auto CLYDE_GHOST_HOUSE_START_POS = ime::Index{Constants::CLYDE_SPAWN_TILE.colm - 1, Constants::CLYDE_SPAWN_TILE.colm};
+    const auto PINKY_GHOST_HOUSE_START_POS = ime::Index{17, 16};
+    const auto INKY_GHOST_HOUSE_START_POS = ime::Index{15, 14};
+    const auto CLYDE_GHOST_HOUSE_START_POS = ime::Index{15, 18};
 
     // Ghost house cyclic paths
-    const auto PINKY_GHOST_HOUSE_PATH = std::queue<ime::Index>({Constants::PINKY_SPAWN_TILE, PINKY_GHOST_HOUSE_START_POS});
-    const auto INKY_GHOST_HOUSE_PATH = std::queue<ime::Index>({Constants::INKY_SPAWN_TILE, INKY_GHOST_HOUSE_START_POS});
-    const auto CLYDE_GHOST_HOUSE_PATH = std::queue<ime::Index>({Constants::CLYDE_SPAWN_TILE, CLYDE_GHOST_HOUSE_START_POS});
+    const auto PINKY_GHOST_HOUSE_PATH = std::queue<ime::Index>({ime::Index{15, 16}, ime::Index{17, 16}});
+    const auto INKY_GHOST_HOUSE_PATH = std::queue<ime::Index>({ime::Index{17, 14}, ime::Index{15, 14}});
+    const auto CLYDE_GHOST_HOUSE_PATH = std::queue<ime::Index>({ime::Index{17, 18}, ime::Index{15, 18}});
 
     ///////////////////////////////////////////////////////////////
     ImprisonedState::ImprisonedState(ActorStateFSM *fsm, Ghost *target, GhostGridMover *gridMover) :
@@ -51,13 +51,36 @@ namespace pm {
     void ImprisonedState::onEntry() {
         ghost_->setState(static_cast<int>(Ghost::State::Imprisoned));
         ghostMover_->setReverseDirEnable(true);
-        ime::Index position = PositionTracker::getPosition(ghost_->getTag());
-        ghostMover_->setDestination(ime::Index{position.row - 1, position.colm});
+        ime::Index position;
+
+        if (ghost_->getTag() == "pinky")
+            position = PINKY_GHOST_HOUSE_START_POS;
+        else if (ghost_->getTag() == "inky")
+            position = INKY_GHOST_HOUSE_START_POS;
+        else if (ghost_->getTag() == "clyde")
+            position = CLYDE_GHOST_HOUSE_START_POS;
+        else {
+            assert(false && "Only pinky, inky and clyde can be imprisoned");
+        }
+
+        ghostMover_->setDestination(position);
 
         // Make ghost switch between the same two tiles
         destFoundHandler_ = ghostMover_->onDestinationReached([this](ime::Index dest) {
-            ime::Vector2i dir = ghost_->getDirection();
-            ghostMover_->setDestination(ime::Index{dest.row + (-1) * dir.y, dest.colm});
+            if (path_.empty()) {
+                if (ghost_->getTag() == "pinky")
+                    path_ = PINKY_GHOST_HOUSE_PATH;
+                else if (ghost_->getTag() == "inky")
+                    path_ = INKY_GHOST_HOUSE_PATH;
+                else if (ghost_->getTag() == "clyde")
+                    path_ = CLYDE_GHOST_HOUSE_PATH;
+                else {
+                    assert(false && "Failed to determine ghost house path: Invalid tag");
+                }
+            }
+
+            ghostMover_->setDestination(path_.front());
+            path_.pop();
         });
     }
 

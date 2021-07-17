@@ -27,15 +27,15 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     GridAnimation::GridAnimation() :
-        spritesheet_{"spritesheet.png", {164, 212}, {1, 1}, {0, 237, 496, 214}}
+        spritesheet_{"spritesheet.png", {230, 248}, {1, 1}, {238, 0, 463, 250}}
     {
         animation_ = ime::Animation::create("flash", spritesheet_, ime::seconds(2.0f));
         const int MAX_NUM_OF_FRAMES = 5;
         for (auto i = 0; i <= MAX_NUM_OF_FRAMES; ++i) {
-            animation_->addFrame(ime::Index{0, 1});
+            animation_->addFrame(ime::Index{0, 0});
 
             if (i != MAX_NUM_OF_FRAMES) // Make the animation finish on the normal grid colour and not on the white grid
-                animation_->addFrame({0, 2}); // White grid
+                animation_->addFrame({0, 1}); // White grid
         }
     }
 

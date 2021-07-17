@@ -36,13 +36,13 @@ namespace pm {
         static constexpr auto MAX_NUM_LEVEL_RESTARTS = 1;  //!< The number of times the player can restart a level before being forced to start from level 1
 
         // 2. Grid positions
-        static inline const auto FRUIT_SPAWN_POSITION = ime::Index{17, 12};      //!< The spawn position of a fruit when it appears
-        static inline const auto PACMAN_SPAWN_TILE = ime::Index{22, 12};         //!< Pacman's spawn position when a level starts or restarts
-        static inline const auto BLINKY_SPAWN_TILE = ime::Index{12, 12};         //!< Blinky's spawn position when a level starts or restarts
-        static inline const auto PINKY_SPAWN_TILE = ime::Index{15, 12};          //!< Pinky's spawn position when a level starts or restarts
-        static inline const auto INKY_SPAWN_TILE = ime::Index{15, 11};           //!< Inky's spawn position when a level starts or restarts
-        static inline const auto CLYDE_SPAWN_TILE = ime::Index{15, 13};          //!< Clyde's spawn position when a level starts or restarts
-        static inline const auto EATEN_GHOST_RESPAWN_TILE = ime::Index{15, 12};  //!< The tile a ghost targets after it is eaten (Once it reaches this tile, it gets revived)
+        static inline const auto FRUIT_SPAWN_POSITION = ime::Index{19, 16};      //!< The spawn position of a fruit when it appears
+        static inline const auto PACMAN_SPAWN_TILE = ime::Index{25, 16};         //!< Pacman's spawn position when a level starts or restarts
+        static inline const auto BLINKY_SPAWN_TILE = ime::Index{13, 16};         //!< Blinky's spawn position when a level starts or restarts
+        static inline const auto PINKY_SPAWN_TILE = ime::Index{16, 16};          //!< Pinky's spawn position when a level starts or restarts
+        static inline const auto INKY_SPAWN_TILE = ime::Index{16, 14};           //!< Inky's spawn position when a level starts or restarts
+        static inline const auto CLYDE_SPAWN_TILE = ime::Index{16, 18};          //!< Clyde's spawn position when a level starts or restarts
+        static inline const auto EATEN_GHOST_RESPAWN_TILE = ime::Index{17, 16};  //!< The tile a ghost targets after it is eaten (Once it reaches this tile, it gets revived)
 
         // 3. Player
         static constexpr auto PLAYER_LiVES = 3;      // The initial number of player lives
@@ -56,11 +56,16 @@ namespace pm {
         // 5. Fruit
         static constexpr auto UNEATEN_FRUIT_DESTRUCTION_DELAY = 10.0f;    //!< The time (in seconds) an uneaten fruit remains on the screen before being destroyed
         static constexpr auto EATEN_FRUIT_DESTRUCTION_DELAY = 2.0f;       //!< The time (in seconds) an eaten fruit remains on the screen before being destroyed
-        static constexpr auto FIRST_FRUIT_APPEARANCE_PELLET_COUNT = 56;   //!< The number of pellets pacman must eat before the first fruit appears in the current level
-        static constexpr auto SECOND_FRUIT_APPEARANCE_PELLET_COUNT = 134; //!< The number of pellets pacman must eat before the second fruit appears in the current level
+        static constexpr auto FIRST_FRUIT_APPEARANCE_PELLET_COUNT = 70;   //!< The number of pellets pacman must eat before the first fruit appears in the current level
+        static constexpr auto SECOND_FRUIT_APPEARANCE_PELLET_COUNT = 170; //!< The number of pellets pacman must eat before the second fruit appears in the current level
 
-        // 6. Misc
-        static constexpr auto GRID_TILE_SIZE = 20;                   //!< The size of each grid cell
+        // 6. Pellets
+        static constexpr auto TOTAL_NUM_OF_DOTS = 240;     //!< The total number of dots in the gameplay grid
+        static constexpr auto TOTAL_NUM_OF_ENERGIZERS = 4; //!< The total number of energizers (big dots) in the gameplay grid
+        static constexpr auto TOTAL_NUM_OF_PELLETS = TOTAL_NUM_OF_DOTS + TOTAL_NUM_OF_ENERGIZERS; //!< The total number of pellets in the gameplay grid
+
+        // 7. Misc
+        static constexpr auto GRID_TILE_SIZE = 16;                   //!< The size of each grid cell
         static constexpr auto LEVEL_START_DELAY = 2.0f;              //!< The time (in seconds) the player must wait before they can control pacman
         static constexpr auto GHOST_VULNERABILITY_LEVEL_CUTOFF = 19; //!< From this level onwards, ghosts can no longer turn blue and be eaten by pacman
         static constexpr auto ACTOR_FREEZE_DURATION = 1.0f;          //!< The time (in seconds), moving actors remain frozen after pacman eats a ghost

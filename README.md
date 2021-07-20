@@ -19,6 +19,9 @@ possible.
 3. Run _PacMan.exe_
 4. Enjoy :video_game:
 
+## Gameplay
+
+![](docs/screenshots/gameplay.gif)
 ## Build
 
 ###### *Read this section if you want to build the game yourself, otherwise you may skip it.*

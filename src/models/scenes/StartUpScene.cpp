@@ -30,6 +30,8 @@
 #include <IME/ui/widgets/EditBox.h>
 #include <IME/ui/widgets/Button.h>
 
+using namespace ime::ui;
+
 namespace pm {
     ///////////////////////////////////////////////////////////////
     void StartUpScene::onEnter() {
@@ -58,13 +60,12 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::promptName() {
-        using namespace ime::ui;
         gui().getWidget<Panel>("pnlContainer")->setVisible(false);
         gui().getWidget<Panel>("pnlNamePrompt")->setVisible(true);
 
         // Disable continue button when player input is less than required and enable when input size is valid
         gui().getWidget("txtName")->on("textChange", ime::Callback<std::string>([this](const std::string& text) {
-            auto static btnContinue = gui().getWidget<Button>("btnContinue");
+            auto* btnContinue = gui().getWidget<Button>("btnContinue");
             if (!text.empty())
                 btnContinue->setEnabled(true);
             else
@@ -72,32 +73,43 @@ namespace pm {
         }));
 
         // Save player name and continue to gameplay
+        gui().getWidget("txtName")->on("enterKeyPress", ime::Callback<std::string>([this](const std::string& text) {
+            if (!text.empty())
+                save();
+        }));
+
+        // Save player name and continue to gameplay
         gui().getWidget("btnContinue")->on("click", ime::Callback<>([this] {
-            auto name = gui().getWidget<EditBox>("txtName")->getText();
-
-            // Save name to engine cache (So that other scenes can get access to it)
-            cache().addProperty(ime::Property{"PLAYER_NAME", name});
-
-            // Save player name to the disk so that it can be accessed on next game run
-            ime::Preference preference("PLAYER_NAME", ime::PrefType::String);
-            preference.setValue(name);
-            preference.setDescription("The name of the player");
-            ime::savePref(preference, cache().getValue<std::string>("SETTINGS_FILENAME"));
-
-            // Display game disclaimer and initiate scene pop countdown
-            gui().getWidget<Panel>("pnlContainer")->setVisible(true);
-            gui().getWidget<Panel>("pnlNamePrompt")->setVisible(false);
-            startCountdown();
-            enableSceneSkip();
+            save();
         }));
     }
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::enableSceneSkip() {
         input().onKeyUp([this](ime::Keyboard::Key key) {
-            if (key == ime::Keyboard::Key::Enter)
+            if (key == ime::Keyboard::Key::Space)
                 engine().popScene();
         });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void StartUpScene::save() {
+        auto name = gui().getWidget<EditBox>("txtName")->getText();
+
+        // Save name to engine cache (So that other scenes can get access to it)
+        cache().addProperty(ime::Property{"PLAYER_NAME", name});
+
+        // Save player name to the disk so that it can be accessed on next game run
+        ime::Preference preference("PLAYER_NAME", ime::PrefType::String);
+        preference.setValue(name);
+        preference.setDescription("The name of the player");
+        ime::savePref(preference, cache().getValue<std::string>("SETTINGS_FILENAME"));
+
+        // Display game disclaimer and initiate scene pop countdown
+        gui().getWidget<Panel>("pnlContainer")->setVisible(true);
+        gui().getWidget<Panel>("pnlNamePrompt")->setVisible(false);
+        startCountdown();
+        enableSceneSkip();
     }
 
     ///////////////////////////////////////////////////////////////

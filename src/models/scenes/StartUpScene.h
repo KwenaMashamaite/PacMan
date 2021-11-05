@@ -70,6 +70,11 @@ namespace pm {
          * By default, the scene is no skippable
          */
         void enableSceneSkip();
+
+        /**
+         * @brief Save the player name and continue to gameplay
+         */
+        void save();
     };
 }
 

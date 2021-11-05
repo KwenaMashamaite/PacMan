@@ -33,7 +33,6 @@ namespace pm {
 
             if (tile.getId() == 'X') {
                 actor = std::make_unique<PacMan>(grid.getScene());
-                actor->attachRigidBody(physicsWorld.createBody(ime::RigidBody::Type::Kinematic));
             } else if (tile.getId() == '|' || tile.getId() == '#') {
                 actor = std::make_unique<Wall>(grid.getScene());
             } else if (tile.getId() == 'T' || tile.getId() == 'H' || tile.getId() == '$' || tile.getId() == '-') {
@@ -71,8 +70,6 @@ namespace pm {
                     actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Orange);
                 else
                     return;
-
-                actor->attachRigidBody(physicsWorld.createBody(ime::RigidBody::Type::Kinematic));
             }
 
             actor->getUserData().addProperty({"scene", std::ref(grid.getScene())});

@@ -41,6 +41,9 @@ namespace pm {
         setTarget(target);
         setGridMover(gridMover);
 
+        // This prevents ghost from being stuck in tunnel
+        ghostMover_->setReverseDirEnable(true);
+
         assert((nextState == Ghost::State::Scatter || nextState == Ghost::State::Chase) && "Invalid regeneration transition state");
     }
 

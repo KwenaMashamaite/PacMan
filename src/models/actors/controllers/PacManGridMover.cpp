@@ -49,7 +49,7 @@ namespace pm {
         if (pacman->getState() == PacMan::State::Idle)
             setMovementRestriction(ime::GridMover::MoveRestriction::All);
 
-        PositionTracker::updatePosition(pacman->getTag(), getTargetTileIndex());
+        PositionTracker::updatePosition(pacman->getTag(), getCurrentTileIndex());
         PositionTracker::updateDirection(pacman->getTag(), pacman->getDirection());
 
         // Update the position when pacman moves to another tile
@@ -66,7 +66,7 @@ namespace pm {
 
         // Keep pacman moving until he collides with a wall
         onAdjacentMoveEnd([this, pacman](ime::Index) {
-            if (pendingDirection_ != ime::Unknown && !isBlockedInDirection(pendingDirection_)) {
+            if (pendingDirection_ != ime::Unknown && !isBlockedInDirection(pendingDirection_).first) {
                 requestDirectionChange(pendingDirection_);
                 pendingDirection_ = ime::Unknown;
             } else
@@ -94,7 +94,7 @@ namespace pm {
             else
                 newDir = ime::Down;
 
-            if (!isBlockedInDirection(newDir) && !isTargetMoving()) {
+            if (!isBlockedInDirection(newDir).first && !isTargetMoving()) {
                 pendingDirection_ = ime::Unknown;
                 return true;
             } else

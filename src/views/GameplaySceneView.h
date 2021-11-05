@@ -108,7 +108,7 @@ namespace pm {
 
     private:
         ime::ui::GuiContainer& gui_;  //!< Container for all widgets
-        ime::Timer timer_;            //!< One up text flash Timer
+        ime::Timer::Ptr timer_;            //!< One up text flash Timer
     };
 }
 

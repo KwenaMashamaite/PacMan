@@ -47,7 +47,7 @@ namespace pm {
         timer_ = ime::Timer::create(ime::milliseconds(200), [this] {
             gui_.getWidget("lblOneUp")->toggleVisibility();
         }, -1);
-        timer_.start();
+        timer_->start();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -170,7 +170,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplaySceneView::update(ime::Time deltaTime) {
-        timer_.update(deltaTime);
+        timer_->update(deltaTime);
     }
 
 } // namespace pm

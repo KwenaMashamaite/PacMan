@@ -45,11 +45,11 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void StartUpScene::startCountdown() {
         auto pnlContainer = gui().getWidget<ime::ui::Panel>("pnlContainer");
-        pnlContainer->showWithEffect(ime::ShowAnimationType::Fade, ime::seconds(3));
+        pnlContainer->showWithEffect(ime::ui::AnimationType::Fade, ime::seconds(3));
 
         // Exit the scene with an effect after a couple of seconds
         timer().setTimeout(ime::seconds(13), [this, pnlContainer] {
-            pnlContainer->hideWithEffect(ime::ShowAnimationType::Fade, ime::seconds(2));
+            pnlContainer->hideWithEffect(ime::ui::AnimationType::Fade, ime::seconds(2));
             pnlContainer->on("animationFinish", ime::Callback<>([this] {
                 engine().popScene();
             }));
@@ -63,9 +63,9 @@ namespace pm {
         gui().getWidget<Panel>("pnlNamePrompt")->setVisible(true);
 
         // Disable continue button when player input is less than required and enable when input size is valid
-        gui().getWidget("txtName")->on("textEnter", ime::Callback<std::string>([this](const std::string& text) {
+        gui().getWidget("txtName")->on("textChange", ime::Callback<std::string>([this](const std::string& text) {
             auto static btnContinue = gui().getWidget<Button>("btnContinue");
-            if (text.size() >= 4)
+            if (!text.empty())
                 btnContinue->setEnabled(true);
             else
                 btnContinue->setEnabled(false);

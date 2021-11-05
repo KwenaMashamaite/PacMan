@@ -44,7 +44,7 @@ namespace pm {
         ime::PrefContainer& settings = engine_.getConfigs();
 
         // Initialize data that must be accessible in all states
-        auto scoreboard = std::make_shared<Scoreboard>(settings.getPref("HIGH_SCORES_DIR").getValue<std::string>() + "/highscores.txt");
+        auto scoreboard = std::make_shared<Scoreboard>("assets/textfiles/highscores.txt");
         scoreboard->load();
 
         engine_.getPersistentData().addProperty({"SETTINGS_FILENAME", settingsFilename_});

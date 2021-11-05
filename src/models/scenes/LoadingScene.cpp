@@ -73,7 +73,7 @@ namespace pm {
         });
 
         auto pnlContainer = gui().getWidget<ime::ui::Panel>("pnlContainer");
-        pnlContainer->showWithEffect(ime::ShowAnimationType::Fade, ime::seconds(0.5));
+        pnlContainer->showWithEffect(ime::ui::AnimationType::Fade, ime::seconds(0.5));
 
         // Initiate asset loading thread after view animation finishes
         pnlContainer->on("animationFinish", ime::Callback<>([this] {

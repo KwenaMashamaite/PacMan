@@ -63,8 +63,8 @@ namespace pm {
          * @return The path from the source tile to the destination tile if
          *         it exists, otherwise an empty path
          */
-        std::stack<ime::Index> findPath(ime::TileMap& grid, ime::Index sourceTile,
-            ime::Index targetTile) override;
+        std::stack<ime::Index> findPath(const ime::TileMap& grid, const ime::Index& sourceTile,
+            const ime::Index& targetTile) override;
 
         /**
          * @brief Get the type of path finding algorithm
@@ -75,7 +75,6 @@ namespace pm {
     private:
         bool& reverseDirectionNow_;
         ime::GameObject* actor_;                 //!< The actor whose path is to be defined
-        std::unique_ptr<ime::GameObject> wall_;  //!< Blocks actors reverse path
         ime::BFS bfs_;                           //!< Grid path finder
     };
 }

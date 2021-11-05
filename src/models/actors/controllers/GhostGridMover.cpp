@@ -26,6 +26,7 @@
 #include "src/models/actors/controllers/ForwardDirectionalBFS.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/PositionTracker.h"
+#include <IME/core/event/EventDispatcher.h>
 #include <cassert>
 #include <algorithm>
 #include <random>
@@ -70,6 +71,22 @@ namespace pm {
         onTargetTileReset([this, ghost](ime::Index index) {
             PositionTracker::updatePosition(ghost->getTag(), index);
             PositionTracker::updateDirection(ghost->getTag(), getDirection());
+        });
+
+        // Prevent ghost from switching directions when chasing in chase mode
+        static auto GlobalEmitter = ime::EventDispatcher::instance();
+        int blockId = GlobalEmitter->onEvent("blockPath" + ghost->getTag(), ime::Callback<ime::Index>([this](ime::Index index) {
+            getGrid().setCollidableByIndex(index, true);
+        }));
+
+        int unblockId = GlobalEmitter->onEvent("unblockPath" + ghost->getTag(), ime::Callback<ime::Index>([this](ime::Index index) {
+            getGrid().setCollidableByIndex(index, false);
+        }));
+
+        // Unsubscribe global event listeners
+        onDestruction([tag = ghost->getTag(), unblockId, blockId] {
+            GlobalEmitter->removeEventListener("blockPath" + tag, blockId);
+            GlobalEmitter->removeEventListener("unblockPath" + tag, unblockId);
         });
 
         setPathFinder(std::make_unique<ForwardDirectionalBFS>(tileMap.getSizeInTiles(), ghost, reverseDirectionNow_));

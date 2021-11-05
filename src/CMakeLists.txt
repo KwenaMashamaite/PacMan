@@ -52,18 +52,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 # Create executable project source files
 add_executable(PacMan ${SRC_FILES} ${RES_FILES})
 
-# Find third party dependency
-set(IME_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME/lib/cmake/IME")
-set(IME_BIN_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME/bin")
-find_package(IME 2.2.0 REQUIRED)
-
-# Link third party dependency to executable
+# Find and link IME
+list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/extlibs")
+find_package(ime 2.3.0 REQUIRED)
 target_link_libraries (PacMan PRIVATE ime)
 
 # Add <project>/ as include directory
 include_directories(${PROJECT_SOURCE_DIR}/)
 
 # Copy runtime dependencies to the executable output folder
+set(IME_BIN_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME-${ime_VERSION}/bin")
+
 add_custom_command(TARGET PacMan PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/bin
     COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/bin

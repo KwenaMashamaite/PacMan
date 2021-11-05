@@ -64,6 +64,7 @@ namespace pm {
             getSprite().getAnimator().addAnimation(animation);
 
         getSprite().scale(2.0f, 2.0f);
+        resetSpriteOrigin();
         getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_));
     }
 

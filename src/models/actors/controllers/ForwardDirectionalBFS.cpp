@@ -26,6 +26,7 @@
 #include "src/common/PositionTracker.h"
 #include "src/models/actors/Wall.h"
 #include <IME/core/tilemap/TileMap.h>
+#include <IME/core/event/EventDispatcher.h>
 #include <cassert>
 #include <iostream>
 
@@ -34,15 +35,15 @@ namespace pm {
     ForwardDirectionalBFS::ForwardDirectionalBFS(const ime::Vector2u &gridSize, ime::GameObject* actor, bool& reverseDir) :
         reverseDirectionNow_{reverseDir},
         bfs_{gridSize},
-        actor_{actor},
-        wall_{nullptr}
+        actor_{actor}
     {
         assert(actor_);
-        wall_ = std::make_unique<Wall>(actor_->getUserData().getValue<std::reference_wrapper<ime::Scene>>("scene"));
     }
 
     ///////////////////////////////////////////////////////////////
-    std::stack<ime::Index> ForwardDirectionalBFS::findPath(ime::TileMap &grid, ime::Index sourceTile, ime::Index targetTile) {
+    std::stack<ime::Index> ForwardDirectionalBFS::findPath(const ime::TileMap &grid,
+        const ime::Index& sourceTile, const ime::Index& targetTile)
+    {
         ime::Index actorTile;
         ime::Vector2i actorDirection;
         try {
@@ -58,13 +59,11 @@ namespace pm {
         ime::Index tileInFront = {actorTile.row + actorDirection.y, actorTile.colm + actorDirection.x};
 
         // Flag the tile behind or in front the actor as inaccessible
-        grid.addChild(wall_.get(), /*reverseDirectionNow_ ? tileInFront :*/ tileBehindActor);
-        reverseDirectionNow_ = false;
-
+        ime::EventDispatcher::instance()->dispatchEvent("blockPath" + actor_->getTag(),  reverseDirectionNow_ ? tileInFront : tileBehindActor);
         std::stack<ime::Index> path = bfs_.findPath(grid, sourceTile, targetTile);
+        ime::EventDispatcher::instance()->dispatchEvent("unblockPath" + actor_->getTag(), reverseDirectionNow_ ? tileInFront : tileBehindActor);
 
-        // Unblock path
-        grid.removeChild(wall_.get());
+        reverseDirectionNow_ = false;
 
         return path;
     }

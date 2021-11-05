@@ -80,6 +80,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void EatenState::onExit() {
+        ghostMover_->setReverseDirEnable(false);
         ghostMover_->unsubscribe(destFoundHandler_);
 
         if (nextState_ == Ghost::State::Chase)

@@ -30,6 +30,7 @@
 #include "src/models/actors/controllers/PacManGridMover.h"
 #include "src/models/actors/controllers/GhostGridMover.h"
 #include "src/models/scenes/GameOverScene.h"
+#include "src/models/scenes/CollisionResponseRegisterer.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
 #include <src/utils/Utils.h>
@@ -52,7 +53,6 @@ namespace pm {
         currentLevel_ = cache().getValue<int>("CURRENT_LEVEL");
         audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
 
-        createPhysWorld({0.0f, 0.0f}); // Since we using grid based physics only, no gravity is needed
         createGrid();
         initGui();
         createActors();
@@ -228,129 +228,14 @@ namespace pm {
             gridMover->requestDirectionChange(gridMover->getDirection());
         };
 
-        ///@brief Increase the game score when a pellet is eaten and destroy it
-        ///@param pelletBase The pellet that was eaten
-        auto onPelletCollision = [this](ime::GameObject* pelletBase, ime::GridMover* pacmanGridMover) {
-            eatenPelletsCount_ += 1;
-
-            auto pellet = static_cast<Pellet*>(pelletBase);
-            pellet->setActive(false);
-            if (pellet->getPelletType() == Pellet::Type::Energizer) {
-                updateScore(Constants::Points::ENERGIZER);
-                startGhostFrightenedMode();
-
-                audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
-            } else {
-                updateScore(Constants::Points::DOT);
-                audio().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
-            }
-
-            if (eatenPelletsCount_ == Constants::FIRST_FRUIT_APPEARANCE_PELLET_COUNT ||
-                eatenPelletsCount_ == Constants::SECOND_FRUIT_APPEARANCE_PELLET_COUNT)
-            {
-                spawnFruit();
-            }
-        };
-
-        ///@brief Increase the game score when a fruit is eaten and replace it's texture with a score value
-        ///@param pelletBase The fruit that was eaten
-        auto onFruitCollision = [this](ime::GameObject* fruit) {
-            uneatenFruitTimer_.stop();
-
-            if (fruit->getTag() == "cherry")
-                updateScore(Constants::Points::CHERRY);
-            else if (fruit->getTag() == "strawberry")
-                updateScore(Constants::Points::STRAWBERRY);
-            else if (fruit->getTag() == "peach")
-                updateScore(Constants::Points::PEACH);
-            else if (fruit->getTag() == "apple")
-                updateScore(Constants::Points::APPLE);
-            else if (fruit->getTag() == "melon")
-                updateScore(Constants::Points::MELON);
-            else if (fruit->getTag() == "galaxian")
-                updateScore(Constants::Points::GALAXIAN);
-            else if (fruit->getTag() == "bell")
-                updateScore(Constants::Points::BELL);
-            else if (fruit->getTag() == "key")
-                updateScore(Constants::Points::KEY);
-
-            replaceFruitWithScore(fruit);
-            audio().play(ime::audio::Type::Sfx, "fruitEaten.wav");
-        };
-
-        auto onGhostCollision = [this](ime::GameObject* pacman, ime::GameObject* ghost) {
-            auto pacmanState = static_cast<PacMan*>(pacman)->getState();
-            auto ghostState = static_cast<Ghost*>(ghost)->getState();
-
-            // Prevent pacman from being killed while dying - Happens when at
-            // least two ghosts enters pacmans tile at the same time
-            if (pacmanState == PacMan::State::Dying)
-                return;
-
-            if (ghostState == Ghost::State::Frightened) {
-                updateScore(Constants::Points::GHOST * pointsMultiplier_);
-                setMovementFreeze(true);
-
-                replaceGhostWithScore(pacman, ghost);
-                updatePointsMultiplier();
-
-                frightenedModeTimer_.pause();
-                uneatenFruitTimer_.pause();
-                timer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [this, ghost] {
-                    setMovementFreeze(false);
-                    frightenedModeTimer_.start();
-
-                    if (uneatenFruitTimer_.getStatus() == ime::Timer::Status::Paused)
-                        uneatenFruitTimer_.start();
-
-                    static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
-                });
-
-                audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
-            } else if ((pacmanState == PacMan::State::Idle || pacmanState == PacMan::State::Moving) &&
-                        (ghostState != Ghost::State::Eaten))
-            {
-                static_cast<PacMan*>(pacman)->setState(PacMan::State::Dying);
-
-                onPrePacmanDeathAnim();
-
-                ime::Animator& pacmanAnimator = pacman->getSprite().getAnimator();
-                pacmanAnimator.startAnimation("dying");
-                auto deathAnimDuration = pacmanAnimator.getActiveAnimation()->getDuration();
-
-                pacmanAnimator.on(ime::Animator::Event::AnimationStart, "dying", [=] {
-                    gameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
-                        gameObject->getSprite().setVisible(false);
-                    });
-
-                    timer().setTimeout(deathAnimDuration + ime::milliseconds(400), [this] {
-                        onPostPacmanDeathAnim();
-                    });
-
-                    audio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
-                }, true);
-            }
-        };
-
         ime::GridMover* pacmanGridMover = gridMovers().findByTag("pacmanGridMover");
+
+        static CollisionResponseRegisterer collisionResponseRegisterer(*this);
+        collisionResponseRegisterer.registerPacmanHandlers(*pacmanGridMover->getTarget());
 
         pacmanGridMover->onGameObjectCollision([=](ime::GameObject* pacman, ime::GameObject* other) {
             if (other->getTag() == "teleportationSensor")
                 onTeleportationSensorTrigger(pacmanGridMover, pacman);
-            else if (other->getClassName() == "Pellet")
-                onPelletCollision(other, pacmanGridMover);
-            else if (other->getClassName() == "Fruit") {
-                onFruitCollision(other);
-
-                // The fruit is destroyed after a delay, prevent subsequent collisions in the mean-time
-                pacman->getCollisionExcludeList().add("fruits");
-
-                // Restore pacman-fruit collision
-                timer().setTimeout(ime::seconds(Constants::EATEN_FRUIT_DESTRUCTION_DELAY), [pacman] {
-                    pacman->getCollisionExcludeList().remove("fruits");
-                });
-            } else if (other->getClassName() == "Ghost")
-                onGhostCollision(pacman, other);
         });
 
         /*-------------- Ghosts collision handlers -----------------------*/
@@ -384,8 +269,7 @@ namespace pm {
                         ghost->getUserData().setValue("is_in_ghost_house", !ghost->getUserData().getValue<bool>("is_in_ghost_house"));
                     } else if (other->getTag() == "teleportationSensor")
                         onTeleportationSensorTrigger(ghostMover, ghost);
-                } else if (other->getClassName() == "PacMan")
-                    onGhostCollision(other, ghost); // Note order
+                }
             });
         });
     }
@@ -460,14 +344,19 @@ namespace pm {
 
             // Reset ghost positions in the grid
             tilemap().removeChild(ghost);
-            if (ghost->getTag() == "blinky")
+            if (ghost->getTag() == "blinky") {
                 tilemap().addChild(ghost, Constants::BLINKY_SPAWN_TILE);
-            else if (ghost->getTag() == "pinky")
+                static_cast<Ghost*>(ghost)->setDirection(ime::Left);
+            } else if (ghost->getTag() == "pinky") {
                 tilemap().addChild(ghost, Constants::PINKY_SPAWN_TILE);
-            else if (ghost->getTag() == "inky")
+                static_cast<Ghost *>(ghost)->setDirection(ime::Down);
+            } else if (ghost->getTag() == "inky") {
                 tilemap().addChild(ghost, Constants::INKY_SPAWN_TILE);
-            else
+                static_cast<Ghost*>(ghost)->setDirection(ime::Up);
+            } else {
                 tilemap().addChild(ghost, Constants::CLYDE_SPAWN_TILE);
+                static_cast<Ghost*>(ghost)->setDirection(ime::Up);
+            }
 
             // Reset ghost house properties
             numGhostsInHouse_ = 0;
@@ -792,7 +681,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::startGhostScatterMode() {
-        if (scatterModeTimer_.getStatus() == ime::Timer::Status::Paused) {
+        if (scatterModeTimer_.isPaused()) {
             scatterModeTimer_.start();
             return;
         }
@@ -827,7 +716,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::startGhostChaseMode() {
-        if (chaseModeTimer_.getStatus() == ime::Timer::Status::Paused) {
+        if (chaseModeTimer_.isPaused()) {
             chaseModeTimer_.start();
             return;
         }
@@ -876,9 +765,9 @@ namespace pm {
         auto freeGhost = [this] {
             ime::PropertyContainer args;
 
-            if (chaseModeTimer_.getStatus() == ime::Timer::Status::Running || chaseModeTimer_.getStatus() == ime::Timer::Status::Paused)
+            if (chaseModeTimer_.isRunning() || chaseModeTimer_.isPaused())
                 args.addProperty({"nextState", Ghost::State::Chase});
-            else if (scatterModeTimer_.getStatus() == ime::Timer::Status::Running || scatterModeTimer_.getStatus() == ime::Timer::Status::Paused)
+            else if (scatterModeTimer_.isRunning() || scatterModeTimer_.isPaused())
                 args.addProperty({"nextState", Ghost::State::Scatter});
             else
                 assert(false && "Failed to determine next state for released ghost");
@@ -905,7 +794,7 @@ namespace pm {
     void GameplayScene::flashGhosts() {
         ime::Time static flashAnimCutoffTime = ime::seconds(2);
 
-        if (frightenedModeTimer_.getStatus() == ime::Timer::Status::Running) {
+        if (frightenedModeTimer_.isRunning()) {
             gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghostBase) {
                 auto* ghost = static_cast<Ghost*>(ghostBase);
                 if (ghost->getState() == Ghost::State::Frightened) {

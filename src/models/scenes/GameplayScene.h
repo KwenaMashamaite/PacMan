@@ -285,6 +285,8 @@ namespace pm {
         unsigned int chaseModeWaveLevel_;   //!< Stores the current ghost chase wave level (up to 5)
         unsigned int scatterModeWaveLevel_; //!< Stores the current scatter mode level (up to 4)
         unsigned int numGhostsInHouse_;     //!< The number of ghosts currently in the ghost house
+
+        friend class CollisionResponseRegisterer;
     };
 }
 

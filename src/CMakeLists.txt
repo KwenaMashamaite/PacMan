@@ -25,6 +25,7 @@ set(SRC_FILES
         models/scenes/PauseMenuScene.cpp
         models/scenes/GameplayScene.cpp
         models/scenes/GameOverScene.cpp
+        models/scenes/CollisionResponseRegisterer.cpp
         models/scoreboard/Score.cpp
         models/scoreboard/Scoreboard.cpp
         models/world/Grid.cpp

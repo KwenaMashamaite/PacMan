@@ -66,19 +66,11 @@ namespace pm {
 
         // Keep pacman moving until he collides with a wall
         onAdjacentMoveEnd([this, pacman](ime::Index) {
-            if (pendingDirection_ != ime::Unknown && !isBlockedInDirection(pendingDirection_).first) {
+            if (pendingDirection_ != ime::Unknown && !(getCurrentTileIndex() == Constants::BLINKY_SPAWN_TILE && pendingDirection_ == ime::Down) && !isBlockedInDirection(pendingDirection_).first) {
                 requestDirectionChange(pendingDirection_);
                 pendingDirection_ = ime::Unknown;
             } else
                 requestDirectionChange(pacman->getDirection());
-        });
-
-        // Prevent pacmam from moving down when above the ghost house gate
-        onAdjacentMoveBegin([this](ime::Index index) {
-            if (index == Constants::BLINKY_SPAWN_TILE)
-                setMovementRestriction(ime::GridMover::MoveRestriction::Horizontal);
-            else
-                setMovementRestriction(ime::GridMover::MoveRestriction::None);
         });
 
         // Prevent pacman from turning into a direction that causes a collision with an obstacle

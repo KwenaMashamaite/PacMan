@@ -137,6 +137,12 @@ namespace pm {
         ~Ghost() override;
 
     private:
+        /**
+         * @brief Initialize animations
+         */
+        void initAnimations();
+
+    private:
         ActorStateFSM fsm_;          //!< Ghosts finite state machine
         ime::Vector2i direction_;    //!< The direction of the ghost
     };

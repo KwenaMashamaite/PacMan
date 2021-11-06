@@ -38,34 +38,17 @@ namespace pm {
     {
         setCollisionGroup("ghosts");
 
-        int spriteSheetRow;
         if (colour == Colour::Red) {
             direction_ = ime::Left;
             setTag("blinky");
-            spriteSheetRow = 0;
-        } else if (colour == Colour::Pink) {
+        } else if (colour == Colour::Pink)
             setTag("pinky");
-            spriteSheetRow = 1;
-        } else if (colour == Colour::Cyan) {
+        else if (colour == Colour::Cyan)
             setTag("inky");
-            spriteSheetRow = 2;
-        } else if (colour == Colour::Orange) {
+        else if (colour == Colour::Orange)
             setTag("clyde");
-            spriteSheetRow = 3;
-        } else {
-            assert(false && "Unknown ghost colour");
-        }
 
-        // Init default animation
-        GhostAnimations animations{};
-        animations.createAnimations(getTag());
-        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(ime::Index{spriteSheetRow, 0});
-        for (const auto& animation : animations.getAll())
-            getSprite().getAnimator().addAnimation(animation);
-
-        getSprite().scale(2.0f, 2.0f);
-        resetSpriteOrigin();
-        getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_));
+        initAnimations();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -141,6 +124,21 @@ namespace pm {
     void Ghost::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         assert(fsm_.top() && "A ghost FSM must have at least one state before handling an event");
         fsm_.top()->handleEvent(event, args);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void Ghost::initAnimations() {
+        GhostAnimations animations;
+        animations.createAnimations(getTag());
+
+        int spriteSheetRow = getTag() == "blinky" ? 0 : (getTag() == "pinky" ? 1 : (getTag() == "inky" ? 2 : 3));
+        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(ime::Index{spriteSheetRow, 0});
+        for (const auto& animation : animations.getAll())
+            getSprite().getAnimator().addAnimation(animation);
+
+        getSprite().scale(2.0f, 2.0f);
+        resetSpriteOrigin();
+        getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_));
     }
 
     ///////////////////////////////////////////////////////////////

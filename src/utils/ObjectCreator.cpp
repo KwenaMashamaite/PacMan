@@ -27,8 +27,8 @@
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    void ObjectCreator::createObjects(ime::PhysicsWorld& physicsWorld, Grid &grid) {
-        grid.forEachCell([&physicsWorld, &grid](const ime::Tile& tile) {
+    void ObjectCreator::createObjects(Grid &grid) {
+        grid.forEachCell([&grid](const ime::Tile& tile) {
             ime::GameObject::Ptr actor;
 
             if (tile.getId() == 'X') {

@@ -36,12 +36,7 @@ namespace pm {
     {
         setTag("pacman");
         setCollisionGroup("pacman");
-
-        auto animations = PacManAnimations();
-        animations.create();
-        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(ime::Index{0, 0});
-        for (const auto& animation : animations.getAll())
-            getSprite().getAnimator().addAnimation(animation);
+        initAnimations();
 
         getTransform().scale(2.0f, 2.0f);
         setDirection(ime::Left);
@@ -96,6 +91,16 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     ime::Vector2i PacMan::getDirection() const {
         return direction_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void PacMan::initAnimations() {
+        auto animations = PacManAnimations();
+        animations.create();
+        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(ime::Index{0, 0});
+
+        for (const auto& animation : animations.getAll())
+            getSprite().getAnimator().addAnimation(animation);
     }
 
     ///////////////////////////////////////////////////////////////

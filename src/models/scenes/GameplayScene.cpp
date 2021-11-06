@@ -98,7 +98,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::createActors() {
-        ObjectCreator::createObjects(physWorld(), *grid_);
+        ObjectCreator::createObjects(*grid_);
 
         grid_->forEachActor([this](ime::GameObject* actor) {
             if (actor->getClassName() == "PacMan") {
@@ -647,12 +647,12 @@ namespace pm {
         else if (currentLevel_ == 1)
             duration = ime::seconds(6);
 
-        if (frightenedModeTimer_.getStatus() == ime::Timer::Status::Running) // Increase frightened mode expiry time
+        if (frightenedModeTimer_.isRunning())
             frightenedModeTimer_.setInterval(frightenedModeTimer_.getRemainingDuration() + duration);
         else {
-            if (scatterModeTimer_.getStatus() == ime::Timer::Status::Running)
+            if (scatterModeTimer_.isRunning())
                 scatterModeTimer_.pause();
-            else if (chaseModeTimer_.getStatus() == ime::Timer::Status::Running)
+            else if (chaseModeTimer_.isRunning())
                 chaseModeTimer_.pause();
             else {
                 assert(false && "Ghost entered frightened mode from an invalid state: valid states are scatter and chase");
@@ -665,9 +665,9 @@ namespace pm {
 
                 // A paused timer implies that the ghost was in the state
                 // controlled by the timer before being frightened
-                if (scatterModeTimer_.getStatus() == ime::Timer::Status::Paused)
+                if (scatterModeTimer_.isPaused())
                     startGhostScatterMode();
-                else if (chaseModeTimer_.getStatus() == ime::Timer::Status::Paused)
+                else if (chaseModeTimer_.isPaused())
                     startGhostChaseMode();
                 else {
                     assert(false && "Cannot determine the state the ghost was in before it was frightened");

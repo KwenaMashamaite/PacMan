@@ -38,10 +38,9 @@ namespace pm {
     public:
         /**
          * @brief Create objects in the grid
-         * @param physicsWorld Physics simulation
          * @param grid The grid to create objects in
          */
-        static void createObjects(ime::PhysicsWorld& physicsWorld, Grid& grid);
+        static void createObjects(Grid& grid);
     };
 }
 

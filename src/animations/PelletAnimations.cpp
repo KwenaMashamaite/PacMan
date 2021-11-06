@@ -31,7 +31,7 @@ namespace pm {
     {
         animation_ = ime::Animation::create("blink", spritesheet_, ime::milliseconds(300));
         animation_->addFrames(ime::Index{0, 0}, 2);
-        animation_->setRepeatCount(-1);
+        animation_->setLoop(true);
     }
 
     ///////////////////////////////////////////////////////////////

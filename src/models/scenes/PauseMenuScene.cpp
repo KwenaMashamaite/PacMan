@@ -90,7 +90,7 @@ namespace pm {
 
         // Return to game when escape is pressed
         input().onKeyUp([this](ime::Keyboard::Key key) {
-            if (key == ime::Keyboard::Key::Escape)
+            if (key == ime::Keyboard::Key::Escape || key == ime::Keyboard::Key::P)
                 engine().popScene();
         });
     }

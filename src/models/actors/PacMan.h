@@ -104,6 +104,11 @@ namespace pm {
          */
         void switchAnimation(ime::Vector2i dir);
 
+        /**
+         * @brief Initialize animations
+         */
+        void initAnimations();
+
     private:
         int livesCount_;             //!< The actors current number of lives
         ime::Vector2i direction_;    //!< Pacmans current direction

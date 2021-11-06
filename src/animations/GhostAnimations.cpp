@@ -49,7 +49,7 @@ namespace pm {
         auto anim = ime::Animation::create(name, spritesheet_, ime::milliseconds(180));
         anim->addFrames(startPos, 2);
         anim->showTargetOnStart(false);
-        anim->setRepeatCount(-1);
+        anim->setLoop(true);
         animations_.push_back(std::move(anim));
     }
 

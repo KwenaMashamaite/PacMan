@@ -57,7 +57,7 @@ namespace pm {
         ime::Animation::Ptr animation = ime::Animation::create(name, movementSpritesheet_, movementAnimDuration);
         animation->addFrames(index, 3);
         animation->showTargetOnStart(false);
-        animation->setRepeatCount(-1);
+        animation->setLoop(true);
         animation->setCurrentFrameResetOnInterrupt(false);
         animations_.push_back(std::move(animation));
     }

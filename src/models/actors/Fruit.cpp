@@ -73,7 +73,7 @@ namespace pm {
 
         static const ime::SpriteSheet spritesheet_{"spritesheet.png", ime::Vector2u{16, 16}, ime::Vector2u{1, 1}, {51, 51, 137, 18}};
         getSprite() = spritesheet_.getSprite(texturePos);
-        resetSpriteOrigin(); // Set sprite origin as the centre
+        resetSpriteOrigin();
         getSprite().scale(2.0f, 2.0f);
     }
 

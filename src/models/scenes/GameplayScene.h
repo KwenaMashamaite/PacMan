@@ -31,6 +31,8 @@
 #include "src/views/GameplaySceneView.h"
 
 namespace pm {
+    class CollisionResponseRegisterer;
+
     /**
      * @brief Defines the playing state of the game
      */
@@ -81,6 +83,11 @@ namespace pm {
          * destroyed
          */
         void onExit() override;
+
+        /**
+         * @brief Destructor
+         */
+        ~GameplayScene();
 
     private:
         /**
@@ -174,23 +181,15 @@ namespace pm {
 
         /**
          * @brief Set the speed of pacman
-         * @param gridMover Pacman's grid mover
+         * @param pacmam PacMan
          */
-        void updatePacmanSpeed(ime::GridMover* gridMover) const;
+        void updatePacmanSpeed(ime::GameObject* pacmam) const;
 
         /**
          * @brief Set the speed of a ghost
-         * @param gridMover The ghosts grid mover
+         * @param ghost The Ghost
          */
-        void updateGhostSpeed(ime::GridMover* gridMover) const;
-
-        /**
-         * @brief Spawn a fruit
-         *
-         * The type of fruit spawned depends on the current level of the game.
-         * If left uneaten for some time, the fruit will disappear
-         */
-        void spawnFruit();
+        void updateGhostSpeed(ime::GameObject* ghost) const;
 
         /**
          * @brief Start the ghost frightened mode timer
@@ -235,26 +234,6 @@ namespace pm {
         void flashGhosts();
 
         /**
-         * @brief Replace a fruit texture with a corresponding score texture
-         * @param fruit The fruit to be replaced with a score texture
-         *
-         * The fruit will remain on the screen for some time before it disappears
-         */
-        void replaceFruitWithScore(ime::GameObject* fruit);
-
-        /**
-         * @brief Convert pacman and an eaten ghost into a single score texture
-         * @param pacman Pacman
-         * @param ghost Eaten ghost
-         *
-         * This function is called when pacman collides with a blue ghost,
-         * after the collision, the ghost and pacman textures are momentarily
-         * combined into a single score texture which corresponds to the number
-         * of points the player earned for eating the ghost
-         */
-        void replaceGhostWithScore(ime::GameObject* pacman, ime::GameObject* ghost);
-
-        /**
          * @brief Freeze or unfreeze the movement of pacman and the ghosts
          * @param freeze True to freeze or false to unfreeze the movement
          */
@@ -285,6 +264,7 @@ namespace pm {
         unsigned int chaseModeWaveLevel_;   //!< Stores the current ghost chase wave level (up to 5)
         unsigned int scatterModeWaveLevel_; //!< Stores the current scatter mode level (up to 4)
         unsigned int numGhostsInHouse_;     //!< The number of ghosts currently in the ghost house
+        std::unique_ptr<CollisionResponseRegisterer> collisionResponseRegisterer_;
 
         friend class CollisionResponseRegisterer;
     };

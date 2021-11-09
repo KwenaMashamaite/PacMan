@@ -118,7 +118,7 @@ namespace pm {
     void GameplayScene::createGridMovers() {
         auto pacmanGridMover = std::make_unique<PacManGridMover>(tilemap(), gameObjects().findByTag<PacMan>("pacman"));
         pacmanGridMover->init();
-        updatePacmanSpeed(pacmanGridMover.get());
+        updatePacmanSpeed(pacmanGridMover->getTarget());
 
         pacmanGridMover->onAdjacentMoveBegin([this](ime::Index index) {
             emit(GameEvent::PacManMoved);
@@ -130,7 +130,7 @@ namespace pm {
         gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghostBase) {
             auto* ghost = static_cast<Ghost*>(ghostBase);
             auto ghostMover = std::make_unique<GhostGridMover>(tilemap(), ghost);
-            updateGhostSpeed(ghostMover.get());
+            updateGhostSpeed(ghostBase);
             ghost->initFSM(ghostMover.get());
             ghostMover->setTag(ghost->getTag() + "GridMover");
 
@@ -138,8 +138,8 @@ namespace pm {
             ghostMover->setPathViewEnable(true);
 #endif
 
-            int stateChangeId = ghost->onPropertyChange("state", [this, gridMover = ghostMover.get()](const ime::Property&) {
-                updateGhostSpeed(gridMover);
+            int stateChangeId = ghost->onPropertyChange("state", [this, ghost](const ime::Property&) {
+                updateGhostSpeed(ghost);
             });
 
             ghostMover->onDestruction([gridMover = ghostMover.get(), stateChangeId] {
@@ -201,65 +201,19 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initCollisionResponses() {
-        ///@brief Teleports an actor to the other side of the tunnel
-        ///@param gridMover The grid mover of the actor that triggered the sensor
-        ///@param sensorTrigger The actor that triggered the sensor
-        auto onTeleportationSensorTrigger = [](ime::GridMover* gridMover, ime::GameObject* sensorTrigger) {
-            ime::TileMap& grid = gridMover->getGrid();
-            auto prevTile = grid.getTileOccupiedByChild(sensorTrigger);
-            grid.removeChild(sensorTrigger);
-            if (prevTile.getIndex().colm == 0) { // Triggered the left-hand side sensor
-                grid.addChild(sensorTrigger,ime::Index{prevTile.getIndex().row, static_cast<int>(grid.getSizeInTiles().x - 1)});
-            } else
-                grid.addChild(sensorTrigger, {prevTile.getIndex().row, 0});
+        collisionResponseRegisterer_ = std::make_unique<CollisionResponseRegisterer>(*this);
 
-            gridMover->resetTargetTile();
-            gridMover->requestDirectionChange(gridMover->getDirection());
-        };
-
-        ime::GridMover* pacmanGridMover = gridMovers().findByTag("pacmanGridMover");
-
-        static CollisionResponseRegisterer collisionResponseRegisterer(*this);
-        collisionResponseRegisterer.registerPacmanHandlers(*pacmanGridMover->getTarget());
-
-        pacmanGridMover->onGameObjectCollision([=](ime::GameObject* pacman, ime::GameObject* other) {
-            if (other->getTag() == "teleportationSensor")
-                onTeleportationSensorTrigger(pacmanGridMover, pacman);
-        });
+        /*-------------- Pacman collision handlers -----------------------*/
+        ime::GameObject* pacman = gameObjects().findByTag("pacman");
+        collisionResponseRegisterer_->registerCollisionWithPellets(pacman);
+        collisionResponseRegisterer_->registerCollisionWithFruit(pacman);
+        collisionResponseRegisterer_->registerCollisionWithGhost(pacman);
+        collisionResponseRegisterer_->registerCollisionWithTeleportationSensor(pacman);
 
         /*-------------- Ghosts collision handlers -----------------------*/
-
-        ///@brief Slow down ghost when it enters a tunnel
-        auto onTunnelEntrySensorTrigger = [this](ime::GridMover* ghostGridMover, ime::GameObject* ghost) {
-            ghost->getCollisionExcludeList().add("tunnelEntrySensor");
-            ghost->getCollisionExcludeList().remove("tunnelExitSensor");
-            ghost->getUserData().setValue("is_in_tunnel", true);
-            updateGhostSpeed(ghostGridMover);
-        };
-
-        ///@brief Revert to normal speed when ghost exits tunnel
-        auto onTunnelExitSensorTrigger = [this](ime::GridMover* ghostGridMover, ime::GameObject* ghost) {
-            ghost->getCollisionExcludeList().add("tunnelExitSensor");
-            ghost->getCollisionExcludeList().remove("tunnelEntrySensor");
-            ghost->getUserData().setValue("is_in_tunnel", false);
-            updateGhostSpeed(ghostGridMover);
-        };
-
-        ///@brief Subscribe collision handlers to ghost grid mover
-        gridMovers().forEachInGroup("GhostMovers", [=] (ime::GridMover* ghostMover){
-            ghostMover->onGameObjectCollision([=](ime::GameObject* ghost, ime::GameObject* other) {
-                if (other->getClassName() == "Sensor") {
-                    if (other->getTag() == "tunnelEntrySensor")
-                        onTunnelEntrySensorTrigger(ghostMover, ghost);
-                    else if (other->getTag() == "tunnelExitSensor")
-                        onTunnelExitSensorTrigger(ghostMover, ghost);
-                    else if (other->getTag() == "ghostHouseGateSensor") {
-                        // Flag ghost as being inside or outside the ghost house
-                        ghost->getUserData().setValue("is_in_ghost_house", !ghost->getUserData().getValue<bool>("is_in_ghost_house"));
-                    } else if (other->getTag() == "teleportationSensor")
-                        onTeleportationSensorTrigger(ghostMover, ghost);
-                }
-            });
+        gameObjects().forEachInGroup("Ghost", [this] (ime::GameObject* ghost) {
+            collisionResponseRegisterer_->registerCollisionWithTeleportationSensor(ghost);
+            collisionResponseRegisterer_->registerCollisionWithSlowDownSensor(ghost);
         });
     }
 
@@ -462,7 +416,9 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameplayScene::updatePacmanSpeed(ime::GridMover *gridMover) const {
+    void GameplayScene::updatePacmanSpeed(ime::GameObject* pacman) const {
+        assert(pacman->getGridMover() && "Cannot update pacman's speed without a grid mover");
+
         float speed;
         if (currentLevel_ == 1)
             speed = 0.80f * Constants::PACMAN_SPEED;
@@ -473,127 +429,42 @@ namespace pm {
         else
             speed = 0.90f * Constants::PACMAN_SPEED;
 
-        gridMover->setMaxLinearSpeed(ime::Vector2f{speed, speed});
+        pacman->getGridMover()->setMaxLinearSpeed(ime::Vector2f{speed, speed});
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameplayScene::updateGhostSpeed(ime::GridMover *gridMover) const {
-        float speed = 0.0f;
-        auto* ghost = static_cast<Ghost*>(gridMover->getTarget());
+    void GameplayScene::updateGhostSpeed(ime::GameObject* ghost) const {
+        assert(ghost->getGridMover() && "Cannot update ghost's speed without a grid mover");
 
-        if (ghost->getState() == Ghost::State::Eaten)
+        float speed = 0.0f;
+        auto* g = static_cast<Ghost*>(ghost);
+
+        if (g->getState() == Ghost::State::Eaten)
             speed = 2.0f * Constants::PACMAN_SPEED;
         else if (currentLevel_ == 1) {
-            if (ghost->getState() == Ghost::State::Frightened)
+            if (g->getState() == Ghost::State::Frightened)
                 speed = 0.50f * Constants::PACMAN_SPEED;
-            else if (ghost->getUserData().getValue<bool>("is_in_tunnel"))
+            else if (g->getUserData().getValue<bool>("is_in_tunnel"))
                 speed = 0.40 * Constants::PACMAN_SPEED;
             else
                 speed = 0.75 * Constants::PACMAN_SPEED;
         } else if (currentLevel_ >= 2 && currentLevel_ <= 4) {
-            if (ghost->getState() == Ghost::State::Frightened)
+            if (g->getState() == Ghost::State::Frightened)
                 speed = 0.55f * Constants::PACMAN_SPEED;
             else if (ghost->getUserData().getValue<bool>("is_in_tunnel"))
                 speed = 0.45f * Constants::PACMAN_SPEED;
             else
                 speed = 0.85f * Constants::PACMAN_SPEED;
         } else {
-            if (ghost->getState() == Ghost::State::Frightened) // Stops triggering from level 19 onwards
+            if (g->getState() == Ghost::State::Frightened) // Stops triggering from level 19 onwards
                 speed = 0.60f * Constants::PACMAN_SPEED;
-            else if (ghost->getUserData().getValue<bool>("is_in_tunnel"))
+            else if (g->getUserData().getValue<bool>("is_in_tunnel"))
                 speed = 0.50f * Constants::PACMAN_SPEED;
             else
                 speed = 0.95f * Constants::PACMAN_SPEED;
         }
 
-        gridMover->setMaxLinearSpeed(ime::Vector2f{speed, speed});
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::spawnFruit() {
-        Fruit::Type fruitType;
-        if (currentLevel_ == 1)
-            fruitType = Fruit::Type::Cherry;
-        else if (currentLevel_ == 2)
-            fruitType = Fruit::Type::Strawberry;
-        else if (currentLevel_ == 3 || currentLevel_ == 4)
-            fruitType = Fruit::Type::Peach;
-        else if (currentLevel_ == 5 || currentLevel_ == 6)
-            fruitType = Fruit::Type::Apple;
-        else if (currentLevel_ == 7 || currentLevel_ == 8)
-            fruitType = Fruit::Type::Melon;
-        else if (currentLevel_ == 9 || currentLevel_ == 10)
-            fruitType = Fruit::Type::Galaxian;
-        else if (currentLevel_ == 11 || currentLevel_ == 12)
-            fruitType = Fruit::Type::Bell;
-        else
-            fruitType = Fruit::Type::Key;
-
-        auto fruit = std::make_unique<Fruit>(*this, fruitType);
-
-        // Destroy fruit if left uneaten for some time
-        uneatenFruitTimer_.setTimeoutCallback([fruitPtr = fruit.get()] {
-            fruitPtr->setActive(false);
-        });
-
-        uneatenFruitTimer_.setInterval(ime::seconds(Constants::UNEATEN_FRUIT_DESTRUCTION_DELAY));
-        uneatenFruitTimer_.start();
-
-        grid_->addActor(std::move(fruit), Constants::FRUIT_SPAWN_POSITION);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::replaceFruitWithScore(ime::GameObject* fruit) {
-        fruit->getSprite().setTexture("spritesheet.png");
-
-        if (fruit->getTag() == "cherry")
-            fruit->getSprite().setTextureRect(ime::UIntRect{1, 116, 16, 16});  // 100
-        else if (fruit->getTag() == "strawberry")
-            fruit->getSprite().setTextureRect(ime::UIntRect{18, 116, 16, 16}); // 300
-        else if (fruit->getTag() == "peach")
-            fruit->getSprite().setTextureRect(ime::UIntRect{35, 116, 16, 16}); // 500
-        else if (fruit->getTag() == "apple")
-            fruit->getSprite().setTextureRect(ime::UIntRect{52, 116, 16, 16}); // 700
-        else if (fruit->getTag() == "melon")
-            fruit->getSprite().setTextureRect(ime::UIntRect{69, 116, 16, 16}); // 1000
-        else if (fruit->getTag() == "galaxian")
-            fruit->getSprite().setTextureRect(ime::UIntRect{86, 116, 16, 16}); // 2000
-        else if (fruit->getTag() == "bell")
-            fruit->getSprite().setTextureRect(ime::UIntRect{103, 116, 16, 16}); // 3000
-        else if (fruit->getTag() == "key")
-            fruit->getSprite().setTextureRect(ime::UIntRect{120, 116, 16, 16}); // 5000
-
-        // Destroy fruit after some seconds have passed since it was replaced by score texture
-        timer().setTimeout(ime::seconds(Constants::EATEN_FRUIT_DESTRUCTION_DELAY), [this, id = fruit->getObjectId()] {
-            if (auto* fruit = gameObjects().findById(id))
-                fruit->setActive(false);
-        });
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::replaceGhostWithScore(ime::GameObject *pacman, ime::GameObject *ghost) {
-        // Freeze animations to prevent texture changes while score texture is displayed
-        pacman->getSprite().getAnimator().setTimescale(0.0f);
-        ghost->getSprite().getAnimator().setTimescale(0.0f);
-
-        pacman->getSprite().setVisible(false);
-        ghost->getSprite().setTexture("spritesheet.png");
-
-        if (pointsMultiplier_ == 1)
-            ghost->getSprite().setTextureRect(ime::UIntRect{137, 116, 16, 16}); // 200
-        else if (pointsMultiplier_ == 2)
-            ghost->getSprite().setTextureRect(ime::UIntRect{154, 116, 16, 16}); // 400
-        else if (pointsMultiplier_ == 4)
-            ghost->getSprite().setTextureRect(ime::UIntRect{171, 116, 16, 16}); // 800
-        else
-            ghost->getSprite().setTextureRect(ime::UIntRect{188, 116, 16, 16}); // 1600
-
-        timer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [pacman, ghost] {
-            pacman->getSprite().getAnimator().setTimescale(1.0f);
-            ghost->getSprite().getAnimator().setTimescale(1.0f);
-
-            pacman->getSprite().setVisible(true);
-        });
+        ghost->getGridMover()->setMaxLinearSpeed(ime::Vector2f{speed, speed});
     }
 
     ///////////////////////////////////////////////////////////////
@@ -809,5 +680,8 @@ namespace pm {
         engine().onFrameEnd(nullptr);
         engine().getWindow().onClose(nullptr);
     }
+
+    ///////////////////////////////////////////////////////////////
+    GameplayScene::~GameplayScene() = default;
 
 } // namespace pm

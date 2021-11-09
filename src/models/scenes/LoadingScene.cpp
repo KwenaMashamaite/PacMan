@@ -99,7 +99,7 @@ namespace pm {
                 case ime::ResourceType::Image:
                     lblLoading->setText("Loading textures...");
                     break;
-                case ime::ResourceType::SoundBuffer:
+                case ime::ResourceType::SoundEffect:
                     lblLoading->setText("Loading sound effects...");
                     break;
                 case ime::ResourceType::Music:
@@ -126,7 +126,7 @@ namespace pm {
             "main_menu_background.jpg", "main_menu_background_blurred.jpg"
         });
 
-        loadFromFile(ime::ResourceType::SoundBuffer, {
+        loadFromFile(ime::ResourceType::SoundEffect, {
             "fruitEaten.wav", "ghostEaten.wav",
             "pacmanDying.wav", "powerPelletEaten.wav",
             "wieu_wieu_slow.ogg", "WakkaWakka.wav"

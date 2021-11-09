@@ -80,20 +80,9 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initGui() {
-        // Update view placeholder text with current level data
         view_.init(cache().getValue<int>("CURRENT_LEVEL"), cache().getValue<int>("PLAYER_LIVES"));
         view_.setHighScore(cache().getValue<int>("HIGH_SCORE"));
         view_.setScore(cache().getValue<int>("CURRENT_SCORE"));
-
-        // Create get ready text (Displayed before level start countdown)
-        auto lblGetReady = ime::ui::Label::create("Ready!");
-        lblGetReady->setTextSize(15.0f);
-        lblGetReady->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Center);
-        lblGetReady->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
-        lblGetReady->getRenderer()->setTextColour(ime::Colour::Yellow);
-        lblGetReady->setOrigin(0.5f, 0.5f);
-        lblGetReady->setPosition(tilemap().getTile(Constants::FRUIT_SPAWN_POSITION).getWorldCentre());
-        gui().addWidget(std::move(lblGetReady), "lblReady");
     }
 
     ///////////////////////////////////////////////////////////////

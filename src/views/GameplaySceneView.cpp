@@ -89,6 +89,15 @@ namespace pm {
         lblCredit->getRenderer()->setTextColour(ime::Colour::White);
         lblCredit->setPosition("8.3%", "&.h - h");
         pnlContainer->addWidget(std::move(lblCredit), "lblCredit");
+
+        auto lblGetReady = ime::ui::Label::create("Ready!");
+        lblGetReady->setTextSize(15.0f);
+        lblGetReady->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Center);
+        lblGetReady->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
+        lblGetReady->getRenderer()->setTextColour(ime::Colour::Yellow);
+        lblGetReady->setOrigin(0.5f, 0.5f);
+        lblGetReady->setPosition(247, 332);
+        pnlContainer->addWidget(std::move(lblGetReady), "lblReady");
     }
 
     ///////////////////////////////////////////////////////////////

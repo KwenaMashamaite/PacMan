@@ -22,9 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/actors/controllers/PacManGridMover.h"
+#include "PacManGridMover.h"
 #include "src/models/actors/PacMan.h"
-#include "src/common/PositionTracker.h"
 #include "src/common/Constants.h"
 #include <cassert>
 
@@ -48,21 +47,6 @@ namespace pm {
 
         if (pacman->getState() == PacMan::State::Idle)
             setMovementRestriction(ime::GridMover::MoveRestriction::All);
-
-        PositionTracker::updatePosition(pacman->getTag(), getCurrentTileIndex());
-        PositionTracker::updateDirection(pacman->getTag(), pacman->getDirection());
-
-        // Update the position when pacman moves to another tile
-        onAdjacentMoveBegin([this, pacman](ime::Index index) {
-            PositionTracker::updatePosition(pacman->getTag(), index);
-            PositionTracker::updateDirection(pacman->getTag(), getDirection());
-        });
-
-        // Update the position and direction when pacmans grid position is changed manually
-        onTargetTileReset([this, pacman](ime::Index index) {
-            PositionTracker::updatePosition(pacman->getTag(), index);
-            PositionTracker::updateDirection(pacman->getTag(), getDirection());
-        });
 
         // Keep pacman moving until he collides with a wall
         onAdjacentMoveEnd([this, pacman](ime::Index) {

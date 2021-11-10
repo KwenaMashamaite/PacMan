@@ -22,29 +22,17 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/actors/states/ghost/GhostState.h"
+#include "GhostState.h"
 #include <cassert>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    GhostState::GhostState(ActorStateFSM* fsm, Ghost* ghost, GhostGridMover* gridMover) :
+    GhostState::GhostState(ActorStateFSM* fsm, Ghost* ghost) :
         fsm_{fsm},
-        ghost_{ghost},
-        ghostMover_{gridMover}
+        ghost_{ghost}
     {
-        assert(fsm_ && "A ghost's FSM cannot be a nullptr");
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GhostState::setTarget(Ghost *ghost) {
         assert(ghost && "Ghost must not be a nullptr");
-        ghost_ = ghost;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GhostState::setGridMover(GhostGridMover* gridMover) {
-        assert(gridMover && "Grid mover must not be nullptr");
-        ghostMover_ = gridMover;
+        assert(fsm_ && "A ghost's FSM cannot be a nullptr");
     }
 
 } // namespace pm

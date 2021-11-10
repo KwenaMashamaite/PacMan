@@ -22,35 +22,23 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_EATENSTATE_H
-#define PACMAN_EATENSTATE_H
+#ifndef PACMAN_CHASESTATE_H
+#define PACMAN_CHASESTATE_H
 
-#include "src/models/actors/states/ghost/GhostState.h"
-#include "src/models/actors/Ghost.h"
+#include "GhostState.h"
 
 namespace pm {
     /**
-     * @brief Defines the behavior of a ghost when it is eaten by pacman
-     *
-     * In this state the ghost retreats to the ghost house to for a magic
-     * pill that completely heals it
+     * @brief Defines the behavior of a ghost when it is chasing pacman
      */
-    class EatenState final : public GhostState {
+    class ChaseState final : public GhostState {
     public:
         /**
-         * @brief Constructor
-         * @param fsm The ghosts Finite State Machine
+         * @brief Construct state
+         * @param fsm The ghost's Finite State Machine
          * @param target The ghost whose behaviour is to be defined by this state
-         * @param gridMover The ghost's grid mover
-         * @param nextState The state the ghost must transition to after it
-         *                  regenerates
-         *
-         * @note @a nextState may change if the the state timer corresponding
-         * to it expires. In this case it will be automatically adjusted to the
-         * appropriate state
          */
-        EatenState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover,
-            Ghost::State nextState);
+        ChaseState(ActorStateFSM* fsm, Ghost* target);
 
         /**
          * @brief Initialize the state
@@ -76,9 +64,13 @@ namespace pm {
         void onExit() override;
 
     private:
-        int destFoundHandler_;   //!< Handler id for a target destination event
-        int adjMoveEndHandler_;  //!< Handler id for targets adjacent move event
-        Ghost::State nextState_; //!< The state to transition to after reaching regeneration spot
+        /**
+         * @brief Defines the chase strategy for each ghost
+         */
+        void chasePacman();
+
+    private:
+        int adjMoveHandlerID_;
     };
 }
 

@@ -22,54 +22,49 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/actors/states/ghost/ChaseState.h"
-#include "src/models/actors/states/ghost/ScatterState.h"
-#include "src/models/actors/states/ghost/FrightenedState.h"
-#include "src/models/actors/Ghost.h"
-#include "src/common/PositionTracker.h"
+#include "ChaseState.h"
+#include "ScatterState.h"
+#include "FrightenedState.h"
+#include "src/common/ObjectReferenceKeeper.h"
 #include "src/utils/Utils.h"
 #include <cassert>
-#include <stack>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    ChaseState::ChaseState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover) :
-        GhostState(fsm, target, gridMover)
+    ChaseState::ChaseState(ActorStateFSM* fsm, Ghost* target) :
+        GhostState(fsm, target),
+        adjMoveHandlerID_{-1}
     {}
 
     ///////////////////////////////////////////////////////////////
     void ChaseState::onEntry() {
         assert(ghost_ && "Cannot enter chase state without a ghost");
-        assert(ghostMover_ && "Cannot enter chase state without a ghost grid mover");
+        assert(ghost_->getGridMover() && "Cannot enter scatter state without a ghost grid mover");
+        auto* gridMover = dynamic_cast<GhostGridMover*>(ghost_->getGridMover());
+        assert(gridMover && "Invalid ghost grid mover");
 
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()));
-        initEvents();
-        ghostMover_->setDestination(PositionTracker::getPosition("pacman"));
-    }
 
-    ///////////////////////////////////////////////////////////////
-    void ChaseState::initEvents() {
-        // Make ghost wonder around if it can't find a path to its target tile
-        ghostMover_->onPathGenFinish([this](const std::stack<ime::Index>& path) {
-            if (path.empty())
-                ghostMover_->setRandomMoveEnable(true);
-            else if (ghostMover_->isRandomMoveEnabled())
-                ghostMover_->setRandomMoveEnable(false);
-        });
+        adjMoveHandlerID_ = gridMover->onAdjacentMoveEnd(std::bind(&ChaseState::chasePacman, this));
+        gridMover->setMoveStrategy(GhostGridMover::Strategy::Target);
+        gridMover->startMovement();
+        chasePacman();
     }
 
     ///////////////////////////////////////////////////////////////
     void ChaseState::chasePacman() {
-        ime::Index pacmanTile = PositionTracker::getPosition("pacman");
-        ime::Vector2i pacmanDir = PositionTracker::getDirection("pacman");
+        ime::GameObject* pacman = ObjectReferenceKeeper::getActor("pacman");
+        ime::Index pacmanTile = pacman->getGridMover()->getCurrentTileIndex();
+        ime::Vector2i pacmanDir = pacman->getGridMover()->getDirection();
 
         if (ghost_->getTag() == "blinky")
-            ghostMover_->setDestination(pacmanTile);
+            dynamic_cast<GhostGridMover*>(ghost_->getGridMover())->setTargetTile(pacmanTile);
         else if (ghost_->getTag() == "pinky")
-            ghostMover_->setDestination(ime::Index{pacmanTile.row + 4 * pacmanDir.y, pacmanTile.colm + 4 * pacmanDir.x});
+            dynamic_cast<GhostGridMover*>(ghost_->getGridMover())->setTargetTile(ime::Index{pacmanTile.row + 4 * pacmanDir.y, pacmanTile.colm + 4 * pacmanDir.x});
         else if (ghost_->getTag() == "inky") {
-            ime::Index blinkyTile = PositionTracker::getPosition("blinky");
+            ime::Index blinkyTile = ObjectReferenceKeeper::getActor("blinky")->getGridMover()->getCurrentTileIndex();
+
             // Choose a position two tiles in front of pacman
             ime::Index pacmanTileOffset = ime::Index{pacmanTile.row + 2 * pacmanDir.y, pacmanTile.colm + 2 * pacmanDir.x};
 
@@ -79,45 +74,35 @@ namespace pm {
             // Flip vector 180 degrees
             ime::Index inkyTargetTile = ime::Index{pacmanTileOffset.row - pacmanTileOffsetToBlinkyVector.row, pacmanTileOffset.colm - pacmanTileOffsetToBlinkyVector.colm};
 
-            // If the target tile lies outside the bounds of the tilemap, pm::GhostMover::setDestination()
-            // does nothing. As a result, inky will just sit there and not move. To counteract that, we
-            // activate random movement
-            if (ghostMover_->getGrid().isIndexValid(inkyTargetTile))
-                ghostMover_->setDestination(inkyTargetTile);
-            else
-                ghostMover_->setRandomMoveEnable(true);
+            static_cast<GhostGridMover*>(ghost_->getGridMover())->setTargetTile(inkyTargetTile);
 
         } else if (ghost_->getTag() == "clyde") {
             const static int CLYDE_SHYNESS_DISTANCE = 8; // Distance in tiles not pixels
-            ime::Index clydeTile = ghostMover_->getGrid().getTileOccupiedByChild(ghost_).getIndex();
+            ime::Index clydeTile = ghost_->getGridMover()->getCurrentTileIndex();
             if ((std::abs(pacmanTile.row - clydeTile.row) > CLYDE_SHYNESS_DISTANCE) ||
                 (std::abs(pacmanTile.colm - clydeTile.colm) > CLYDE_SHYNESS_DISTANCE))
             {
-                ghostMover_->setDestination(pacmanTile);
+                auto* gridMover = dynamic_cast<GhostGridMover*>(ghost_->getGridMover());
+                gridMover->setMoveStrategy(GhostGridMover::Strategy::Target);
+                gridMover->setTargetTile(pacmanTile);
             } else
-                ghostMover_->setRandomMoveEnable(true);
+                dynamic_cast<GhostGridMover*>(ghost_->getGridMover())->setMoveStrategy(GhostGridMover::Strategy::Random);
         } else {
             assert("Failed to create ghost chase strategy: Invalid tag");
         }
-
-        ghostMover_->startMovement();
     }
 
     ///////////////////////////////////////////////////////////////
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
-        if (event == GameEvent::PacManMoved)
-            chasePacman();
-        else if (event == GameEvent::FrightenedModeBegin && !ghost_->getUserData().getValue<bool>("is_in_ghost_house"))
-            fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_, Ghost::State::Chase));
+        if (event == GameEvent::FrightenedModeBegin /*&& !ghost_->getUserData().getValue<bool>("is_in_ghost_house")*/)
+            fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, Ghost::State::Chase));
         else if (event == GameEvent::ScatterModeBegin)
-            fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_, ghostMover_));
+            fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_));
     }
 
     ///////////////////////////////////////////////////////////////
     void ChaseState::onExit() {
-        ghostMover_->resetDestination();
-        ghostMover_->onPathGenFinish(nullptr);
-        ghostMover_->setRandomMoveEnable(false);
+        ghost_->getGridMover()->unsubscribe(adjMoveHandlerID_);
     }
 
 } // namespace pm

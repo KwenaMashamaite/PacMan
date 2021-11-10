@@ -22,48 +22,30 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_GIDLESTATE_H
-#define PACMAN_GIDLESTATE_H
-
-#include "src/models/actors/states/ghost/GhostState.h"
+#include "GIdleState.h"
+#include "ScatterState.h"
+#include "src/models/actors/Ghost.h"
+#include <cassert>
 
 namespace pm {
-    /**
-     * @brief A ghosts idle state
-     *
-     * In this state, the ghost cannot remains at its current position
-     * and cannot move around the maze
-     */
-    class GIdleState final : public GhostState {
-    public:
-        /**
-         * @brief Constructor
-         * @param fsm The ghosts Finite State Machine
-         * @param target The ghost whose behaviour is to be defined by this state
-         * @param gridMover The ghost's grid mover
-         */
-        GIdleState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover);
+    ///////////////////////////////////////////////////////////////
+    GIdleState::GIdleState(ActorStateFSM* fsm, Ghost* ghost) :
+        GhostState(fsm, ghost)
+    {}
 
-        /**
-         * @brief Initialize the state
-         */
-        void onEntry() override;
+    ///////////////////////////////////////////////////////////////
+    void GIdleState::onEntry() {
+        assert(ghost_->getGridMover() && "Cannot enter idle state without a grid mover");
+        ghost_->setState(static_cast<int>(Ghost::State::Idle));
+        ghost_->getGridMover()->setMovementRestriction(ime::GridMover::MoveRestriction::All);
+    }
 
-        /**
-         * @brief Handle a game event
-         * @param event The event to be handled
-         * @param args Event arguments
-         */
-        void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
+    ///////////////////////////////////////////////////////////////
+    void GIdleState::handleEvent(GameEvent event, const ime::PropertyContainer& args) {
+        if (event == GameEvent::ScatterModeBegin) {
+            ghost_->getGridMover()->setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
+            fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_));
+        }
+    }
 
-        /**
-         * @brief Exit a state
-         *
-         * This function will be called by the FSM before the state is
-         * destroyed
-         */
-        void onExit() override;
-    };
-}
-
-#endif
+} // namespace pm

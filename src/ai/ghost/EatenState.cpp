@@ -22,9 +22,9 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/actors/states/ghost/EatenState.h"
-#include "src/models/actors/states/ghost/ChaseState.h"
-#include "src/models/actors/states/ghost/ScatterState.h"
+#include "EatenState.h"
+#include "ChaseState.h"
+#include "ScatterState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
 #include "src/utils/Utils.h"

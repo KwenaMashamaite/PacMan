@@ -22,12 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/actors/states/ghost/ImprisonedState.h"
+#include "ImprisonedState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
-#include "src/common/PositionTracker.h"
-#include "src/models/actors/states/ghost/ChaseState.h"
-#include "src/models/actors/states/ghost/ScatterState.h"
+#include "src/common/ObjectReferenceKeeper.h"
+#include "ChaseState.h"
+#include "ScatterState.h"
 #include <cassert>
 
 namespace pm {

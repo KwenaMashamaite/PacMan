@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/actors/states/ActorStateFSM.h"
+#include "ActorStateFSM.h"
 #include <cassert>
 
 namespace pm {

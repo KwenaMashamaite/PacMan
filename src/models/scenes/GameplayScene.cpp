@@ -27,14 +27,18 @@
 #include "src/utils/ObjectCreator.h"
 #include "src/models/actors/Actors.h"
 #include "src/common/Constants.h"
-#include "src/models/actors/controllers/PacManGridMover.h"
-#include "src/models/actors/controllers/GhostGridMover.h"
+#include "src/movement/PacManGridMover.h"
+#include "src/movement/GhostGridMover.h"
 #include "src/models/scenes/GameOverScene.h"
 #include "src/models/scenes/CollisionResponseRegisterer.h"
+#include "src/common/ObjectReferenceKeeper.h"
 #include <IME/core/engine/Engine.h>
+#include <IME/core/physics/grid/RandomGridMover.h>
+#include <IME/core/physics/grid/CyclicGridMover.h>
 #include <IME/ui/widgets/Label.h>
 #include <src/utils/Utils.h>
 #include <cassert>
+#include <iostream>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
@@ -91,8 +95,10 @@ namespace pm {
 
         grid_->forEachActor([this](ime::GameObject* actor) {
             if (actor->getClassName() == "PacMan") {
+                ObjectReferenceKeeper::registerActor(actor);
                 static_cast<PacMan*>(actor)->setLivesCount(cache().getValue<int>("PLAYER_LIVES"));
             } else if (actor->getClassName() == "Ghost") {
+                ObjectReferenceKeeper::registerActor(actor);
                 actor->getUserData().addProperty({"is_in_tunnel", false});
                 actor->getCollisionExcludeList().add("tunnelExitSensor");
 
@@ -131,12 +137,8 @@ namespace pm {
             auto* ghost = static_cast<Ghost*>(ghostBase);
             auto ghostMover = std::make_unique<GhostGridMover>(tilemap(), ghost);
             updateGhostSpeed(ghostBase);
-            ghost->initFSM(ghostMover.get());
+            ghost->initFSM();
             ghostMover->setTag(ghost->getTag() + "GridMover");
-
-#ifndef NDEBUG
-            ghostMover->setPathViewEnable(true);
-#endif
 
             int stateChangeId = ghost->onPropertyChange("state", [this, ghost](const ime::Property&) {
                 updateGhostSpeed(ghost);
@@ -207,7 +209,7 @@ namespace pm {
         ime::GameObject* pacman = gameObjects().findByTag("pacman");
         collisionResponseRegisterer_->registerCollisionWithPellets(pacman);
         collisionResponseRegisterer_->registerCollisionWithFruit(pacman);
-        collisionResponseRegisterer_->registerCollisionWithGhost(pacman);
+        //collisionResponseRegisterer_->registerCollisionWithGhost(pacman);
         collisionResponseRegisterer_->registerCollisionWithTeleportationSensor(pacman);
 
         /*-------------- Ghosts collision handlers -----------------------*/
@@ -237,7 +239,7 @@ namespace pm {
             auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
             soundEffect->setLoop(true);
 
-            startGhostHouseTimer();
+            //startGhostHouseTimer();
             startGhostScatterMode();
             emit(GameEvent::LevelStarted);
         });

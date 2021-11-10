@@ -22,36 +22,37 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_FRIGHTENEDSTATE_H
-#define PACMAN_FRIGHTENEDSTATE_H
+#ifndef PACMAN_SCATTERSTATE_H
+#define PACMAN_SCATTERSTATE_H
 
-#include "src/models/actors/states/ghost/GhostState.h"
-#include "src/models/actors/Ghost.h"
+#include "GhostState.h"
+#include <queue>
 
 namespace pm {
+    class Ghost;
+
     /**
-     * @brief Defines the state of a ghost when it is frightened
+     * @brief Defines the behavior of a ghost in scatter mode
      *
-     * When in this state, the ghost is vulnerable and can be eaten by pacman.
-     * In addition, it changes colour and moves randomly in the grid
+     * In this state the ghost moves to a specific corner thereafter follows a
+     * cyclic path at the corner. Depending on the duration of the state the
+     * ghost may not cycle a corner as the state might timeout while the ghost
+     * is en route to corner. This state is triggered between pacman chases in
+     * order to give the player a breather
      */
-    class FrightenedState final : public GhostState {
+    class ScatterState final : public GhostState {
     public:
         /**
-         * @brief Constructor
-         * @param fsm The ghosts Finite State Machine
+         * @brief Construct state
+         * @param fsm The ghost's Finite State Machine
          * @param target The ghost whose behaviour is to be defined by this state
-         * @param gridMover The ghost's grid mover
-         * @param nextState The state the ghost must transition to when frightened
-         *                  mode expires
          */
-        FrightenedState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover,
-            Ghost::State nextState);
+        ScatterState(ActorStateFSM* fsm, Ghost* ghost);
 
         /**
          * @brief Initialize the state
          *
-         * This function will be called by the FSM when the state is entered
+         * This function will be called by the FSM before a state is entered
          * for the first time
          */
         void onEntry() override;
@@ -62,17 +63,6 @@ namespace pm {
          * @param args Arguments associated with the event
          */
         void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
-
-        /**
-         * @brief Exit a state
-         *
-         * This function will be called by the FSM before the state is
-         * destroyed
-         */
-        void onExit() override;
-
-    private:
-        Ghost::State nextState_; //!< The state
     };
 }
 

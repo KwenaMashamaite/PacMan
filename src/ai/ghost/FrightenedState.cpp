@@ -22,48 +22,45 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/actors/states/ghost/FrightenedState.h"
-#include "src/models/actors/states/ghost/EatenState.h"
-#include "src/models/actors/states/ghost/ScatterState.h"
-#include "src/models/actors/states/ghost/ChaseState.h"
+#include "FrightenedState.h"
+#include "EatenState.h"
+#include "ScatterState.h"
+#include "ChaseState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/utils/Utils.h"
 #include <cassert>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    FrightenedState::FrightenedState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover, Ghost::State nextState) :
-        GhostState(fsm, target, gridMover),
+    FrightenedState::FrightenedState(ActorStateFSM* fsm, Ghost* target, Ghost::State nextState) :
+        GhostState(fsm, target),
         nextState_{nextState}
     {}
 
     ///////////////////////////////////////////////////////////////
     void FrightenedState::onEntry() {
         assert(ghost_ && "Cannot enter frightened state without a ghost");
-        assert(ghostMover_ && "Cannot enter frightened state without a ghost grid mover");
+        assert(ghost_->getGridMover() && "Cannot enter scatter state without a ghost grid mover");
+        auto* gridMover = dynamic_cast<GhostGridMover*>(ghost_->getGridMover());
+        assert(gridMover && "Invalid ghost grid mover");
 
         ghost_->setState(static_cast<int>(Ghost::State::Frightened));
-        ghostMover_->setRandomMoveEnable(true);
         ghost_->getSprite().getAnimator().startAnimation("frightened");
+        gridMover->setMoveStrategy(GhostGridMover::Strategy::Random);
     }
 
     ///////////////////////////////////////////////////////////////
     void FrightenedState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         if (event == GameEvent::FrightenedModeEnd) {
             if (nextState_ == Ghost::State::Scatter)
-                fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_, ghostMover_));
+                fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_));
             else if (nextState_ == Ghost::State::Chase)
-                fsm_->pop(std::make_unique<ChaseState>(fsm_, ghost_, ghostMover_));
+                fsm_->pop(std::make_unique<ChaseState>(fsm_, ghost_));
             else {
                 assert(false && "Ghost can only transition to scatter or chase state after it was frightened");
             }
-        } else if (event == GameEvent::GhostEaten)
-            fsm_->pop(std::make_unique<EatenState>(fsm_, ghost_, ghostMover_, nextState_));
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void FrightenedState::onExit() {
-        ghostMover_->setRandomMoveEnable(false);
+        } /*else if (event == GameEvent::GhostEaten)
+            fsm_->pop(std::make_unique<EatenState>(fsm_, ghost_, nextState_));*/
     }
 
 } // namespace pm

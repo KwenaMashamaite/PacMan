@@ -25,7 +25,7 @@
 #ifndef PACMAN_GHOST_H
 #define PACMAN_GHOST_H
 
-#include "src/models/actors/states/ActorStateFSM.h"
+#include "src/ai/ActorStateFSM.h"
 #include <IME/core/game_object/GameObject.h>
 
 namespace pm {
@@ -68,12 +68,8 @@ namespace pm {
 
         /**
          * @brief Initialize the ghosts Finite State Machine
-         * @param gridMover The ghosts movement controller
-         *
-         * @note This function will replace all states present in the FSM with
-         * the default ghost state
          */
-        void initFSM(GhostGridMover* gridMover);
+        void initFSM();
 
         /**
          * @brief Get the name of this class

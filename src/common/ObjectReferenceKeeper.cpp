@@ -22,32 +22,20 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/actors/states/ghost/GIdleState.h"
-#include "src/models/actors/states/ghost/ScatterState.h"
-#include "src/models/actors/Ghost.h"
+#include "src/common/ObjectReferenceKeeper.h"
+#include <cassert>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    GIdleState::GIdleState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover) :
-        GhostState(fsm, target, gridMover)
-    {}
-
-    ///////////////////////////////////////////////////////////////
-    void GIdleState::onEntry() {
-        ghost_->setState(static_cast<int>(Ghost::State::Idle));
-        ghostMover_->setMovementRestriction(ime::GridMover::MoveRestriction::All);
+    void ObjectReferenceKeeper::registerActor(ime::GameObject *gameObject) {
+        assert(gameObject);
+        gameObjects_.insert({gameObject->getTag(), gameObject});
     }
 
     ///////////////////////////////////////////////////////////////
-    void GIdleState::handleEvent(GameEvent event, const ime::PropertyContainer& args) {
-        if (event == GameEvent::ScatterModeBegin)
-            fsm_->pop();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GIdleState::onExit() {
-        ghostMover_->setMovementRestriction(ime::GridMover::MoveRestriction::None);
-        fsm_->push(std::make_unique<ScatterState>(fsm_, ghost_, ghostMover_));
+    ime::GameObject* ObjectReferenceKeeper::getActor(const std::string &tag) {
+        auto found = gameObjects_.find(tag);
+        return found != gameObjects_.end() ? found->second : nullptr;
     }
 
 } // namespace pm

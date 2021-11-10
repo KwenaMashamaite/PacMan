@@ -22,58 +22,38 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_CHASESTATE_H
-#define PACMAN_CHASESTATE_H
+#ifndef PACMAN_GIDLESTATE_H
+#define PACMAN_GIDLESTATE_H
 
-#include "src/models/actors/states/ghost/GhostState.h"
+#include "GhostState.h"
 
 namespace pm {
     /**
-     * @brief Defines the behavior of a ghost when it is chasing pacman
+     * @brief A ghosts idle state
+     *
+     * In this state, the ghost cannot remains at its current position
+     * and cannot move around the maze
      */
-    class ChaseState final : public GhostState {
+    class GIdleState final : public GhostState {
     public:
         /**
-         * @brief Construct state
-         * @param fsm The ghost's Finite State Machine
-         * @param target The ghost whose behaviour is to be defined by this state
-         * @param gridMover The ghost's grid mover
+         * @brief Constructor
+         * @param fsm The ghosts Finite State Machine
+         * @param ghost The ghost whose behaviour is to be defined by this state
          */
-        ChaseState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover);
+        GIdleState(ActorStateFSM* fsm, Ghost* ghost);
 
         /**
          * @brief Initialize the state
-         *
-         * This function will be called by the FSM when a state is entered
-         * for the first time
          */
         void onEntry() override;
 
         /**
          * @brief Handle a game event
          * @param event The event to be handled
-         * @param args Arguments associated with the event
+         * @param args Event arguments
          */
         void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
-
-        /**
-         * @brief Exit a state
-         *
-         * This function will be called by the FSM before the state is
-         * destroyed
-         */
-        void onExit() override;
-
-    private:
-        /**
-         * @brief Init state events
-         */
-        void initEvents();
-
-        /**
-         * @brief Defines the chase strategy for each ghost
-         */
-        void chasePacman();
     };
 }
 

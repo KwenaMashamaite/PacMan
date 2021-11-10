@@ -1,17 +1,16 @@
 set(SRC_FILES
         main.cpp
-        common/PositionTracker.cpp
-        models/actors/states/ActorStateFSM.cpp
-        models/actors/controllers/GhostGridMover.cpp
-        models/actors/controllers/ForwardDirectionalBFS.cpp
-        models/actors/controllers/PacManGridMover.cpp
-        models/actors/states/ghost/GhostState.cpp
-        models/actors/states/ghost/GIdleState.cpp
-        models/actors/states/ghost/ScatterState.cpp
-        models/actors/states/ghost/ChaseState.cpp
-        models/actors/states/ghost/FrightenedState.cpp
-        models/actors/states/ghost/EatenState.cpp
-        models/actors/states/ghost/ImprisonedState.cpp
+        common/ObjectReferenceKeeper.cpp
+        ai/ActorStateFSM.cpp
+        movement/GhostGridMover.cpp
+        movement/PacManGridMover.cpp
+        ai/ghost/GhostState.cpp
+        ai/ghost/GIdleState.cpp
+        ai/ghost/ScatterState.cpp
+        ai/ghost/ChaseState.cpp
+        ai/ghost/FrightenedState.cpp
+        #models/actors/states/ghost/EatenState.cpp
+        #models/actors/states/ghost/ImprisonedState.cpp
         models/actors/Fruit.cpp
         models/actors/Ghost.cpp
         models/actors/Pellet.cpp

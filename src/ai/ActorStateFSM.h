@@ -25,7 +25,7 @@
 #ifndef PACMAN_ACTORSTATEFSM_H
 #define PACMAN_ACTORSTATEFSM_H
 
-#include "src/models/actors/states/IActorState.h"
+#include "IActorState.h"
 #include <stack>
 #include <memory>
 

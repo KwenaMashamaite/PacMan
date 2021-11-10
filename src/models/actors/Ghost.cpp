@@ -24,8 +24,7 @@
 
 #include "src/models/actors/Ghost.h"
 #include "src/utils/Utils.h"
-#include "src/models/actors/states/ghost/GIdleState.h"
-#include "src/models/actors/states/ghost/ImprisonedState.h"
+#include "src/ai/ghost/GIdleState.h"
 #include "src/animations/GhostAnimations.h"
 #include <memory>
 #include <cassert>
@@ -52,14 +51,9 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Ghost::initFSM(GhostGridMover* gridMover) {
+    void Ghost::initFSM() {
         fsm_.clear();
-
-        if (getUserData().getValue<bool>("is_locked_in_ghost_house"))
-            fsm_.push(std::make_unique<ImprisonedState>(&fsm_, this, gridMover));
-        else
-            fsm_.push(std::make_unique<GIdleState>(&fsm_, this, gridMover));
-
+        fsm_.push(std::make_unique<GIdleState>(&fsm_, this));
         fsm_.start();
     }
 

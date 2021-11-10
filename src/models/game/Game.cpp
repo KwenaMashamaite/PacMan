@@ -24,7 +24,7 @@
 
 #include "src/models/game/Game.h"
 #include "src/models/scoreboard/Scoreboard.h"
-#include "src/models/scenes/StartUpScene.h"
+#include "src/models/scenes/GameplayScene.h"
 #include "src/common/Constants.h"
 
 namespace pm {
@@ -53,14 +53,14 @@ namespace pm {
         engine_.getPersistentData().addProperty({"CURRENT_LEVEL", 1});
         engine_.getPersistentData().addProperty({"CURRENT_SCORE", 0});
         engine_.getPersistentData().addProperty({"PLAYER_LIVES", Constants::PLAYER_LiVES});
-        engine_.getPersistentData().addProperty({"MASTER_VOLUME", 100.0f});
+        engine_.getPersistentData().addProperty({"MASTER_VOLUME", 0.0f});
         engine_.getPersistentData().addProperty({"LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS});
 
         // If not found in settings file, player will be prompted for name in StartUpScene
         if (settings.hasPref("PLAYER_NAME"))
             engine_.getPersistentData().addProperty({"PLAYER_NAME",settings.getPref("PLAYER_NAME").getValue<std::string>()});
 
-        engine_.pushScene(std::make_unique<StartUpScene>());
+        engine_.pushScene(std::make_unique<GameplayScene>());
     }
 
     ///////////////////////////////////////////////////////////////

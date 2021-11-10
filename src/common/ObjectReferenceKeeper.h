@@ -22,27 +22,39 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/common/PositionTracker.h"
+#ifndef PACMAN_OBJECTREFERENCEKEEPER_H
+#define PACMAN_OBJECTREFERENCEKEEPER_H
+
+#include <IME/core/game_object/GameObject.h>
+#include <IME/common/Vector2.h>
+#include <string>
+#include <unordered_map>
+#include <utility>
 
 namespace pm {
-    ///////////////////////////////////////////////////////////////
-    void PositionTracker::updatePosition(const std::string &tag, const ime::Index& index) {
-        positions_[tag].first = index;
-    }
+    /**
+     * @brief Registers and provides global access to game objects
+     */
+    class ObjectReferenceKeeper {
+    public:
+        /**
+         * @brief Register a game object for global access
+         * @param gameObject The game object to be registered
+         *
+         * @warning @a gameObject must not be @a nullptr
+         */
+        static void registerActor(ime::GameObject* gameObject);
 
-    ///////////////////////////////////////////////////////////////
-    ime::Index PositionTracker::getPosition(const std::string &tag) {
-        return positions_.at(tag).first;
-    }
+        /**
+         * @brief Get access to an actor
+         * @param tag The tag of the game ob
+         * @return A pointer to the actor if it exists otherwise a nullptr
+         */
+        static ime::GameObject* getActor(const std::string& tag);
 
-    ///////////////////////////////////////////////////////////////
-    void PositionTracker::updateDirection(const std::string &tag, const ime::Vector2i &dir) {
-        positions_[tag].second = dir;
-    }
+    private:
+        inline static std::unordered_map<std::string, ime::GameObject*> gameObjects_{};
+    };
+}
 
-    ///////////////////////////////////////////////////////////////
-    ime::Vector2i PositionTracker::getDirection(const std::string &tag) {
-        return positions_.at(tag).second;
-    }
-
-} // namespace pm
+#endif //PACMAN_OBJECTREFERENCEKEEPER_H

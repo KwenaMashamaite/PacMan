@@ -42,10 +42,10 @@ WINDOW_HEIGHT:INT=600
 WINDOW_ICON:STRING=assets/images/window_icon.png
 
 # FPS limit
-FPS_LIMIT:INT=60
+FPS_LIMIT:INT=120
 
 # Vertical synchronization (V-Sync)
-V_SYNC:BOOL=1
+V_SYNC:BOOL=0
 
 # Path to fonts
 FONTS_DIR:STRING=assets/fonts/

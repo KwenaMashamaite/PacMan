@@ -25,10 +25,11 @@
 #ifndef PACMAN_GHOSTSTATE_H
 #define PACMAN_GHOSTSTATE_H
 
-#include "src/models/actors/states/IActorState.h"
-#include "src/models/actors/states/ActorStateFSM.h"
-#include "src/models/actors/controllers/GhostGridMover.h"
+#include "src/ai/IActorState.h"
+#include "src/ai/ActorStateFSM.h"
+#include "src/movement/GhostGridMover.h"
 #include <IME/core/time/Timer.h>
+#include <IME/core/physics/grid/GridMover.h>
 
 namespace pm {
     class Ghost;
@@ -46,24 +47,10 @@ namespace pm {
          * @param fsm The ghost's finite state machine
          * @param ghost The ghost the ghost for the state
          * @param gridMover The ghosts grid mover
-         */
-        explicit GhostState(ActorStateFSM* fsm, Ghost* ghost = nullptr, GhostGridMover* gridMover = nullptr);
-
-        /**
-         * @brief Set the ghost for this state
-         * @param ghost The ghost the ghost for the state
          *
          * @warning @a ghost must not be a nullptr
          */
-        void setTarget(Ghost* ghost);
-
-        /**
-         * @brief Set the ghosts grid mover
-         * @param gridMover The ghosts grid mover
-         *
-         * @warning @a gridMover must not be a nullptr
-         */
-        void setGridMover(GhostGridMover* gridMover);
+        explicit GhostState(ActorStateFSM* fsm, Ghost* ghost);
 
         /**
          * @brief Update the state
@@ -96,7 +83,6 @@ namespace pm {
     protected:
         ActorStateFSM* fsm_;         //!< Ghost state controller
         Ghost* ghost_;               //!< Ghost whose behavior is to be defined by the state
-        GhostGridMover* ghostMover_; //!< Ghost movement controller
     };
 }
 

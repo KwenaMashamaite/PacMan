@@ -41,7 +41,6 @@ namespace pm {
          * @brief Constructor
          * @param fsm The ghosts Finite State Machine
          * @param target The ghost whose behaviour is to be defined by this state
-         * @param gridMover The ghost's grid mover
          * @param nextState The state the ghost must transition to after it
          *                  regenerates
          *
@@ -49,8 +48,7 @@ namespace pm {
          * to it expires. In this case it will be automatically adjusted to the
          * appropriate state
          */
-        EatenState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover,
-            Ghost::State nextState);
+        EatenState(ActorStateFSM* fsm, Ghost* target, Ghost::State nextState);
 
         /**
          * @brief Initialize the state
@@ -77,8 +75,7 @@ namespace pm {
 
     private:
         int destFoundHandler_;   //!< Handler id for a target destination event
-        int adjMoveEndHandler_;  //!< Handler id for targets adjacent move event
-        Ghost::State nextState_; //!< The state to transition to after reaching regeneration spot
+        Ghost::State nextState_; //!< The state to transition to after reaching the regeneration spot
     };
 }
 

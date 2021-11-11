@@ -43,6 +43,10 @@ namespace pm {
         static inline const auto INKY_SPAWN_TILE = ime::Index{16, 14};           //!< Inky's spawn position when a level starts or restarts
         static inline const auto CLYDE_SPAWN_TILE = ime::Index{16, 18};          //!< Clyde's spawn position when a level starts or restarts
         static inline const auto EATEN_GHOST_RESPAWN_TILE = ime::Index{17, 16};  //!< The tile a ghost targets after it is eaten (Once it reaches this tile, it gets revived)
+        static inline const auto PINKY_SCATTER_TARGET_TILE = ime::Index{0, 2};   //!< The tile the pink ghost targets when in scatter state
+        static inline const auto BLINKY_SCATTER_TARGET_TILE = ime::Index{0, 30}; //!< The tile the red ghost targets when in scatter state
+        static inline const auto INKY_SCATTER_TARGET_TILE = ime::Index{34, 30};  //!< The tile blue ghost targets when in scatter state
+        static inline const auto CLYDE_SCATTER_TARGET_TILE = ime::Index{34, 2};  //!< The tile the orange ghost targets when in scatter state
 
         // 3. Player
         static constexpr auto PLAYER_LiVES = 3;      // The initial number of player lives

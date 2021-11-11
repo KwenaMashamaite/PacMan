@@ -33,16 +33,18 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     Ghost::Ghost(ime::Scene& scene, Colour colour) :
         ime::GameObject(scene),
-        direction_{ime::Up}
+        direction_{ime::Up},
+        isLockedInHouse_{false}
     {
         setCollisionGroup("ghosts");
 
         if (colour == Colour::Red) {
             direction_ = ime::Left;
             setTag("blinky");
-        } else if (colour == Colour::Pink)
+        } else if (colour == Colour::Pink) {
+            direction_ = ime::Down;
             setTag("pinky");
-        else if (colour == Colour::Cyan)
+        } else if (colour == Colour::Cyan)
             setTag("inky");
         else if (colour == Colour::Orange)
             setTag("clyde");
@@ -105,6 +107,16 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     bool Ghost::isFlashAnimationPlaying() const {
         return getSprite().getAnimator().getActiveAnimation()->getName() == "flash";
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void Ghost::lockInGhostHouse(bool lock) {
+        isLockedInHouse_ = lock;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    bool Ghost::isLockedInGhostHouse() const {
+        return isLockedInHouse_;
     }
 
     ///////////////////////////////////////////////////////////////

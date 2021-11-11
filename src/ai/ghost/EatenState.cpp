@@ -32,41 +32,30 @@
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    EatenState::EatenState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover, Ghost::State nextState) :
-        GhostState(fsm),
+    EatenState::EatenState(ActorStateFSM* fsm, Ghost* target, Ghost::State nextState) :
+        GhostState(fsm, target),
         destFoundHandler_{-1},
-        adjMoveEndHandler_{-1},
         nextState_{nextState}
     {
-        setTarget(target);
-        setGridMover(gridMover);
-
-        // This prevents ghost from being stuck in tunnel
-        ghostMover_->setReverseDirEnable(true);
-
         assert((nextState == Ghost::State::Scatter || nextState == Ghost::State::Chase) && "Invalid regeneration transition state");
     }
 
     ///////////////////////////////////////////////////////////////
     void EatenState::onEntry() {
-        assert(ghost_ && "Cannot enter Eaten state without a ghost");
-        assert(ghostMover_ && "Cannot enter Eaten state without a ghost grid mover");
+        assert(ghost_->getGridMover() && "Cannot enter scatter state without a ghost grid mover");
+        auto* gridMover = dynamic_cast<GhostGridMover*>(ghost_->getGridMover());
+        assert(gridMover && "Invalid ghost grid mover");
 
         ghost_->setState(static_cast<int>(Ghost::State::Eaten));
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()) + "Eaten");
 
-        if (ghostMover_->isTargetMoving()) {
-            adjMoveEndHandler_ = ghostMover_->onAdjacentMoveEnd([this] (ime::Index) {
-                ghostMover_->unsubscribe(adjMoveEndHandler_);
-                ghostMover_->setDestination(Constants::EATEN_GHOST_RESPAWN_TILE);
-            });
-        } else
-            ghostMover_->setDestination(Constants::EATEN_GHOST_RESPAWN_TILE);
+        gridMover->setMoveStrategy(GhostGridMover::Strategy::Target);
+        gridMover->setTargetTile(Constants::EATEN_GHOST_RESPAWN_TILE);
+        gridMover->startMovement();
 
-        ghostMover_->startMovement();
-
-        destFoundHandler_ = ghostMover_->onDestinationReached([this](ime::Index) {
-            fsm_->pop();
+        destFoundHandler_ = gridMover->onAdjacentMoveEnd([this](ime::Index index) {
+            if (index == Constants::EATEN_GHOST_RESPAWN_TILE)
+                fsm_->pop();
         });
     }
 
@@ -80,13 +69,12 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void EatenState::onExit() {
-        ghostMover_->setReverseDirEnable(false);
-        ghostMover_->unsubscribe(destFoundHandler_);
+        ghost_->getGridMover()->unsubscribe(destFoundHandler_);
 
         if (nextState_ == Ghost::State::Chase)
-            fsm_->push(std::make_unique<ChaseState>(fsm_, ghost_, ghostMover_));
+            fsm_->push(std::make_unique<ChaseState>(fsm_, ghost_));
         else
-            fsm_->push(std::make_unique<ScatterState>(fsm_, ghost_, ghostMover_));
+            fsm_->push(std::make_unique<ScatterState>(fsm_, ghost_));
     }
 
 } // namespace pm

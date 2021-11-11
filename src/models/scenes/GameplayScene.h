@@ -216,6 +216,12 @@ namespace pm {
         void startGhostChaseMode();
 
         /**
+         * @brief Attempt to lock a ghost in the ghost house
+         * @param ghost The ghost to be locked inside
+         */
+        void lockGhostInHouse(ime::GameObject* ghost);
+
+        /**
          * @brief Start the timer that controls when a ghost leaves the ghost
          *        house
          *

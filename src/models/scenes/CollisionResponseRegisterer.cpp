@@ -144,7 +144,7 @@ namespace pm {
         } else if ((pacmanState == PacMan::State::Idle || pacmanState == PacMan::State::Moving) &&
                    (ghostState != Ghost::State::Eaten))
         {
-            static_cast<PacMan*>(pacman)->setState(PacMan::State::Dying);
+            /*static_cast<PacMan*>(pacman)->setState(PacMan::State::Dying);
 
             game_.onPrePacmanDeathAnim();
 
@@ -162,7 +162,7 @@ namespace pm {
                 });
 
                 game_.audio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
-            }, true);
+            }, true);*/
         }
     }
 

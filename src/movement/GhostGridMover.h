@@ -25,6 +25,7 @@
 #ifndef PACMAN_GHOSTGRIDMOVER_H
 #define PACMAN_GHOSTGRIDMOVER_H
 
+#include "src/models/actors/Ghost.h"
 #include <IME/core/physics/grid/GridMover.h>
 #include <vector>
 
@@ -91,9 +92,10 @@ namespace pm {
         ime::Direction getNextDirection();
 
     private:
+        Ghost* ghost_;                                   //!< The target ghost
         bool movementStarted_;                           //!< Flags if movement has been initiated or not
         Strategy moveStrategy_;                          //!< The current movement strategy of the ghost
-        const ime::Tile* targetTile_;                    //!< The target tile to move to when move strategy is target
+        ime::Index targetTile_;                          //!< The target tile to move to when move strategy is target
         std::vector<ime::Direction> possibleDirections_; //!< Stores directions to be attempted by randomly moving ghost
     };
 }

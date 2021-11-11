@@ -101,21 +101,7 @@ namespace pm {
                 ObjectReferenceKeeper::registerActor(actor);
                 actor->getUserData().addProperty({"is_in_tunnel", false});
                 actor->getCollisionExcludeList().add("tunnelExitSensor");
-
-                // Flag ghost as inside ghost house - Can leave at any time
-                actor->getUserData().addProperty({"is_in_ghost_house", !(actor->getTag() == "blinky")});
-
-                // Lock ghosts in ghost house - Can't leave until it's locked sentence expires
-                if (actor->getTag() == "blinky" ||
-                    (actor->getTag() == "pinky" && currentLevel_ > 1) ||
-                    (actor->getTag() == "inky" && currentLevel_ > 2) ||
-                    (actor->getTag() == "clyde" && currentLevel_ > 3))
-                {
-                    actor->getUserData().addProperty({"is_locked_in_ghost_house", false});
-                } else {
-                    actor->getUserData().addProperty({"is_locked_in_ghost_house", true});
-                    numGhostsInHouse_ += 1;
-                }
+                lockGhostInHouse(actor);
             }
         });
     }
@@ -209,7 +195,7 @@ namespace pm {
         ime::GameObject* pacman = gameObjects().findByTag("pacman");
         collisionResponseRegisterer_->registerCollisionWithPellets(pacman);
         collisionResponseRegisterer_->registerCollisionWithFruit(pacman);
-        //collisionResponseRegisterer_->registerCollisionWithGhost(pacman);
+        collisionResponseRegisterer_->registerCollisionWithGhost(pacman);
         collisionResponseRegisterer_->registerCollisionWithTeleportationSensor(pacman);
 
         /*-------------- Ghosts collision handlers -----------------------*/
@@ -305,18 +291,7 @@ namespace pm {
 
             // Reset ghost house properties
             numGhostsInHouse_ = 0;
-            ghost->getUserData().setValue("is_in_ghost_house", !(ghost->getTag() == "blinky"));
-
-            if (ghost->getTag() == "blinky" ||
-                (ghost->getTag() == "pinky" && currentLevel_ > 1) ||
-                (ghost->getTag() == "inky" && currentLevel_ > 2) ||
-                (ghost->getTag() == "clyde" && currentLevel_ > 3))
-            {
-                ghost->getUserData().addProperty({"is_locked_in_ghost_house", false});
-            } else {
-                ghost->getUserData().addProperty({"is_locked_in_ghost_house", true});
-                numGhostsInHouse_ += 1;
-            }
+            lockGhostInHouse(ghost);
         });
 
         createGridMovers();
@@ -574,6 +549,17 @@ namespace pm {
         scatterModeTimer_.setInterval(duration);
         scatterModeTimer_.start();
         emit(GameEvent::ScatterModeBegin);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::lockGhostInHouse(ime::GameObject* ghost) {
+        if ((ghost->getTag() == "pinky" && currentLevel_ == 1) ||
+            (ghost->getTag() == "inky" && currentLevel_ <= 2) ||
+            (ghost->getTag() == "clyde" && currentLevel_ <= 3))
+        {
+            //static_cast<Ghost*>(ghost)->lockInGhostHouse(true);
+            //numGhostsInHouse_ += 1;
+        }
     }
 
     ///////////////////////////////////////////////////////////////

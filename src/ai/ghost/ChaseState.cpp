@@ -26,6 +26,7 @@
 #include "ScatterState.h"
 #include "FrightenedState.h"
 #include "src/common/ObjectReferenceKeeper.h"
+#include "src/common/Constants.h"
 #include "src/utils/Utils.h"
 #include <cassert>
 
@@ -59,11 +60,19 @@ namespace pm {
         ime::Vector2i pacmanDir = pacman->getGridMover()->getDirection();
 
         if (ghost_->getTag() == "blinky")
-            dynamic_cast<GhostGridMover*>(ghost_->getGridMover())->setTargetTile(pacmanTile);
-        else if (ghost_->getTag() == "pinky")
-            dynamic_cast<GhostGridMover*>(ghost_->getGridMover())->setTargetTile(ime::Index{pacmanTile.row + 4 * pacmanDir.y, pacmanTile.colm + 4 * pacmanDir.x});
-        else if (ghost_->getTag() == "inky") {
-            ime::Index blinkyTile = ObjectReferenceKeeper::getActor("blinky")->getGridMover()->getCurrentTileIndex();
+            static_cast<GhostGridMover*>(ghost_->getGridMover())->setTargetTile(pacmanTile);
+        else if (ghost_->getTag() == "pinky") {
+            auto targetTile = ime::Index{pacmanTile.row + 4 * pacmanDir.y, pacmanTile.colm + 4 * pacmanDir.x};
+
+            // Mimic the overflow error
+            if (pacmanDir == ime::Up)
+                targetTile.colm -= 4;
+
+            static_cast<GhostGridMover*>(ghost_->getGridMover())->setTargetTile(targetTile);
+        } else if (ghost_->getTag() == "inky") {
+            ime::GameObject* blinky = ObjectReferenceKeeper::getActor("blinky");
+            assert(blinky && "Inky cannot enter chase state without blinky in the maze");
+            ime::Index blinkyTile = blinky->getGridMover()->getCurrentTileIndex();
 
             // Choose a position two tiles in front of pacman
             ime::Index pacmanTileOffset = ime::Index{pacmanTile.row + 2 * pacmanDir.y, pacmanTile.colm + 2 * pacmanDir.x};
@@ -79,14 +88,12 @@ namespace pm {
         } else if (ghost_->getTag() == "clyde") {
             const static int CLYDE_SHYNESS_DISTANCE = 8; // Distance in tiles not pixels
             ime::Index clydeTile = ghost_->getGridMover()->getCurrentTileIndex();
-            if ((std::abs(pacmanTile.row - clydeTile.row) > CLYDE_SHYNESS_DISTANCE) ||
-                (std::abs(pacmanTile.colm - clydeTile.colm) > CLYDE_SHYNESS_DISTANCE))
-            {
-                auto* gridMover = dynamic_cast<GhostGridMover*>(ghost_->getGridMover());
-                gridMover->setMoveStrategy(GhostGridMover::Strategy::Target);
+            auto* gridMover = static_cast<GhostGridMover*>(ghost_->getGridMover());
+
+            if (std::sqrt(std::pow(pacmanTile.row - clydeTile.row, 2.0) + std::pow(pacmanTile.colm - clydeTile.colm, 2.0)) > CLYDE_SHYNESS_DISTANCE)
                 gridMover->setTargetTile(pacmanTile);
-            } else
-                dynamic_cast<GhostGridMover*>(ghost_->getGridMover())->setMoveStrategy(GhostGridMover::Strategy::Random);
+            else
+                gridMover->setTargetTile(Constants::CLYDE_SCATTER_TARGET_TILE);
         } else {
             assert("Failed to create ghost chase strategy: Invalid tag");
         }
@@ -94,7 +101,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
-        if (event == GameEvent::FrightenedModeBegin /*&& !ghost_->getUserData().getValue<bool>("is_in_ghost_house")*/)
+        if (event == GameEvent::FrightenedModeBegin)
             fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, Ghost::State::Chase));
         else if (event == GameEvent::ScatterModeBegin)
             fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_));

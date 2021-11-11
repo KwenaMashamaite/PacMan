@@ -24,20 +24,32 @@
 
 #include "GhostGridMover.h"
 #include "src/models/actors/Ghost.h"
+#include "src/common/Constants.h"
 #include <cassert>
 #include <algorithm>
 #include <random>
 #include <limits>
+#include <cmath>
 
 namespace pm {
+    ///////////////////////////////////////////////////////////////
+    bool isSpecialTile(const ime::Index& index) {
+        const static auto specialTiles = {ime::Index{13, 14}, ime::Index{13, 18}, ime::Index{25, 14}, ime::Index{25, 18}};
+
+        return std::any_of(specialTiles.begin(), specialTiles.end(), [&index](ime::Index specialTileIndex){
+            return index == specialTileIndex;
+        });
+    }
+
     ///////////////////////////////////////////////////////////////
     GhostGridMover::GhostGridMover(ime::TileMap& tileMap, Ghost* ghost) :
         ime::GridMover(tileMap, ghost),
         movementStarted_{false},
         moveStrategy_{Strategy::Random},
-        targetTile_{nullptr}
+        targetTile_{0, 0}
     {
-        assert(ghost && "spm::GhostGridMover target must not be a nullptr");
+        ghost_ = dynamic_cast<Ghost*>(ghost);
+        assert(ghost_ && "spm::GhostGridMover target must not be a nullptr");
 
         onPropertyChange("direction", [ghost](const ime::Property& property) {
             ghost->setDirection(property.getValue<ime::Direction>());
@@ -49,7 +61,17 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GhostGridMover::move() {
-        ime::Direction reverseGhostDir = getDirection() * -1;
+        // Regardless of state, when locked in ghost house we override the movement strategy to up and down movement
+        if (ghost_->isLockedInGhostHouse()) {
+            if (getCurrentTileIndex().row == 15 || getCurrentTileIndex().row == 17)
+                requestDirectionChange(getDirection() * -1);
+            else
+                requestDirectionChange(getDirection());
+
+            return;
+        }
+
+        ime::Direction reverseGhostDir = ghost_->getDirection() * -1;
         initPossibleDirections(reverseGhostDir);
 
         if (possibleDirections_.empty())
@@ -69,14 +91,19 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GhostGridMover::setTargetTile(ime::Index index) {
-        assert(index.row >= 0 && index.row < getGrid().getSizeInTiles().y && "Row out of grid bounds");
-        assert(index.colm >= 0 && index.colm < getGrid().getSizeInTiles().x && "Column out of grid bounds");
-        targetTile_ = &getGrid().getTile(index);
+        targetTile_ = index;
     }
 
     ///////////////////////////////////////////////////////////////
     void GhostGridMover::startMovement() {
         if (!movementStarted_) {
+            if (ghost_->isLockedInGhostHouse()) {
+                if (ghost_->getDirection() != ime::Up && ghost_->getDirection() != ime::Down)
+                    requestDirectionChange(ime::Up);
+                else
+                    requestDirectionChange(ghost_->getDirection());
+            }
+
             movementStarted_ = true;
             move();
         }
@@ -84,9 +111,17 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GhostGridMover::initPossibleDirections(const ime::Direction& reverseGhostDir) {
-        for (const auto& dir : {ime::Up, ime::Left, ime::Down, ime::Right}) {
-            if (dir == reverseGhostDir || isBlockedInDirection(dir).first)
+        static const auto allowedDirections = {ime::Up, ime::Left, ime::Down, ime::Right};
+        bool preventGoingUp = isSpecialTile(getCurrentTileIndex()) && getTarget()->getState() != static_cast<int>(Ghost::State::Frightened);
+
+        for (const auto& dir : allowedDirections) {
+            if (dir == reverseGhostDir ||
+                isBlockedInDirection(dir).first ||
+                (getCurrentTileIndex() == Constants::BLINKY_SPAWN_TILE && dir == ime::Down && getTarget()->getState() != static_cast<int>(Ghost::State::Eaten)) ||
+                preventGoingUp && dir == ime::Up)
+            {
                 continue;
+            }
 
             possibleDirections_.emplace_back(dir);
         }
@@ -99,14 +134,14 @@ namespace pm {
             std::shuffle(possibleDirections_.begin(), possibleDirections_.end(), randomEngine);
             return possibleDirections_.front();
         } else if (moveStrategy_ == Strategy::Target) {
-            std::vector<float> weights;
+            std::vector<double> weights;
 
             for (const auto& dir : possibleDirections_) {
-                weights.push_back(getGrid().getTile(ime::Index{getCurrentTileIndex().row + dir.y,
-                    getCurrentTileIndex().colm + dir.x}).getWorldCentre().distanceTo(targetTile_->getWorldCentre()));
+                ime::Index adjTileIndex = ime::Index{getCurrentTileIndex().row + dir.y, getCurrentTileIndex().colm + dir.x};
+                weights.push_back(std::sqrt(std::pow( targetTile_.row - adjTileIndex.row, 2.0) + std::pow( targetTile_.colm - adjTileIndex.colm, 2.0)));
             }
 
-            float minDistance = std::numeric_limits<float>::max();
+            auto minDistance = std::numeric_limits<double>::max();
             int index = -1;
             for (int i = 0; i < weights.size(); i++) {
                 if (weights[i] < minDistance) {

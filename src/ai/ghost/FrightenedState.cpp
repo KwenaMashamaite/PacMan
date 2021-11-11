@@ -26,7 +26,6 @@
 #include "EatenState.h"
 #include "ScatterState.h"
 #include "ChaseState.h"
-#include "src/models/actors/Ghost.h"
 #include "src/utils/Utils.h"
 #include <cassert>
 
@@ -59,8 +58,8 @@ namespace pm {
             else {
                 assert(false && "Ghost can only transition to scatter or chase state after it was frightened");
             }
-        } /*else if (event == GameEvent::GhostEaten)
-            fsm_->pop(std::make_unique<EatenState>(fsm_, ghost_, nextState_));*/
+        } else if (event == GameEvent::GhostEaten)
+            fsm_->pop(std::make_unique<EatenState>(fsm_, ghost_, nextState_));
     }
 
 } // namespace pm

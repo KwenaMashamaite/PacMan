@@ -25,8 +25,8 @@
 #include "ScatterState.h"
 #include "ChaseState.h"
 #include "FrightenedState.h"
-#include "src/models/actors/Ghost.h"
 #include "src/utils/Utils.h"
+#include "src/common/Constants.h"
 #include <cassert>
 
 namespace pm {
@@ -37,22 +37,20 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void ScatterState::onEntry() {
-        assert(ghost_ && "Cannot enter scatter state without a ghost");
         assert(ghost_->getGridMover() && "Cannot enter scatter state without a ghost grid mover");
         auto* gridMover = dynamic_cast<GhostGridMover*>(ghost_->getGridMover());
         assert(gridMover && "Invalid ghost grid mover");
 
         gridMover->setMoveStrategy(GhostGridMover::Strategy::Target);
-        auto& grid = gridMover->getGrid();
 
         if (ghost_->getTag() == "blinky")
-            gridMover->setTargetTile(ime::Index{0, static_cast<int>(grid.getSizeInTiles().x - 1)});
+            gridMover->setTargetTile(Constants::BLINKY_SCATTER_TARGET_TILE);
         else if (ghost_->getTag() == "pinky")
-            gridMover->setTargetTile(ime::Index{0, 0});
+            gridMover->setTargetTile(Constants::PINKY_SCATTER_TARGET_TILE);
         else if (ghost_->getTag() == "inky")
-            gridMover->setTargetTile(ime::Index{static_cast<int>(grid.getSizeInTiles().y - 1), static_cast<int>(grid.getSizeInTiles().x - 1)});
+            gridMover->setTargetTile(Constants::INKY_SCATTER_TARGET_TILE);
         else if (ghost_->getTag() == "clyde")
-            gridMover->setTargetTile(ime::Index{static_cast<int>(grid.getSizeInTiles().y - 1), 0});
+            gridMover->setTargetTile(Constants::CLYDE_SCATTER_TARGET_TILE);
         else {
             assert(false && "Failed to initialize ScatterState, unknown ghost tag");
         }
@@ -62,8 +60,8 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void ScatterState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
-        if (event == GameEvent::FrightenedModeBegin /*&& !ghost_->getUserData().getValue<bool>("is_in_ghost_house")*/)
-                fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, Ghost::State::Scatter));
+        if (event == GameEvent::FrightenedModeBegin)
+            fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, Ghost::State::Scatter));
         else if (event == GameEvent::ChaseModeBegin)
             fsm_->pop(std::make_unique<ChaseState>(fsm_, ghost_));
     }

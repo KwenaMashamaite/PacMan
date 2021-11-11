@@ -115,6 +115,23 @@ namespace pm {
         bool isFlashAnimationPlaying() const;
 
         /**
+         * @brief Lock or unlock the ghost from the ghost house
+         * @param lock True to lock the ghost or false to unlock the ghost
+         *
+         * By default, the ghost is not locked in the ghost house
+         *
+         * @warning The ghost must physically be in the ghost house before locking
+         * it inside, otherwise undefined behavior
+         */
+        void lockInGhostHouse(bool lock);
+
+        /**
+         * @brief Check if the ghost is locked in the ghost house or not
+         * @return True if locked in the ghost house, otherwise false
+         */
+        bool isLockedInGhostHouse() const;
+
+        /**
          * @brief Update the ghost
          * @param deltaTime Time passed since last update
          */
@@ -141,6 +158,7 @@ namespace pm {
     private:
         ActorStateFSM fsm_;          //!< Ghosts finite state machine
         ime::Vector2i direction_;    //!< The direction of the ghost
+        bool isLockedInHouse_;       //!< A flag indicating whether or not the ghost is locked in the ghost pen
     };
 }
 

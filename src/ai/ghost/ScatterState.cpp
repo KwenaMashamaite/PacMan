@@ -41,6 +41,9 @@ namespace pm {
         auto* gridMover = dynamic_cast<GhostGridMover*>(ghost_->getGridMover());
         assert(gridMover && "Invalid ghost grid mover");
 
+        ghost_->setState(static_cast<int>(Ghost::State::Scatter));
+        ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()));
+
         gridMover->setMoveStrategy(GhostGridMover::Strategy::Target);
 
         if (ghost_->getTag() == "blinky")

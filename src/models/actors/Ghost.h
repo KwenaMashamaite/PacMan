@@ -55,8 +55,7 @@ namespace pm {
             Scatter,      //!< The ghost cycles a grid corner (cannot be eaten by Pacman)
             Chase,        //!< The ghost chases pacman (cannot be eaten by PacMan)
             Frightened,   //!< The ghost runs away from pacman (can be eaten by PacMan)
-            Eaten,        //!< The ghost retreats back to the ghost house (cannot be eaten by PacMan nor can it kill Pacman)
-            Imprisoned,   //!< The ghost is locked inside the ghost house (cannot be eaten by PacMan)
+            Eaten         //!< The ghost retreats back to the ghost house (cannot be eaten by PacMan nor can it kill Pacman)
         };
 
         /**

@@ -33,10 +33,8 @@
 #include "src/models/scenes/CollisionResponseRegisterer.h"
 #include "src/common/ObjectReferenceKeeper.h"
 #include <IME/core/engine/Engine.h>
-#include <IME/core/physics/grid/RandomGridMover.h>
-#include <IME/core/physics/grid/CyclicGridMover.h>
 #include <IME/ui/widgets/Label.h>
-#include <src/utils/Utils.h>
+#include <IME/utility/Utils.h>
 #include <cassert>
 #include <iostream>
 
@@ -57,6 +55,7 @@ namespace pm {
         currentLevel_ = cache().getValue<int>("CURRENT_LEVEL");
         audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
 
+        ObjectReferenceKeeper::clear();
         createGrid();
         initGui();
         createActors();
@@ -108,23 +107,20 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::createGridMovers() {
-        auto pacmanGridMover = std::make_unique<PacManGridMover>(tilemap(), gameObjects().findByTag<PacMan>("pacman"));
+        // Pacman
+        auto* pacman = gameObjects().findByTag<PacMan>("pacman");
+        auto pacmanGridMover = std::make_unique<PacManGridMover>(tilemap(), pacman );
         pacmanGridMover->init();
-        updatePacmanSpeed(pacmanGridMover->getTarget());
-
-        pacmanGridMover->onAdjacentMoveBegin([this](ime::Index index) {
-            emit(GameEvent::PacManMoved);
-        });
+        updatePacmanSpeed(pacman);
 
         gridMovers().addObject(std::move(pacmanGridMover));
 
-        // 2. Create movement controllers for all ghost
+        // Ghosts
         gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghostBase) {
             auto* ghost = static_cast<Ghost*>(ghostBase);
             auto ghostMover = std::make_unique<GhostGridMover>(tilemap(), ghost);
             updateGhostSpeed(ghostBase);
             ghost->initFSM();
-            ghostMover->setTag(ghost->getTag() + "GridMover");
 
             int stateChangeId = ghost->onPropertyChange("state", [this, ghost](const ime::Property&) {
                 updateGhostSpeed(ghost);
@@ -225,7 +221,7 @@ namespace pm {
             auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
             soundEffect->setLoop(true);
 
-            //startGhostHouseTimer();
+            startGhostHouseTimer();
             startGhostScatterMode();
             emit(GameEvent::LevelStarted);
         });
@@ -507,7 +503,10 @@ namespace pm {
                 else if (chaseModeTimer_.isPaused())
                     startGhostChaseMode();
                 else {
-                    assert(false && "Cannot determine the state the ghost was in before it was frightened");
+                    if (ime::utility::generateRandomNum(1, 100) >= 50)
+                        startGhostChaseMode();
+                    else
+                        startGhostScatterMode();
                 }
             });
 
@@ -557,8 +556,8 @@ namespace pm {
             (ghost->getTag() == "inky" && currentLevel_ <= 2) ||
             (ghost->getTag() == "clyde" && currentLevel_ <= 3))
         {
-            //static_cast<Ghost*>(ghost)->lockInGhostHouse(true);
-            //numGhostsInHouse_ += 1;
+            static_cast<Ghost*>(ghost)->lockInGhostHouse(true);
+            numGhostsInHouse_ += 1;
         }
     }
 
@@ -611,23 +610,14 @@ namespace pm {
             return;
 
         auto freeGhost = [this] {
-            ime::PropertyContainer args;
-
-            if (chaseModeTimer_.isRunning() || chaseModeTimer_.isPaused())
-                args.addProperty({"nextState", Ghost::State::Chase});
-            else if (scatterModeTimer_.isRunning() || scatterModeTimer_.isPaused())
-                args.addProperty({"nextState", Ghost::State::Scatter});
-            else
-                assert(false && "Failed to determine next state for released ghost");
-
             if (numGhostsInHouse_ == 3) { // Release pinky
-                static_cast<Ghost*>(gameObjects().getGroup("Ghost").findByTag("pinky"))->handleEvent(GameEvent::GhostFreed, args);
+                static_cast<Ghost*>(gameObjects().getGroup("Ghost").findByTag("pinky"))->lockInGhostHouse(false);
                 ghostHouseTimer_.setInterval(ime::seconds(Constants::INKY_HOUSE_ARREST_DURATION));
             } else if (numGhostsInHouse_ == 2) { // Release inky
-                static_cast<Ghost*>(gameObjects().getGroup("Ghost").findByTag("inky"))->handleEvent(GameEvent::GhostFreed, args);
+                static_cast<Ghost*>(gameObjects().getGroup("Ghost").findByTag("inky"))->lockInGhostHouse(false);
                 ghostHouseTimer_.setInterval(ime::seconds(Constants::CLYDE_HOUSE_ARREST_DURATION));
             } else // Release clyde
-                static_cast<Ghost*>(gameObjects().getGroup("Ghost").findByTag("clyde"))->handleEvent(GameEvent::GhostFreed, args);
+                static_cast<Ghost*>(gameObjects().getGroup("Ghost").findByTag("clyde"))->lockInGhostHouse(false);
 
             numGhostsInHouse_ -= 1;
         };
@@ -665,11 +655,14 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onExit() {
+        ObjectReferenceKeeper::clear();
         engine().onFrameEnd(nullptr);
         engine().getWindow().onClose(nullptr);
     }
 
     ///////////////////////////////////////////////////////////////
-    GameplayScene::~GameplayScene() = default;
+    GameplayScene::~GameplayScene() {
+        ObjectReferenceKeeper::clear();
+    }
 
 } // namespace pm

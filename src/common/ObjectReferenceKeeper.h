@@ -52,6 +52,11 @@ namespace pm {
          */
         static ime::GameObject* getActor(const std::string& tag);
 
+        /**
+         * @brief Clear the records
+         */
+        static void clear();
+
     private:
         inline static std::unordered_map<std::string, ime::GameObject*> gameObjects_{};
     };

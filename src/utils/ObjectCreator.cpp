@@ -44,9 +44,6 @@ namespace pm {
                 } else if (tile.getId() == 'H') {
                     actor->setTag("tunnelEntrySensor");
                     actor->setCollisionGroup("tunnelEntrySensor");
-                } else if (tile.getId() == '-') {
-                    actor->setTag("ghostHouseGateSensor");
-                    actor->setCollisionGroup("ghostHouseGateSensor");
                 } else { // Tunnel exit sensor + Dot
                     actor->setTag("tunnelExitSensor");
                     actor->setCollisionGroup("tunnelExitSensor");
@@ -72,7 +69,6 @@ namespace pm {
                     return;
             }
 
-            actor->getUserData().addProperty({"scene", std::ref(grid.getScene())});
             grid.addActor(std::move(actor), tile.getIndex());
         });
     }

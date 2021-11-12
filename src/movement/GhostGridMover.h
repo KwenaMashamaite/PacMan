@@ -86,10 +86,41 @@ namespace pm {
         void initPossibleDirections(const ime::Direction& reverseGhostDir);
 
         /**
-         * @brief Get the direction to move in
-         * @return The next direction based on the movement strategy
+         * @brief Get a random direction
+         * @return A random direction
+         *
+         * @note This function must be called after forbidden directions have
+         * been filtered out from the possible directions, otherwise it may
+         * return an invalid direction
          */
-        ime::Direction getNextDirection();
+        ime::Direction getRandomDirection();
+
+        /**
+         * @brief Get a direction with minimal distance to the target tile
+         * @param targetTile The target tile
+         * @return The direction to go in
+         *
+         * @note This function must be called after forbidden directions have
+         * been filtered out from the possible directions, otherwise it may
+         * return an invalid direction
+         */
+        ime::Direction getMinDistanceDirection(const ime::Index& targetTile) const;
+
+        /**
+         * @brief Check if the ghost is allowed to be in the ghost house
+         * @return True if is allowed otherwise false
+         *
+         * If this function returns false, the ghost will be forcefully be moved
+         * out of the ghost house regardless of its state
+         */
+        bool isAllowedToBeInGhostHouse();
+
+        /**
+         * @brief Handle the case where the ghost is not allowed to leave the ghost house
+         * @return True if the case was handled or false is the ghost is not
+         *         locked in the ghost house
+         */
+        bool handleLockedGhost();
 
     private:
         Ghost* ghost_;                                   //!< The target ghost

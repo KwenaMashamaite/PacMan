@@ -34,11 +34,17 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     bool isSpecialTile(const ime::Index& index) {
+        // A ghost cannot move in the up direction when on a special tile
         const static auto specialTiles = {ime::Index{13, 14}, ime::Index{13, 18}, ime::Index{25, 14}, ime::Index{25, 18}};
 
         return std::any_of(specialTiles.begin(), specialTiles.end(), [&index](ime::Index specialTileIndex){
             return index == specialTileIndex;
         });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    bool isInGhostHouse(const ime::Index& curIndex) {
+        return curIndex.row >= 15 && curIndex.row <= 17 && curIndex.colm >= 13 && curIndex.colm <= 19;
     }
 
     ///////////////////////////////////////////////////////////////
@@ -61,27 +67,30 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GhostGridMover::move() {
-        // Regardless of state, when locked in ghost house we override the movement strategy to up and down movement
-        if (ghost_->isLockedInGhostHouse()) {
-            if (getCurrentTileIndex().row == 15 || getCurrentTileIndex().row == 17)
-                requestDirectionChange(getDirection() * -1);
-            else
-                requestDirectionChange(getDirection());
-
-            return;
-        }
-
         ime::Direction reverseGhostDir = ghost_->getDirection() * -1;
         initPossibleDirections(reverseGhostDir);
 
-        if (possibleDirections_.empty())
-            requestDirectionChange(reverseGhostDir);
-        else if (possibleDirections_.size() == 1)
-            requestDirectionChange(possibleDirections_.front());
-        else
-            requestDirectionChange(getNextDirection());
+        bool isInGhostPen = isInGhostHouse(getCurrentTileIndex());
+        bool allowedInGhostHouse = isAllowedToBeInGhostHouse();
 
-        possibleDirections_.clear();
+        if (isInGhostPen && allowedInGhostHouse && handleLockedGhost())
+            return;
+        else {
+            if (possibleDirections_.empty()) // Ghost is in a dead end, only option is backwards (special case)
+                requestDirectionChange(reverseGhostDir);
+            else if (possibleDirections_.size() == 1) // Going forward is the only option
+                requestDirectionChange(possibleDirections_.front());
+            else { // Multiple directions to move in
+                if (isInGhostPen && !allowedInGhostHouse) // Kick it out to the front door
+                    requestDirectionChange(getMinDistanceDirection(Constants::BLINKY_SPAWN_TILE));
+                else if (moveStrategy_ == Strategy::Random)
+                    requestDirectionChange(getRandomDirection());
+                else
+                    requestDirectionChange(getMinDistanceDirection(targetTile_));
+            }
+
+            possibleDirections_.clear();
+        }
     }
 
     ///////////////////////////////////////////////////////////////
@@ -128,32 +137,53 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::Direction GhostGridMover::getNextDirection() {
-        if (moveStrategy_ == Strategy::Random) {
-            auto static randomEngine = std::default_random_engine{std::random_device{}()};
-            std::shuffle(possibleDirections_.begin(), possibleDirections_.end(), randomEngine);
-            return possibleDirections_.front();
-        } else if (moveStrategy_ == Strategy::Target) {
-            std::vector<double> weights;
+    ime::Direction GhostGridMover::getRandomDirection() {
+        auto static randomEngine = std::default_random_engine{std::random_device{}()};
+        std::shuffle(possibleDirections_.begin(), possibleDirections_.end(), randomEngine);
+        return possibleDirections_.front();
+    }
 
-            for (const auto& dir : possibleDirections_) {
-                ime::Index adjTileIndex = ime::Index{getCurrentTileIndex().row + dir.y, getCurrentTileIndex().colm + dir.x};
-                weights.push_back(std::sqrt(std::pow( targetTile_.row - adjTileIndex.row, 2.0) + std::pow( targetTile_.colm - adjTileIndex.colm, 2.0)));
-            }
+    ///////////////////////////////////////////////////////////////
+    ime::Direction GhostGridMover::getMinDistanceDirection(const ime::Index &targetTile) const {
+        std::vector<double> weights;
 
-            auto minDistance = std::numeric_limits<double>::max();
-            int index = -1;
-            for (int i = 0; i < weights.size(); i++) {
-                if (weights[i] < minDistance) {
-                    minDistance = weights[i];
-                    index = i;
-                }
-            }
-
-            return index == -1 ? possibleDirections_.front() : possibleDirections_[index];
+        for (const auto& dir : possibleDirections_) {
+            ime::Index adjTileIndex = ime::Index{getCurrentTileIndex().row + dir.y, getCurrentTileIndex().colm + dir.x};
+            weights.push_back(std::sqrt(std::pow( targetTile.row - adjTileIndex.row, 2.0) + std::pow( targetTile.colm - adjTileIndex.colm, 2.0)));
         }
 
-        return ime::Unknown;
+        auto minDistance = std::numeric_limits<double>::max();
+        int index = -1; // Accommodate equal distance condition
+        for (int i = 0; i < weights.size(); i++) {
+            if (weights[i] < minDistance) {
+                minDistance = weights[i];
+                index = i;
+            }
+        }
+
+        return index == -1 ? possibleDirections_.front() : possibleDirections_[index];
+    }
+
+    ///////////////////////////////////////////////////////////////
+    bool GhostGridMover::isAllowedToBeInGhostHouse() {
+        return ghost_->isLockedInGhostHouse() || ghost_->getState() == Ghost::State::Eaten;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    bool GhostGridMover::handleLockedGhost() {
+        if (ghost_->isLockedInGhostHouse()) {
+            // Regardless of state, when locked in ghost house we override the movement strategy to up and down movement
+            if (getCurrentTileIndex().row == 15 || getCurrentTileIndex().row == 17)
+                requestDirectionChange(getDirection() * -1);
+            else
+                requestDirectionChange(getDirection());
+
+            possibleDirections_.clear();
+
+            return true;
+        }
+
+        return false;
     }
 
 } // namespace pm

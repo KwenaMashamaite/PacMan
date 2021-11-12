@@ -38,4 +38,9 @@ namespace pm {
         return found != gameObjects_.end() ? found->second : nullptr;
     }
 
+    ///////////////////////////////////////////////////////////////
+    void ObjectReferenceKeeper::clear() {
+        gameObjects_.clear();
+    }
+
 } // namespace pm

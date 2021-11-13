@@ -24,7 +24,7 @@
 
 #include "Game.h"
 #include "Scoreboard/Scoreboard.h"
-#include "Scenes/GameplayScene.h"
+#include "Scenes/StartUpScene.h"
 #include "Common/Constants.h"
 
 namespace pm {
@@ -60,7 +60,7 @@ namespace pm {
         if (settings.hasPref("PLAYER_NAME"))
             engine_.getPersistentData().addProperty({"PLAYER_NAME",settings.getPref("PLAYER_NAME").getValue<std::string>()});
 
-        engine_.pushScene(std::make_unique<GameplayScene>());
+        engine_.pushScene(std::make_unique<StartUpScene>());
     }
 
     ///////////////////////////////////////////////////////////////

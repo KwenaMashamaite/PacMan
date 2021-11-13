@@ -257,14 +257,15 @@ namespace pm {
     void GameplayScene::resetActors() {
         gridMovers().removeAll();
 
-        // Reset pacmans position in the grid
+        // Pacman
         auto pacman = gameObjects().findByTag("pacman");
         tilemap().removeChild(pacman);
         tilemap().addChild(pacman, Constants::PACMAN_SPAWN_TILE);
         static_cast<PacMan*>(pacman)->setState(PacMan::State::Idle);
         static_cast<PacMan*>(pacman)->setDirection(ime::Left);
 
-        // Reset ghosts
+        // Ghosts
+        numGhostsInHouse_ = 0;
         gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
             ghost->getSprite().setVisible(true);
 
@@ -284,13 +285,10 @@ namespace pm {
                 static_cast<Ghost*>(ghost)->setDirection(ime::Up);
             }
 
-            // Reset ghost house properties
-            numGhostsInHouse_ = 0;
             lockGhostInHouse(ghost);
         });
 
         createGridMovers();
-        initCollisionResponses();
     }
 
     ///////////////////////////////////////////////////////////////

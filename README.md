@@ -1,15 +1,10 @@
-# Pac-Man
-
-[Pac-Man](https://en.wikipedia.org/wiki/Pac-Man) is a classic grid-based arcade game
-that was created in 1980 by [Namco](https://en.wikipedia.org/wiki/Namco).
-
 ## Overview
 
 This project is a clone of the 1980 Pac-Man arcade game using my 2D game engine, [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME). 
-Some parts of this project reuses code from my first game, [Super Pac-Man clone](https://github.com/KwenaMashamaite/SuperPacMan). 
-The only major difference between the two is the gameplay. I tried to make the ghost AI and gameplay mechanics
-as close to the [original game](https://www.gamasutra.com/view/feature/3938/the_pacman_dossier.php?print=1) as 
-possible.
+I tried to make the game as close to the [original game](https://www.gamasutra.com/view/feature/3938/the_pacman_dossier.php?print=1) as 
+possible without the glitch screen.
+
+You can check out another similar clone of mine; [Super Pac-Man clone](https://github.com/KwenaMashamaite/SuperPacMan).
 
 ## How to play
 
@@ -22,11 +17,6 @@ possible.
 ## Gameplay
 
 ![](docs/screenshots/gameplay.gif)
-
-## Documentation
-
-This project is documented in header files. There are also standalone [online](https://kwenamashamaite.github.io/PacMan/v0.8.0/index.html) 
-and [offline](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.8.0) doxygen documentations.
 
 ## Build
 
@@ -46,9 +36,7 @@ $ git clone https://github.com/KwenaMashamaite/PacMan
 ![](docs/screenshots/extlibs_directory_structure.png)
    
 At this point your ready to build the project. The easiest way to do this is to
-use an IDE that supports building with *CMake*. I recommend using [CLion](https://www.jetbrains.com/clion/) (Paid - Free 30 day trial), 
-which uses *CMake* as the default build system for C/C++, and it comes bundled with 
-*CMake*, so no need to install it yourself. Another personal recommendation is [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/) (Free)
+use an IDE.
 
 To build the game using the *CLI*, run the following commands from the project root 
 directory:

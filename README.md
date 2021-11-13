@@ -23,11 +23,6 @@ possible.
 
 ![](docs/screenshots/gameplay.gif)
 
-## Documentation
-
-This project is documented in header files. There are also standalone [online](https://kwenamashamaite.github.io/PacMan/v0.8.0/index.html) 
-and [offline](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.8.0) doxygen documentations.
-
 ## Build
 
 ###### *Read this section if you want to build the game yourself, otherwise you may skip it.*

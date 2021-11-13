@@ -268,6 +268,7 @@ namespace pm {
         numGhostsInHouse_ = 0;
         gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
             ghost->getSprite().setVisible(true);
+            ghost->getUserData().setValue("is_in_tunnel", false);
 
             // Reset ghost positions in the grid
             tilemap().removeChild(ghost);

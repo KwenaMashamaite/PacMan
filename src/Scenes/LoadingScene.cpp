@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////////////
 // Pac-Man clone
 //
@@ -129,7 +130,7 @@ namespace pm {
         loadFromFile(ime::ResourceType::SoundEffect, {
             "fruitEaten.wav", "ghostEaten.wav",
             "pacmanDying.wav", "powerPelletEaten.wav",
-            "wieu_wieu_slow.ogg", "WakkaWakka.wav"
+            "wieu_wieu_slow.ogg", "WakkaWakka.ogg"
         });
 
         loadingFinished_ = true;

@@ -25,6 +25,7 @@
 #include "GameObjects/Actors.h"
 #include "Common/Constants.h"
 #include "CollisionResponseRegisterer.h"
+#include <IME/core/audio/SoundEffect.h>
 #include <cassert>
 
 namespace pm {
@@ -116,7 +117,13 @@ namespace pm {
             game_.audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
         } else {
             game_.updateScore(Constants::Points::DOT);
-            game_.audio().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
+            static auto wakkawakkaSfx = ime::audio::SoundEffect();
+
+            if (wakkawakkaSfx.getSource().empty())
+                wakkawakkaSfx.setSource("WakkaWakka.ogg");
+
+            if (wakkawakkaSfx.getStatus() != ime::audio::Status::Playing)
+                wakkawakkaSfx.play();
         }
 
         if (game_.eatenPelletsCount_ == Constants::FIRST_FRUIT_APPEARANCE_PELLET_COUNT ||

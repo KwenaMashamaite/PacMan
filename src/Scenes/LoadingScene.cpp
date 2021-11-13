@@ -38,7 +38,7 @@ namespace pm {
     namespace {
         //Warning!! This number must be updated each time a new resource is added to the
         // Number of assets to be loaded
-        const int numOfResources = 16;
+        const int numOfResources = 17;
     }
 
     ///////////////////////////////////////////////////////////////
@@ -129,7 +129,7 @@ namespace pm {
 
         loadFromFile(ime::ResourceType::SoundEffect, {
             "fruitEaten.wav", "ghostEaten.wav", "pacmanDying.wav", "powerPelletEaten.wav",
-            "wieu_wieu_slow.ogg", "WakkaWakka.ogg", "extraLife.wav"
+            "wieu_wieu_slow.ogg", "WakkaWakka.ogg", "extraLife.wav", "ready.wav"
         });
 
         loadingFinished_ = true;

@@ -271,6 +271,7 @@ namespace pm {
         unsigned int chaseModeWaveLevel_;   //!< Stores the current ghost chase wave level (up to 5)
         unsigned int scatterModeWaveLevel_; //!< Stores the current scatter mode level (up to 4)
         unsigned int numGhostsInHouse_;     //!< The number of ghosts currently in the ghost house
+        static inline bool isBoot_ = true;  //!< A flag indicating whether the game just booted or not (is set to false after the first countdown)
         std::unique_ptr<CollisionResponseRegisterer> collisionResponseRegisterer_;
 
         friend class CollisionResponseRegisterer;

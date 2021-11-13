@@ -208,7 +208,7 @@ namespace pm {
             actor->getSprite().getAnimator().setTimescale(0.0f);
         });
 
-        timer().setTimeout(ime::seconds(Constants::LEVEL_START_DELAY), [this] {
+        timer().setTimeout(ime::seconds(isBoot_ ? 2.15 * Constants::LEVEL_START_DELAY : Constants::LEVEL_START_DELAY), [this] {
             gameObjects().forEach([] (ime::GameObject* actor) {
                 actor->getSprite().getAnimator().setTimescale(1.0f);
             });
@@ -225,6 +225,11 @@ namespace pm {
             startGhostScatterMode();
             emit(GameEvent::LevelStarted);
         });
+
+        if (isBoot_) {
+            isBoot_ = false;
+            audio().play(ime::audio::Type::Sfx, "ready.wav");
+        }
     }
 
     ///////////////////////////////////////////////////////////////

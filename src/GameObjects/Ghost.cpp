@@ -39,7 +39,7 @@ namespace pm {
         setCollisionGroup("ghosts");
 
         if (colour == Colour::Red) {
-            direction_ = ime::Right;
+            direction_ = ime::Left;
             setTag("blinky");
         } else if (colour == Colour::Pink) {
             direction_ = ime::Down;

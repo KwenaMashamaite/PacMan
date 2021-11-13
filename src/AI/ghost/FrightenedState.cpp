@@ -45,6 +45,10 @@ namespace pm {
 
         ghost_->setState(static_cast<int>(Ghost::State::Frightened));
         ghost_->getSprite().getAnimator().startAnimation("frightened");
+
+        if (!ghost_->isLockedInGhostHouse())
+            ghost_->setDirection(ghost_->getDirection() * -1);
+
         gridMover->setMoveStrategy(GhostGridMover::Strategy::Random);
     }
 

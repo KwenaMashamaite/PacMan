@@ -44,6 +44,9 @@ namespace pm {
         ghost_->setState(static_cast<int>(Ghost::State::Scatter));
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()));
 
+        if (!ghost_->isLockedInGhostHouse() && gridMover->getCurrentTileIndex() != Constants::EATEN_GHOST_RESPAWN_TILE)
+            ghost_->setDirection(ghost_->getDirection() * -1);
+
         gridMover->setMoveStrategy(GhostGridMover::Strategy::Target);
 
         if (ghost_->getTag() == "blinky")

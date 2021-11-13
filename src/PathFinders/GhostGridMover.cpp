@@ -173,9 +173,9 @@ namespace pm {
         if (ghost_->isLockedInGhostHouse()) {
             // Regardless of state, when locked in ghost house we override the PathFinders strategy to up and down PathFinders
             if (getCurrentTileIndex().row == 15 || getCurrentTileIndex().row == 17)
-                requestDirectionChange(getDirection() * -1);
+                requestDirectionChange(ghost_->getDirection() * -1);
             else
-                requestDirectionChange(getDirection());
+                requestDirectionChange(ghost_->getDirection());
 
             possibleDirections_.clear();
 

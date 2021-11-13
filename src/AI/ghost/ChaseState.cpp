@@ -47,6 +47,9 @@ namespace pm {
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()));
 
+        if (!ghost_->isLockedInGhostHouse() && gridMover->getCurrentTileIndex() != Constants::EATEN_GHOST_RESPAWN_TILE)
+            ghost_->setDirection(ghost_->getDirection() * -1);
+
         adjMoveHandlerID_ = gridMover->onAdjacentMoveEnd(std::bind(&ChaseState::chasePacman, this));
         gridMover->setMoveStrategy(GhostGridMover::Strategy::Target);
         gridMover->startMovement();

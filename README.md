@@ -8,7 +8,7 @@ You can check out another similar clone of mine; [Super Pac-Man clone](https://g
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.8.0)
+1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v1.0.0)
    the game
 2. Extract the zip archive
 3. Run _PacMan.exe_

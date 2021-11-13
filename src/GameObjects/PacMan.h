@@ -58,6 +58,16 @@ namespace pm {
         void setLivesCount(int numOfLives);
 
         /**
+         * @brief Add one life
+         */
+        void addLife();
+
+        /**
+         * @brief Remove one life
+         */
+        void removeLife();
+
+        /**
          * @brief Get number of lives remaining
          * @return The number of lives remaining
          */

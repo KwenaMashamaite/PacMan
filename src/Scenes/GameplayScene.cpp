@@ -43,6 +43,7 @@ namespace pm {
         currentLevel_{-1},
         pointsMultiplier_{1},
         eatenPelletsCount_{0},
+        extraLivesGiven_{0},
         view_{gui()},
         chaseModeWaveLevel_{0},
         scatterModeWaveLevel_{0},
@@ -309,9 +310,9 @@ namespace pm {
         ghostHouseTimer_.stop();
 
         auto pacman = gameObjects().findByTag<PacMan>("pacman");
-        pacman->setLivesCount(pacman->getLivesCount() - 1);
+        pacman->removeLife();
+        view_.removeLife();
         cache().setValue("PLAYER_LIVES", pacman->getLivesCount());
-        view_.updateLives(pacman->getLivesCount());
 
         // Destroy fruit if it was spawned
         gameObjects().forEachInGroup("Fruit", [](ime::GameObject* fruit) {
@@ -367,6 +368,13 @@ namespace pm {
         if (newScore > cache().getValue<int>("HIGH_SCORE")) {
             cache().setValue("HIGH_SCORE", newScore);
             view_.setHighScore(newScore);
+        }
+
+        if (newScore > Constants::FIRST_EXTRA_LIFE_MIN_SCORE && extraLivesGiven_ == 0) {
+            extraLivesGiven_++;
+            gameObjects().findByTag<PacMan>("pacman")->addLife();
+            view_.addLife();
+            audio().play(ime::audio::Type::Sfx, "extraLife.wav");
         }
     }
 

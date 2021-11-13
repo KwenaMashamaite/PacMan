@@ -46,7 +46,17 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void PacMan::setLivesCount(int numOfLives) {
         livesCount_ = numOfLives;
-        emitChange(ime::Property{"livesCount", livesCount_});
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void PacMan::addLife() {
+        livesCount_++;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void PacMan::removeLife() {
+        if (livesCount_ > 0)
+            livesCount_--;
     }
 
     ///////////////////////////////////////////////////////////////

@@ -33,7 +33,8 @@ using namespace ime::ui;
 namespace pm {
     ///////////////////////////////////////////////////////////////
     GameplaySceneView::GameplaySceneView(GuiContainer &gui) :
-        gui_{gui}
+        gui_{gui},
+        pacmanLives_{0}
     {
         gui_.setFont("namco.ttf");
     }
@@ -152,34 +153,39 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplaySceneView::createPlayerLivesIndicatorSprites(unsigned int lives) {
-        auto* pnlContainer = gui_.getWidget<Panel>("pnlContainer");
-        auto static frameSize = ime::Vector2u{16, 16};
-        auto static startPos = ime::Vector2u{18, 1}; //Top-left position of the frame on the spritesheet
-
-        if (lives > 0) {
-            pnlContainer->getWidget("lblCredit")->setVisible(false);
-            auto* picLife = pnlContainer->addWidget(Picture::create("spritesheet.png", {startPos.x, startPos.y, frameSize.x, frameSize.y}), "picLife0");
-            picLife->setOrigin(0.0f, 1.0f);
-            picLife->scale(0.2f, 0.2f);
-            picLife->setPosition(2 * Constants::GRID_TILE_SIZE, pnlContainer->getSize().y - Constants::GRID_TILE_SIZE);
-
-            for (auto i = 1u; i < lives; ++i) {
-                auto picLifeCopy = picLife->clone();
-                auto picPrev = pnlContainer->getWidget("picLife" + std::to_string(i - 1));
-                picLifeCopy->setPosition(ime::bindRight(picPrev).append("+0.5%"), std::to_string(picPrev->getPosition().y));
-                pnlContainer->addWidget(std::move(picLifeCopy), "picLife" + std::to_string(i));
-            }
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplaySceneView::updateLives(unsigned int pacmanLives) {
-        gui_.removeWidget("picLife" + std::to_string(pacmanLives));
+        for (unsigned int i = 0u; i < lives; ++i)
+            addLife();
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplaySceneView::update(ime::Time deltaTime) {
         timer_->update(deltaTime);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplaySceneView::addLife() {
+        auto* pnlContainer = gui_.getWidget<Panel>("pnlContainer");
+        auto static frameSize = ime::Vector2u{16, 16};
+        auto static startPos = ime::Vector2u{18, 1}; //Top-left position of the frame on the spritesheet
+
+        if (pacmanLives_ == 0) {
+            pnlContainer->getWidget("lblCredit")->setVisible(false);
+            auto* picLife = pnlContainer->addWidget(Picture::create("spritesheet.png", {startPos.x, startPos.y, frameSize.x, frameSize.y}), "picLife" + std::to_string(++pacmanLives_));
+            picLife->setOrigin(0.0f, 1.0f);
+            picLife->scale(0.2f, 0.2f);
+            picLife->setPosition(2 * Constants::GRID_TILE_SIZE, pnlContainer->getSize().y - Constants::GRID_TILE_SIZE);
+        } else {
+            auto picLastAdded = pnlContainer->getWidget("picLife" + std::to_string(pacmanLives_));
+            auto picNewLife  = picLastAdded->clone();
+            picNewLife->setPosition(ime::bindRight(picLastAdded).append("+0.5%"), std::to_string(picLastAdded->getPosition().y));
+            pnlContainer->addWidget(std::move(picNewLife), "picLife" + std::to_string(++pacmanLives_));
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplaySceneView::removeLife() {
+        if (pacmanLives_ > 0)
+            gui_.removeWidget("picLife" + std::to_string(pacmanLives_--));
     }
 
 } // namespace pm

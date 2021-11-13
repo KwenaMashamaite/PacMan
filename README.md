@@ -33,7 +33,7 @@ and [offline](https://github.com/KwenaMashamaite/PacMan/releases/tag/v0.8.0) dox
 ###### *Read this section if you want to build the game yourself, otherwise you may skip it.*
 
 This project is a CMake project, therefore you must download and install [CMake](https://cmake.org/). 
-You also need to download [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME) _v2.1.0_ or higher,
+You also need to download [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME) _v2.4.0_ or higher,
 then:
 
 1. Clone the repository
@@ -69,4 +69,4 @@ This game only runs on the Windows platform. It was tested on Windows 10.
 
 ## License
 
-Pac-Man clone falls under the [MIT](LICENSE) license.
+Pac-Man clone is licensed under the [MIT](LICENSE) license.

@@ -1,44 +1,44 @@
 set(SRC_FILES
         main.cpp
-        common/ObjectReferenceKeeper.cpp
-        ai/ActorStateFSM.cpp
-        movement/GhostGridMover.cpp
-        movement/PacManGridMover.cpp
-        ai/ghost/GhostState.cpp
-        ai/ghost/GIdleState.cpp
-        ai/ghost/ScatterState.cpp
-        ai/ghost/ChaseState.cpp
-        ai/ghost/FrightenedState.cpp
-        ai/ghost/EatenState.cpp
-        models/actors/Fruit.cpp
-        models/actors/Ghost.cpp
-        models/actors/Pellet.cpp
-        models/actors/PacMan.cpp
-        models/actors/Wall.cpp
-        models/actors/Sensor.cpp
-        models/game/Game.cpp
-        models/scenes/StartUpScene.cpp
-        models/scenes/LoadingScene.cpp
-        models/scenes/MainMenuScene.cpp
-        models/scenes/PauseMenuScene.cpp
-        models/scenes/GameplayScene.cpp
-        models/scenes/GameOverScene.cpp
-        models/scenes/CollisionResponseRegisterer.cpp
-        models/scoreboard/Score.cpp
-        models/scoreboard/Scoreboard.cpp
-        models/world/Grid.cpp
-        views/GameplaySceneView.cpp
-        views/StartUpSceneView.cpp
-        views/LoadingSceneView.cpp
-        views/MainMenuSceneView.cpp
-        views/PauseMenuSceneView.cpp
-        views/GameOverSceneView.cpp
-        animations/GhostAnimations.cpp
-        animations/GridAnimation.cpp
-        animations/PelletAnimations.cpp
-        animations/PacManAnimations.cpp
-        utils/ObjectCreator.cpp
-        utils/Utils.cpp)
+        Common/ObjectReferenceKeeper.cpp
+        AI/ActorStateFSM.cpp
+        PathFinders/GhostGridMover.cpp
+        PathFinders/PacManGridMover.cpp
+        AI/ghost/GhostState.cpp
+        AI/ghost/GIdleState.cpp
+        AI/ghost/ScatterState.cpp
+        AI/ghost/ChaseState.cpp
+        AI/ghost/FrightenedState.cpp
+        AI/ghost/EatenState.cpp
+        GameObjects/Fruit.cpp
+        GameObjects/Ghost.cpp
+        GameObjects/Pellet.cpp
+        GameObjects/PacMan.cpp
+        GameObjects/Wall.cpp
+        GameObjects/Sensor.cpp
+        Game.cpp
+        Scenes/StartUpScene.cpp
+        Scenes/LoadingScene.cpp
+        Scenes/MainMenuScene.cpp
+        Scenes/PauseMenuScene.cpp
+        Scenes/GameplayScene.cpp
+        Scenes/GameOverScene.cpp
+        Scenes/CollisionResponseRegisterer.cpp
+        Scoreboard/Score.cpp
+        Scoreboard/Scoreboard.cpp
+        Grid2D/Grid.cpp
+        Views/GameplaySceneView.cpp
+        Views/StartUpSceneView.cpp
+        Views/LoadingSceneView.cpp
+        Views/MainMenuSceneView.cpp
+        Views/PauseMenuSceneView.cpp
+        Views/GameOverSceneView.cpp
+        Animations/GhostAnimations.cpp
+        Animations/GridAnimation.cpp
+        Animations/PelletAnimations.cpp
+        Animations/PacManAnimations.cpp
+        Utils/ObjectCreator.cpp
+        Utils/Utils.cpp)
 
 # Resource script files
 set(RES_FILES
@@ -57,7 +57,7 @@ find_package(ime 2.4.0 REQUIRED)
 target_link_libraries (PacMan PRIVATE ime)
 
 # Add <project>/ as include directory
-include_directories(${PROJECT_SOURCE_DIR}/)
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
 # Copy runtime dependencies to the executable output folder
 set(IME_BIN_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME-${ime_VERSION}/bin")

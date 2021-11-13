@@ -1,4 +1,4 @@
-#include "src/models/game/Game.h"
+#include "Game.h"
 
 #ifdef NDEBUG
     #include "windows.h"

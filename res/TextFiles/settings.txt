@@ -39,7 +39,7 @@ WINDOW_WIDTH:INT=493
 WINDOW_HEIGHT:INT=600
 
 # Icon of the game window
-WINDOW_ICON:STRING=assets/images/window_icon.png
+WINDOW_ICON:STRING=res/Images/window_icon.png
 
 # FPS limit
 FPS_LIMIT:INT=120
@@ -48,22 +48,22 @@ FPS_LIMIT:INT=120
 V_SYNC:BOOL=0
 
 # Path to fonts
-FONTS_DIR:STRING=assets/fonts/
+FONTS_DIR:STRING=res/Fonts/
 
 # Path to image files
-IMAGES_DIR:STRING=assets/images/
+IMAGES_DIR:STRING=res/Images/
 
 # Path to texture files
-TEXTURES_DIR:STRING=assets/images/
+TEXTURES_DIR:STRING=res/Images/
 
 # Path to music files
-MUSIC_DIR:STRING=assets/music/
+MUSIC_DIR:STRING=res/Music/
 
 # Path to sound effects
-SOUND_EFFECTS_DIR:STRING=assets/sound_effects/
+SOUND_EFFECTS_DIR:STRING=res/SoundEffects/
 
 # Path to game scoreboard
-HIGH_SCORES_DIR:STRING=assets/textFiles/
+HIGH_SCORES_DIR:STRING=res/TextFiles/
 
 # Path to the gameplay maze
-MAZE_DIR:STRING=assets/textFiles/
+MAZE_DIR:STRING=res/TextFiles/

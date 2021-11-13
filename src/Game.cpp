@@ -30,7 +30,7 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     Game::Game() :
-        settingsFilename_("assets/textFiles/settings.txt"),
+        settingsFilename_("res/TextFiles/settings.txt"),
         engine_{"Pac-Man", settingsFilename_}
     {}
 
@@ -44,7 +44,7 @@ namespace pm {
         ime::PrefContainer& settings = engine_.getConfigs();
 
         // Initialize data that must be accessible in all states
-        auto scoreboard = std::make_shared<Scoreboard>("assets/textfiles/highscores.txt");
+        auto scoreboard = std::make_shared<Scoreboard>("res/Textfiles/highscores.txt");
         scoreboard->load();
 
         engine_.getPersistentData().addProperty({"SETTINGS_FILENAME", settingsFilename_});

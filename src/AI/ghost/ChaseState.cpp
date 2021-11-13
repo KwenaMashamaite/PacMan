@@ -47,9 +47,6 @@ namespace pm {
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()));
 
-        if (!ghost_->isLockedInGhostHouse() && gridMover->getCurrentTileIndex() != Constants::EATEN_GHOST_RESPAWN_TILE)
-            ghost_->setDirection(ghost_->getDirection() * -1);
-
         adjMoveHandlerID_ = gridMover->onAdjacentMoveEnd(std::bind(&ChaseState::chasePacman, this));
         gridMover->setMoveStrategy(GhostGridMover::Strategy::Target);
         gridMover->startMovement();
@@ -104,6 +101,12 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+        // Reverse direction
+        if (event == GameEvent::ScatterModeBegin || event == GameEvent::FrightenedModeBegin) {
+            if (!ghost_->isLockedInGhostHouse() && ghost_->getGridMover()->getCurrentTileIndex() != Constants::EATEN_GHOST_RESPAWN_TILE)
+                ghost_->setDirection(ghost_->getDirection() * -1);
+        }
+
         if (event == GameEvent::FrightenedModeBegin)
             fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, Ghost::State::Chase));
         else if (event == GameEvent::ScatterModeBegin)

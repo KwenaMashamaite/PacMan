@@ -260,7 +260,7 @@ namespace pm {
         int currentLevel_;                  //!< Current game level
         int pointsMultiplier_;              //!< Ghost points multiplier when player eats ghosts in succession (in one power mode session)
         int eatenPelletsCount_;             //!< Keeps track of the number of pellets pacman has eaten
-        int extraLivesGiven_;               //!< Keeps track of the number of extra lives the player has been awarded with
+        static int extraLivesGiven_;        //!< Keeps track of the number of extra lives the player has been awarded with
         GameplaySceneView view_;            //!< Scene view without the gameplay grid
         std::unique_ptr<Grid> grid_;        //!< Gameplay grid view
         ime::Timer frightenedModeTimer_;    //!< Controls the duration of the ghosts frightened state

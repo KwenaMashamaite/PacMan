@@ -42,13 +42,12 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameOverScene::updateLeaderboard() {
-        auto playerScore = cache().getValue<int>("CURRENT_SCORE");
-        auto playerLevel = cache().getValue<int>("CURRENT_LEVEL");
+        Score score;
+        score.value_ = cache().getValue<int>("CURRENT_SCORE");
+        score.level_ = cache().getValue<int>("CURRENT_LEVEL");
 
-        auto score = Score();
-        score.setValue(playerScore);
-        score.setLevel(playerLevel);
-        score.setOwner(cache().getValue<std::string>("PLAYER_NAME"));
+        auto name = cache().getValue<std::string>("PLAYER_NAME");
+        name.copy(score.owner_, name.length() + 1);
 
         auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
         scoreboard->addScore(score);

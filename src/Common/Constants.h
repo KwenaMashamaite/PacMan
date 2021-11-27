@@ -74,6 +74,7 @@ namespace pm {
         static constexpr auto LEVEL_START_DELAY = 2.0f;              //!< The time (in seconds) the player must wait before they can control pacman
         static constexpr auto GHOST_VULNERABILITY_LEVEL_CUTOFF = 19; //!< From this level onwards, ghosts can no longer turn blue and be eaten by pacman
         static constexpr auto ACTOR_FREEZE_DURATION = 1.0f;          //!< The time (in seconds), moving GameObjects remain frozen after pacman eats a ghost
+        static constexpr auto MAX_NAME_CHARACTERS = 15;              //!< The time (in seconds), moving GameObjects remain frozen after pacman eats a ghost
 
         /**
          * @brief Points awarded to the player when pacman eats another actor

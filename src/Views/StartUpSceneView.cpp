@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "StartUpSceneView.h"
+#include "Common/Constants.h"
 #include <IME/ui/widgets/Picture.h>
 #include <IME/ui/widgets/Panel.h>
 #include <IME/ui/widgets/Label.h>
@@ -106,7 +107,7 @@ namespace pm {
         // Create input field for entering name
         auto* txtName = pnlSecondaryContainer->addWidget<EditBox>(EditBox::create(), "txtName");
         txtName->setDefaultText("Enter your name");
-        txtName->setMaximumCharacters(15);
+        txtName->setMaximumCharacters(Constants::MAX_NAME_CHARACTERS);
         txtName->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
         txtName->getRenderer()->setTextStyle(ime::TextStyle::Bold);
         txtName->setMouseCursor(ime::CursorType::Text);

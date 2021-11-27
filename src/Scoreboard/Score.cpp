@@ -26,64 +26,8 @@
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    Score::Score() :
-        value_{0},
-        level_{0}
-    {}
-
-    ///////////////////////////////////////////////////////////////
-    void Score::setValue(int value) {
-        value_ = value;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    int Score::getValue() const {
-        return value_;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void Score::setLevel(unsigned int level) {
-        level_ = level;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    unsigned int Score::getLevel() const {
-        return level_;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void Score::setOwner(const std::string &name) {
-        owner_ = name;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    const std::string &Score::getOwner() const {
-        return owner_;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void Score::adjustValue(int offset) {
-        setValue(getValue() + offset);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    bool Score::operator==(const Score &rhs) const {
-        return value_ == rhs.value_ && owner_ == rhs.owner_;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    bool Score::operator!=(const Score &rhs) const{
-        return !(*this == rhs);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    bool operator<(const Score &lhs, const Score &rhs) {
-        return lhs.getValue() < rhs.getValue();
-    }
-
-    ///////////////////////////////////////////////////////////////
     bool operator>(const Score &lhs, const Score &rhs) {
-        return lhs.getValue() > rhs.getValue();
+        return lhs.value_ > rhs.value_;
     }
 
 } // namespace pm

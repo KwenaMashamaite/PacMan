@@ -44,12 +44,12 @@ namespace pm {
         ime::PrefContainer& settings = engine_.getConfigs();
 
         // Initialize data that must be accessible in all states
-        auto scoreboard = std::make_shared<Scoreboard>("res/Textfiles/highscores.txt");
+        auto scoreboard = std::make_shared<Scoreboard>("res/Textfiles/highscores.pcmg");
         scoreboard->load();
 
         engine_.getPersistentData().addProperty({"SETTINGS_FILENAME", settingsFilename_});
         engine_.getPersistentData().addProperty({"SCOREBOARD", scoreboard});
-        engine_.getPersistentData().addProperty({"HIGH_SCORE", scoreboard->getTopScore().getValue()});
+        engine_.getPersistentData().addProperty({"HIGH_SCORE", scoreboard->getTopScore().value_});
         engine_.getPersistentData().addProperty({"CURRENT_LEVEL", 1});
         engine_.getPersistentData().addProperty({"CURRENT_SCORE", 0});
         engine_.getPersistentData().addProperty({"PLAYER_LIVES", Constants::PLAYER_LiVES});

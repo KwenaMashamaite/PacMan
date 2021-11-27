@@ -46,7 +46,6 @@ namespace pm {
 
         /**
          * @brief Load high scores from the disk
-         * @throws FileNotFound If the file cannot be found on the disk
          *
          * The high scores will be loaded from the file provided during
          * instantiation
@@ -91,6 +90,12 @@ namespace pm {
          * @param callback Function to be executed
          */
         void forEachScore(std::function<void(const Score&)> callback);
+
+    private:
+        /**
+         * @brief Load default leaderboard
+         */
+        void loadDefaultScores();
 
     private:
         std::vector<Score> highScores_; //!< High scores read from dis

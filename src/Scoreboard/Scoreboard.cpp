@@ -23,8 +23,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Scoreboard.h"
-#include <IME/utility/DiskFileReader.h>
 #include <algorithm>
+#include <fstream>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
@@ -34,19 +34,23 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void Scoreboard::load() {
-        auto highScores = std::stringstream();
-        ime::utility::DiskFileReader().readFileInto(highScoresFile_, highScores);
-        auto line = std::string();
-        while (std::getline(highScores, line)) {
-            auto posOfSpaceBetweenNameAndScore = line.find_first_of(':');
-            auto scoreAndLevel = line.substr(posOfSpaceBetweenNameAndScore + 1);
-            auto posOfSpaceBetweenScoreAndLevel = scoreAndLevel.find_first_of(' ');
-            auto score = Score();
-            score.setOwner(line.substr(0, posOfSpaceBetweenNameAndScore));
-            score.setValue(std::stoi(line.substr(posOfSpaceBetweenNameAndScore + 1, posOfSpaceBetweenScoreAndLevel)));
-            score.setLevel(std::stoi(scoreAndLevel.substr(posOfSpaceBetweenScoreAndLevel + 1)));
-            highScores_.push_back(score);
-        }
+        std::ifstream infile(highScoresFile_, std::ios::in | std::ios::binary);
+
+        if (infile.is_open()) {
+            infile.seekg(0, std::ios::end);
+            auto numRecords = infile.tellg() / sizeof(Score);
+            infile.seekg(0, std::ios::beg);
+
+            Score score;
+
+            for (int i = 0; i < numRecords; i++) {
+                infile.read(reinterpret_cast<char *>(&score), sizeof(Score));
+                highScores_.push_back(score);
+            }
+
+            infile.close();
+        } else
+            loadDefaultScores();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -67,19 +71,38 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void Scoreboard::updateHighScoreFile() {
-        auto newHighscoreList = std::stringstream();
-        newHighscoreList << highScores_.front().getOwner() + ":" + std::to_string(highScores_.front().getValue()) + " " + std::to_string(highScores_.front().getLevel());
-        std::for_each(++highScores_.begin(), highScores_.end(),[&](auto& score) {
-            newHighscoreList << "\n" + score.getOwner() + ":" + std::to_string(score.getValue()) + " " + std::to_string(score.getLevel());
-        });
+        std::ofstream outfile(highScoresFile_, std::ios::out | std::ios::binary);
 
-        ime::utility::DiskFileReader().writeToFile(newHighscoreList, highScoresFile_);
+        for (auto& highScore : highScores_) {
+            outfile.write(reinterpret_cast<char*>(&highScore), sizeof(Score));
+        }
+
+        outfile.close();
     }
 
     ///////////////////////////////////////////////////////////////
     void Scoreboard::forEachScore(std::function<void(const Score&)> callback) {
         for (const auto& score : highScores_)
             callback(score);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void Scoreboard::loadDefaultScores() {
+        auto defaultScores = std::vector<Score>{
+            {"Brandon Jnr", 150000, 17},
+            {"Kyle Jenkins", 125000, 15},
+            {"Megan Bever", 120000, 13},
+            {"Paul Martinez", 85000, 12},
+            {"Sydney Willis", 55000, 10},
+            {"Kate Watts", 35000, 8},
+            {"Micheal Craig", 22700, 7},
+            {"Jake Martins", 150000, 4},
+            {"Tommy Shelby", 9800, 2},
+            {"John Merc", 4500, 1},
+        };
+
+        highScores_.swap(defaultScores);
+        updateHighScoreFile();
     }
 
 } // namespace pm

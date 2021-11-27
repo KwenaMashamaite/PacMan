@@ -61,9 +61,9 @@ namespace pm {
             if (count > NUM_SCORES_TO_DISPLAY)
                 return;
 
-            namesContainer->getWidget<ime::ui::Label>("lblEntry" + std::to_string(count))->setText(score.getOwner());
-            scoreContainer->getWidget<ime::ui::Label>("lblEntry" + std::to_string(count))->setText(std::to_string(score.getValue()));
-            levelContainer->getWidget<ime::ui::Label>("lblEntry" + std::to_string(count))->setText(std::to_string(score.getLevel()));
+            namesContainer->getWidget<ime::ui::Label>("lblEntry" + std::to_string(count))->setText(score.owner_);
+            scoreContainer->getWidget<ime::ui::Label>("lblEntry" + std::to_string(count))->setText(std::to_string(score.value_));
+            levelContainer->getWidget<ime::ui::Label>("lblEntry" + std::to_string(count))->setText(std::to_string(score.level_));
             count++;
         });
     }

@@ -231,6 +231,11 @@ namespace pm {
         void startGhostHouseTimer();
 
         /**
+         * @brief Stop all active timers
+         */
+        void stopTimers();
+
+        /**
          * @brief Make ghosts flash
          *
          * Note that a ghost only flashes when in pm::FrightenedState. The

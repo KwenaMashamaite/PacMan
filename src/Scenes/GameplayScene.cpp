@@ -146,11 +146,7 @@ namespace pm {
 
         eventEmitter().on("levelComplete", ime::Callback<>([this] {
             engine().onFrameEnd(nullptr);
-            scatterModeTimer_.stop();
-            chaseModeTimer_.stop();
-            frightenedModeTimer_.stop();
-            ghostHouseTimer_.stop();
-            uneatenFruitTimer_.stop();
+            stopTimers();
 
             if (gameObjects().hasGroup("Fruit"))
                 gameObjects().getGroup("Fruit").removeAll();
@@ -171,10 +167,6 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initEngineEvents() {
-        engine().getWindow().onClose([this] {
-            pauseGame();
-        });
-
         engine().onFrameEnd([this] {
             gameObjects().removeIf([](const ime::GameObject* actor) {
                 return !actor->isActive();
@@ -210,6 +202,8 @@ namespace pm {
             actor->getSprite().getAnimator().setTimescale(0.0f);
         });
 
+        setInputEnable(false);
+
         timer().setTimeout(ime::seconds(isBoot_ ? 2.15 * Constants::LEVEL_START_DELAY : Constants::LEVEL_START_DELAY), [this] {
             gameObjects().forEach([] (ime::GameObject* actor) {
                 actor->getSprite().getAnimator().setTimescale(1.0f);
@@ -225,6 +219,14 @@ namespace pm {
 
             startGhostHouseTimer();
             startGhostScatterMode();
+
+            // Enable pause menu
+            engine().getWindow().onClose([this] {
+                pauseGame();
+            });
+
+            setInputEnable(true);
+
             emit(GameEvent::LevelStarted);
         });
 
@@ -302,13 +304,15 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::endGameplay() {
-        engine().popScene();
+        gameObjects().removeByTag("pacman");
+        setOnPauseAction(ime::Scene::OnPauseAction::Show | ime::Scene::OnPauseAction::UpdateTime);
         engine().pushScene(std::make_unique<GameOverScene>());
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onPrePacmanDeathAnim() {
         audio().stopAll();
+        stopTimers();
 
         chaseModeTimer_.stop();
         frightenedModeTimer_.stop();
@@ -645,6 +649,15 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void GameplayScene::stopTimers() {
+        chaseModeTimer_.stop();
+        frightenedModeTimer_.stop();
+        scatterModeTimer_.stop();
+        uneatenFruitTimer_.stop();
+        ghostHouseTimer_.stop();
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::flashGhosts() {
         ime::Time static flashAnimCutoffTime = ime::seconds(2);
 
@@ -672,6 +685,7 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onExit() {
         ObjectReferenceKeeper::clear();
+        stopTimers();
         engine().onFrameEnd(nullptr);
         engine().getWindow().onClose(nullptr);
     }

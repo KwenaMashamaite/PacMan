@@ -38,19 +38,6 @@ namespace pm {
          * @param gui Container for all ui widgets in the view
          */
         void init(ime::ui::GuiContainer& gui);
-
-    private:
-        /**
-         * @brief Create menu displayed before user saves their data
-         * @param gui Container for gui widgets
-         */
-        void createPreSaveMenu(ime::ui::GuiContainer& gui);
-
-        /**
-         * @brief Create menu displayed after user saves their data
-         * @param gui Container for gui widgets
-         */
-        void createNavButtons(ime::ui::GuiContainer& gui);
     };
 }
 

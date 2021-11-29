@@ -74,8 +74,10 @@ namespace pm {
 
         // Save player name and continue to gameplay
         gui().getWidget("txtName")->on("enterKeyPress", ime::Callback<std::string>([this](const std::string& text) {
-            if (!text.empty())
+            if (!text.empty()) {
+                gui().setMouseCursor(ime::CursorType::Arrow);
                 save();
+            }
         }));
 
         // Save player name and continue to gameplay

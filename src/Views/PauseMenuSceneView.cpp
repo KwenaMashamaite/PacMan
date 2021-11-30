@@ -29,6 +29,7 @@
 #include <IME/ui/widgets/HorizontalLayout.h>
 #include <IME/ui/widgets/Button.h>
 #include <IME/ui/widgets/ToggleButton.h>
+#include <IME/ui/widgets/Slider.h>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
@@ -94,16 +95,23 @@ namespace pm {
 
         auto lblAudio = hlContainer->addWidget<Label>(Label::create("Audio"), "lblAudio");
         lblAudio->getRenderer()->setTextColour(ime::Colour::White);
-        lblAudio->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
+        lblAudio->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Top);
         lblAudio->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
 
-        auto btnOption = hlContainer->addWidget<ToggleButton>(ToggleButton::create("off"), "btnAudioToggle");
-        btnOption->getRenderer()->setTextStyle(ime::TextStyle::Italic);
-        btnOption->getRenderer()->setRoundedBorderRadius(15.0f);
-        btnOption->getRenderer()->setFont("DejaVuSans.ttf");
-        hlContainer->setRatio(std::size_t{1}, 0.3);
-        pnlInnerContainer->addWidget(std::move(hlContainer), "hlAudioOption");
+        auto* slMasterVolume = hlContainer->addWidget<Slider>(Slider::create(0, 100), "slMasterVolume");
+        slMasterVolume->getRenderer()->setThumbColour(ime::Colour::Black);
+        slMasterVolume->getRenderer()->setThumbHoverColour(ime::Colour::White);
 
+        auto lblMasterVolume = hlContainer->addWidget<Label>(Label::create("0"), "lblMasterVolume");
+        lblMasterVolume->getRenderer()->setTextColour(ime::Colour::White);
+        lblMasterVolume->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Top);
+        lblMasterVolume->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
+
+        hlContainer->setRatio(std::size_t{0}, 0.4f);
+        hlContainer->setRatio(std::size_t{0}, 0.6f);
+        hlContainer->setRatio(std::size_t{2}, 0.3f);
+
+        pnlInnerContainer->addWidget(std::move(hlContainer), "hlAudioOption");
         pnlInnerContainer->addWidget(std::move(vlBtnContainer), "vlPauseMenu");
     }
 

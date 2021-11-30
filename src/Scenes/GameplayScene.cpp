@@ -55,7 +55,7 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onEnter() {
         currentLevel_ = cache().getValue<int>("CURRENT_LEVEL");
-        audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
+        audio().setMasterVolume(sCache().getPref("MASTER_VOLUME").getValue<float>());
 
         ObjectReferenceKeeper::clear();
         createGrid();
@@ -365,7 +365,7 @@ namespace pm {
 
         initEngineEvents();
         setOnPauseAction(ime::Scene::OnPauseAction::Default);
-        audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
+        audio().setMasterVolume(sCache().getPref("MASTER_VOLUME").getValue<float>());
         audio().playAll();
     }
 

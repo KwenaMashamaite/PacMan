@@ -27,7 +27,8 @@
 #include "GameplayScene.h"
 #include "Views/PauseMenuSceneView.h"
 #include "Common/Constants.h"
-#include <IME/ui/widgets/ToggleButton.h>
+#include <IME/ui/widgets/Slider.h>
+#include <IME/ui/widgets/Label.h>
 #include <IME/core/engine/Engine.h>
 
 namespace pm {
@@ -73,19 +74,15 @@ namespace pm {
             engine().quit();
         }));
 
-        // 5. Audio toggle button click handler
-        auto btnOption = gui().getWidget<ime::ui::ToggleButton>("btnAudioToggle");
-        btnOption->setChecked(cache().getValue<float>("MASTER_VOLUME") > 0.0f);
-        btnOption->setText(btnOption->isChecked() ? "on" : "off");
+        // 5. Volume slider
+        auto* slMasterVolume = gui().getWidget<ime::ui::Slider>("slMasterVolume");
+        auto masterVolume = sCache().getPref("MASTER_VOLUME").getValue<float>();
+        slMasterVolume->setValue(masterVolume);
+        gui().getWidget<ime::ui::Label>("lblMasterVolume")->setText(std::to_string((int) masterVolume));
 
-        gui().getWidget("btnAudioToggle")->on("toggle", ime::Callback<bool>([this, btnOption](bool checked) {
-            if (checked) {
-                cache().setValue("MASTER_VOLUME", 100.0f);
-                btnOption->setText("on");
-            } else {
-                cache().setValue("MASTER_VOLUME", 0.0f);
-                btnOption->setText("off");
-            }
+        slMasterVolume->on("valueChange", ime::Callback<float>([this](float value) {
+            gui().getWidget<ime::ui::Label>("lblMasterVolume")->setText(std::to_string((int) value));
+            sCache().getPref("MASTER_VOLUME").setValue( value);
         }));
 
         // Return to game when escape is pressed

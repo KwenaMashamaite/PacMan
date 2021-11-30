@@ -26,6 +26,9 @@
 //
 //###################################################
 
+# The volume for all audio types
+MASTER_VOLUME:FLOAT=100
+
 # Keyboard key that moves the pacman left
 MOVE_LEFT_BUTTON:STRING=A
 

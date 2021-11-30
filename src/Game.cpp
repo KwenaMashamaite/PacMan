@@ -72,7 +72,6 @@ namespace pm {
         engine_.getPersistentData().addProperty({"CURRENT_LEVEL", 1});
         engine_.getPersistentData().addProperty({"CURRENT_SCORE", 0});
         engine_.getPersistentData().addProperty({"PLAYER_LIVES", Constants::PLAYER_LiVES});
-        engine_.getPersistentData().addProperty({"MASTER_VOLUME", 100.0f});
         engine_.getPersistentData().addProperty({"LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS});
 
         // Load disk configs

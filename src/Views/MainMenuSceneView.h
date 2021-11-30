@@ -54,6 +54,12 @@ namespace pm {
          */
         void init();
 
+        /**
+         * @brief Get the active panel
+         * @return The active panel
+         */
+        SubView getActivePanel() const;
+
     private:
         /**
          * @brief Switch to a different view within the main menu

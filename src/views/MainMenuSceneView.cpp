@@ -58,6 +58,11 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
+    SubView MainMenuSceneView::getActivePanel() const {
+        return subView_;
+    }
+
+    ///////////////////////////////////////////////////////////////
     ime::ui::Widget::Ptr MainMenuSceneView::createBackBtn() {
         auto btnReturn = Button::create("BACK");
         btnReturn->getRenderer()->setRoundedBorderRadius(10.0f);
@@ -173,6 +178,7 @@ namespace pm {
 
         // Create panel for control settings widgets
         auto pnlControlsSettings = Panel::create();
+        pnlControlsSettings->setName("pnlControls");
         pnlControlsSettings->getRenderer()->setBackgroundColour({28, 28, 28, 100});
         pnlControlsSettings->getRenderer()->setBorders({1, 1, 1, 1});
         pnlControlsSettings->getRenderer()->setBorderColour(ime::Colour::Black);
@@ -183,9 +189,9 @@ namespace pm {
         lblText->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
         lblText->getRenderer()->setBackgroundColour(ime::Colour("#121212cc"));
         lblText->getRenderer()->setTextColour(ime::Colour("#ffffffe6"));
-        lblText->getRenderer()->setBorders({0.0f, 1.0f, 0.0f, 1.0f});
+        lblText->getRenderer()->setBorders({0.0f, 0.0f, 0.0f, 0.0f});
 
-        const auto SPACE_BETWEEN_WIDGETS = 0.10f;
+        const auto SPACE_BETWEEN_WIDGETS = 0.15f;
         vlLabels->addWidget(lblText->copy(), "lblMoveLeft");
         vlLabels->addSpace(SPACE_BETWEEN_WIDGETS);
 
@@ -199,14 +205,24 @@ namespace pm {
 
         lblText->setText("Move down");
         vlLabels->addWidget(lblText->copy(), "lblMoveDown");
+        vlLabels->addSpace(SPACE_BETWEEN_WIDGETS);
+
+        lblText->setText("Pause Or Resume Game");
+        vlLabels->addWidget(lblText->copy());
 
         //
         auto vlButtons = VerticalLayout::create();
-        auto btnControl = Label::create("A");
-        btnControl->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Right);
-        btnControl->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
-        btnControl->getRenderer()->setBorders({0.0f, 1.0f, 0.0f, 1.0f});
-        btnControl->getRenderer()->setBackgroundColour(ime::Colour("#121212cc"));
+        auto btnControl = Button::create("A");
+        btnControl->getRenderer()->setBorders({1.0f, 1.0f, 1.0f, 1.0f});
+        btnControl->getRenderer()->setBorderColour(ime::Colour::Transparent);
+        btnControl->getRenderer()->setDisabledBackgroundColour(ime::Colour("#1F1F1F99"));
+        btnControl->getRenderer()->setDisabledBorderColour(ime::Colour::Transparent);
+        btnControl->getRenderer()->setBackgroundHoverColour(ime::Colour(128, 128, 128, 150));
+        btnControl->getRenderer()->setBackgroundColour(ime::Colour("#1F1F1F"));
+        btnControl->getRenderer()->setFocusedBackgroundColour(ime::Colour(128, 128, 128, 10));
+        btnControl->getRenderer()->setFocusedBorderColour(ime::Colour("#004225"));
+        btnControl->getRenderer()->setFocusedTextColour(ime::Colour::Yellow);
+        btnControl->getRenderer()->setTextStyleFocused(ime::TextStyle::Bold);
         btnControl->getRenderer()->setTextColour(ime::Colour::White);
 
         vlButtons->addWidget(btnControl->copy(), "btnMoveLeft");
@@ -222,25 +238,23 @@ namespace pm {
 
         btnControl->setText("S");
         vlButtons->addWidget(btnControl->copy(), "btnMoveDown");
+        vlButtons->addSpace(SPACE_BETWEEN_WIDGETS);
+
+        btnControl->setText("Esc / P");
+        btnControl->setEnabled(false);
+        vlButtons->addWidget(btnControl->copy(), "btnPauseGame");
 
         //
         auto hlControlsContainer = HorizontalLayout::create();
         hlControlsContainer->addWidget(std::move(vlLabels), "vlLabels");
         hlControlsContainer->addWidget(std::move(vlButtons), "vlButtons");
-
-        // Player controls heading
-        auto lblPlayerControlHeading = Label::create("PLAYER MOVEMENTS");
-        lblPlayerControlHeading->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
-        lblPlayerControlHeading->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Bottom);
-        lblPlayerControlHeading->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Left);
-        lblPlayerControlHeading->getRenderer()->setTextColour(ime::Colour::White);
+        hlControlsContainer->setRatio(std::size_t{1}, 0.60f);
 
         // Player controls widgets container
         auto vlPlayerControls = VerticalLayout::create("95%", "40%");
         vlPlayerControls->setOrigin(0.5f, 0.0f);
         vlPlayerControls->setPosition("50%", "5%");
 
-        vlPlayerControls->addWidget(std::move(lblPlayerControlHeading), "lblPlayerMovementHeading");
         vlPlayerControls->addSpace(0.1f);
         vlPlayerControls->setRatio(std::size_t{0}, 0.20f);
         vlPlayerControls->addWidget(std::move(hlControlsContainer), "hlControls");

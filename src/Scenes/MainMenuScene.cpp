@@ -29,7 +29,10 @@
 #include <IME/ui/widgets/VerticalLayout.h>
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
+#include <IME/ui/widgets/Button.h>
+#include <IME/ui/widgets/TabsContainer.h>
 #include <cassert>
+#include <iostream>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
@@ -76,6 +79,27 @@ namespace pm {
         gui().getWidget("btnQuit")->on("click", ime::Callback<>([this] {
             engine().quit();
         }));
+
+        input().onKeyUp([this](ime::Keyboard::Key key) {
+            if (view_.getActivePanel() == SubView::OptionsMenu && key != ime::Keyboard::Key::Unknown) {
+                ime::ui::Panel* pnlControlsContainer = gui().getWidget<ime::ui::TabsContainer>("tbsOptions")->getPanel("pnlControls");
+
+                if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveLeft")->isFocused()) {
+                    pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveLeft")->setText(ime::Keyboard::keyToString(key));
+                }else if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveRight")->isFocused()) {
+                    pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveRight")->setText(ime::Keyboard::keyToString(key));
+                } else if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveUp")->isFocused()) {
+                    pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveUp")->setText(ime::Keyboard::keyToString(key));
+                } else if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveDown")->isFocused()) {
+                    pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveDown")->setText(ime::Keyboard::keyToString(key));
+                }
+            }
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void MainMenuScene::onExit() {
+        //sCache().save();
     }
 
 } // namespace pm

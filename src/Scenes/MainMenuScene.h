@@ -52,6 +52,11 @@ namespace pm {
          */
         void onEnter() override;
 
+        /**
+         * @brief Scene about to be destroyed
+         */
+        void onExit() override;
+
     private:
         /**
          * @brief Replace Scoreboard placeholder text with actual player scores

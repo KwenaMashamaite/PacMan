@@ -23,11 +23,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "MainMenuSceneView.h"
+#include "Common/Constants.h"
 #include <IME/ui/widgets/VerticalLayout.h>
 #include <IME/ui/widgets/HorizontalLayout.h>
 #include <IME/ui/widgets/Button.h>
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/Panel.h>
+#include <IME/ui/widgets/ScrollablePanel.h>
 #include <IME/ui/widgets/Tabs.h>
 #include <IME/ui/widgets/TabsContainer.h>
 #include <IME/ui/widgets/Picture.h>
@@ -106,12 +108,15 @@ namespace pm {
         std::for_each(navBtns.begin(), navBtns.end(), [&vlNavButtons](auto& buttonInfo) {
             Button::Ptr btn = Button::create(buttonInfo.text);
             btn->setTextSize(14.0f);
-            btn->getRenderer()->setRoundedBorderRadius(20);
-            btn->getRenderer()->setHoverTextStyle(ime::TextStyle::Italic);
-            btn->getRenderer()->setBackgroundColour(ime::Colour("#444410"));
-            btn->getRenderer()->setBackgroundHoverColour(ime::Colour("#32CD32"));
+            btn->getRenderer()->setFont("DejaVuSans.ttf");
+            btn->getRenderer()->setBorderColour(ime::Colour("#1F1F1F80"));
+            btn->getRenderer()->setHoverTextStyle(ime::TextStyle::Bold);
+            btn->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+            btn->getRenderer()->setBackgroundHoverColour(ime::Colour::Transparent);
+            btn->getRenderer()->setBorders({1.0f, 1.0f, 1.0f, 1.0f});
+            btn->getRenderer()->setBorderHoverColour(ime::Colour("#1F1F1F"));
             btn->getRenderer()->setTextColour(ime::Colour::White);
-            btn->getRenderer()->setTextHoverColour(ime::Colour::Black);
+            btn->getRenderer()->setTextHoverColour(ime::Colour::Yellow);
             btn->getRenderer()->setFocusedBorderColour(ime::Colour::Transparent);
             vlNavButtons->addWidget(std::move(btn), buttonInfo.name);
         });
@@ -254,31 +259,30 @@ namespace pm {
         auto picBackground = gui_.getWidget<Panel>("pnlOptions")->getWidget("picBckgrnd")->clone();
         pnlParentContainer->addWidget(std::move(picBackground), "picBckgrnd");
 
-        // Container for all widgets
-        auto* vlSubParentContainer = pnlParentContainer->addWidget<VerticalLayout>(VerticalLayout::create("90%", "70%"), "hlSecondaryContainer");
-        vlSubParentContainer->setPosition("50%", "50%");
-        vlSubParentContainer->setOrigin(0.5f, 0.5f);
-        vlSubParentContainer->getRenderer()->setSpaceBetweenWidgets(25);
+        auto* pnlChildContainer = pnlParentContainer->addWidget<Panel>(Panel::create("97%", "97%"));
+        pnlChildContainer->setOrigin(0.5f, 0.5f);
+        pnlChildContainer->setPosition("50%", "50%");
+        pnlChildContainer->getRenderer()->setBackgroundColour(ime::Colour(0, 0, 0, 180));
 
         // High Scores Heading
-        auto lblHighScores = Label::create("HIGH SCORES");
-        lblHighScores->getRenderer()->setBackgroundColour(ime::Colour("#121212cc"));
+        auto* lblHighScores = pnlChildContainer->addWidget<Label>(Label::create("HIGH SCORES"));
+        lblHighScores->setSize("90%", "5%");
+        lblHighScores->setVerticalAlignment(Label::VerticalAlignment::Center);
+        lblHighScores->setOrigin(0.5f, 0.0f);
+        lblHighScores->setPosition("50%", "1%");
+        lblHighScores->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
         lblHighScores->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
         lblHighScores->setTextSize(18.0f);
         lblHighScores->getRenderer()->setTextColour(ime::Colour("#ffffffe6"));
         lblHighScores->getRenderer()->setTextStyle(ime::TextStyle::Bold);
         lblHighScores->setHorizontalAlignment(Label::HorizontalAlignment::Center);
-        vlSubParentContainer->addWidget(std::move(lblHighScores), "lblHighScoresHeading");
-        vlSubParentContainer->setRatio(std::size_t{0}, 0.1f);
 
         // Container for columns (Rank, Name, Score and Level)
-        auto hlScoresContainer = HorizontalLayout::create("95%", "95%");
-        hlScoresContainer->setOrigin(0.5f, 0.5f);
-        hlScoresContainer->setPosition("50%", "50%");
+        auto hlScoresContainer = HorizontalLayout::create("100%", "1000");
+        hlScoresContainer->setOrigin(0.0f, 0.0f);
+        hlScoresContainer->setPosition("0%", "0%");
 
-        // Helper function
-        const int NUM_ENTRIES = 10;
-        auto createList = [NUM_ENTRIES](const std::string& heading, ime::Colour headingColour, const std::string& placeholder) {
+        auto createList = [](const std::string& heading, ime::Colour headingColour, const std::string& placeholder) {
             auto vlColumn = VerticalLayout::create();
             vlColumn->getRenderer()->setSpaceBetweenWidgets(5);
 
@@ -292,11 +296,11 @@ namespace pm {
             vlColumn->setRatio(std::size_t{0}, 0.75f);
 
             // Create placeholder text
-            for (auto i = 1u; i <= NUM_ENTRIES; i++) {
+            for (auto i = 1u; i <= Constants::MAX_NUM_HIGH_SCORES_TO_DISPLAY; i++) {
                 auto lblEntry = Label::create(std::to_string(i));
                 lblEntry->setHorizontalAlignment(Label::HorizontalAlignment::Center);
                 lblEntry->setText(placeholder);
-                lblEntry->getRenderer()->setBorders({0.0f, 1.0f, 0.0f, 1.0f});
+                lblEntry->getRenderer()->setBorders({0.0f, 0.0f, 0.0f, 1.0f});
                 lblEntry->getRenderer()->setBorderColour(ime::Colour("#ffffff33"));
                 lblEntry->getRenderer()->setTextColour(ime::Colour::White);
                 vlColumn->addWidget(std::move(lblEntry), "lblEntry" + std::to_string(i));
@@ -307,7 +311,7 @@ namespace pm {
 
         // 1. Rank
         auto vlRank = createList("RANK", ime::Colour::Green, "1ST");
-        for (int count = 1; count <= NUM_ENTRIES; count++) {
+        for (int count = 1; count <= Constants::MAX_NUM_HIGH_SCORES_TO_DISPLAY; count++) {
             auto postFix = "";
             if (count == 1)
                 postFix = "ST";
@@ -335,15 +339,17 @@ namespace pm {
         auto vlLevels = createList("LEVEL", ime::Colour("#9f5afd"), "0");
         hlScoresContainer->addWidget(std::move(vlLevels), "vlLevels");
 
-        auto pnlCon = Panel::create();
-        pnlCon->getRenderer()->setBackgroundColour(ime::Colour("#27293db3"));
-        pnlCon->addWidget(std::move(hlScoresContainer), "hlScoresContainer");
-        vlSubParentContainer->addWidget(std::move(pnlCon), "pnlCon");
+        auto* pnlCon = pnlChildContainer->addWidget<ScrollablePanel>(ScrollablePanel::create("90%", "78%"));
+        pnlCon->getRenderer()->setScrollbarWidth(8);
+        pnlCon->getRenderer()->setBackgroundColour(ime::Colour("#12121212"));
+        pnlCon->setOrigin(0.5f, 0.0f);
+        pnlCon->setPosition("50%", ime::bindBottom(lblHighScores).append("+5%"));
+        pnlCon->addWidget(std::move(hlScoresContainer));
 
         // Return button
         auto btnBack = createBackBtn();
-        btnBack->setPosition("5%", "2%");
-        pnlParentContainer->addWidget(std::move(btnBack), "btnReturn");
+        btnBack->setPosition("4%", ime::bindBottom(pnlCon).append("+5%"));
+        pnlChildContainer->addWidget(std::move(btnBack), "btnReturn");
     }
 
     ///////////////////////////////////////////////////////////////

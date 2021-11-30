@@ -24,6 +24,7 @@
 
 #include "MainMenuScene.h"
 #include "GameplayScene.h"
+#include "Common/Constants.h"
 #include "Scoreboard/Scoreboard.h"
 #include <IME/ui/widgets/VerticalLayout.h>
 #include <IME/core/engine/Engine.h>
@@ -43,22 +44,19 @@ namespace pm {
         view_.init();
         initLeaderboard();
         initEventHandlers();
+        gui().setTabKeyUsageEnabled(false);
     }
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::initLeaderboard() {
         auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
-
-        const int NUM_SCORES_TO_DISPLAY = 10;
-        assert(scoreboard->getSize() >= NUM_SCORES_TO_DISPLAY && "Scoreboard must have at least 10 entries");
-
         auto namesContainer = gui().getWidget<ime::ui::VerticalLayout>("vlNames");
         auto scoreContainer = gui().getWidget<ime::ui::VerticalLayout>("vlScores");
         auto levelContainer = gui().getWidget<ime::ui::VerticalLayout>("vlLevels");
 
         // Replace placeholder text with actual Scoreboard data
         scoreboard->forEachScore([&, count = 1] (const Score& score) mutable {
-            if (count > NUM_SCORES_TO_DISPLAY)
+            if (count > Constants::MAX_NUM_HIGH_SCORES_TO_DISPLAY)
                 return;
 
             namesContainer->getWidget<ime::ui::Label>("lblEntry" + std::to_string(count))->setText(score.owner_);

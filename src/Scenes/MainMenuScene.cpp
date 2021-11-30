@@ -31,8 +31,6 @@
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/Button.h>
 #include <IME/ui/widgets/TabsContainer.h>
-#include <cassert>
-#include <iostream>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
@@ -44,10 +42,21 @@ namespace pm {
     void MainMenuScene::onEnter() {
         engine().getWindow().onClose(nullptr); // Let window be closed with exit button only
 
-        view_.init();
+        initGui();
         initLeaderboard();
         initEventHandlers();
         gui().setTabKeyUsageEnabled(false);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void MainMenuScene::initGui() {
+        view_.init();
+
+        ime::ui::Panel* pnlControlsContainer = gui().getWidget<ime::ui::TabsContainer>("tbsOptions")->getPanel("pnlControls");
+        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveLeft")->setText(sCache().getPref("MOVE_LEFT_BUTTON").getValue<std::string>());
+        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveRight")->setText(sCache().getPref("MOVE_RIGHT_BUTTON").getValue<std::string>());
+        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveUp")->setText(sCache().getPref("MOVE_UP_BUTTON").getValue<std::string>());
+        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveDown")->setText(sCache().getPref("MOVE_DOWN_BUTTON").getValue<std::string>());
     }
 
     ///////////////////////////////////////////////////////////////
@@ -86,20 +95,19 @@ namespace pm {
 
                 if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveLeft")->isFocused()) {
                     pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveLeft")->setText(ime::Keyboard::keyToString(key));
+                    sCache().getPref("MOVE_LEFT_BUTTON").setValue(ime::Keyboard::keyToString(key));
                 }else if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveRight")->isFocused()) {
                     pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveRight")->setText(ime::Keyboard::keyToString(key));
+                    sCache().getPref("MOVE_RIGHT_BUTTON").setValue(ime::Keyboard::keyToString(key));
                 } else if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveUp")->isFocused()) {
                     pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveUp")->setText(ime::Keyboard::keyToString(key));
+                    sCache().getPref("MOVE_UP_BUTTON").setValue(ime::Keyboard::keyToString(key));
                 } else if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveDown")->isFocused()) {
                     pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveDown")->setText(ime::Keyboard::keyToString(key));
+                    sCache().getPref("MOVE_DOWN_BUTTON").setValue(ime::Keyboard::keyToString(key));
                 }
             }
         });
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void MainMenuScene::onExit() {
-        //sCache().save();
     }
 
 } // namespace pm

@@ -52,12 +52,12 @@ namespace pm {
          */
         void onEnter() override;
 
-        /**
-         * @brief Scene about to be destroyed
-         */
-        void onExit() override;
-
     private:
+        /**
+         * @brief Initialize the gui
+         */
+        void initGui();
+
         /**
          * @brief Replace Scoreboard placeholder text with actual player scores
          */

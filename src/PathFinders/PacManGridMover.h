@@ -46,8 +46,9 @@ namespace pm {
 
         /**
          * @brief Initialize the grid mover
+         * @param movementKeys Movement keys settings
          */
-        void init();
+        void init(const ime::TriggerKeys& movementKeys);
 
         /**
          * @brief Destructor

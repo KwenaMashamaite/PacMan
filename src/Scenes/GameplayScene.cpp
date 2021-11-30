@@ -112,7 +112,14 @@ namespace pm {
         // Pacman
         auto* pacman = gameObjects().findByTag<PacMan>("pacman");
         auto pacmanGridMover = std::make_unique<PacManGridMover>(tilemap(), pacman );
-        pacmanGridMover->init();
+
+        pacmanGridMover->init(ime::TriggerKeys{
+            ime::Keyboard::stringToKey(sCache().getPref("MOVE_LEFT_BUTTON").getValue<std::string>()),
+            ime::Keyboard::stringToKey(sCache().getPref("MOVE_RIGHT_BUTTON").getValue<std::string>()),
+            ime::Keyboard::stringToKey(sCache().getPref("MOVE_UP_BUTTON").getValue<std::string>()),
+            ime::Keyboard::stringToKey(sCache().getPref("MOVE_DOWN_BUTTON").getValue<std::string>())
+        });
+
         updatePacmanSpeed(pacman);
 
         gridMovers().addObject(std::move(pacmanGridMover));

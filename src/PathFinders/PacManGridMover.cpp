@@ -39,8 +39,8 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void PacManGridMover::init() {
-        setKeys(ime::TriggerKeys{ime::Key::A, ime::Key::D, ime::Key::W, ime::Key::S});
+    void PacManGridMover::init(const ime::TriggerKeys& movementKeys) {
+        setKeys(movementKeys);
 
         auto* pacman = static_cast<PacMan*>(getTarget());
 

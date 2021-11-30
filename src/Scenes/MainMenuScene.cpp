@@ -68,7 +68,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::initEventHandlers() {
-        gui().getWidget("btnPlay")->on("click", ime::Callback<>([this] {
+        gui().getWidget("btnPlay")->on("leftMouseDown", ime::Callback<>([this] {
             engine().popScene();
             engine().pushScene(std::make_unique<GameplayScene>());
         }));

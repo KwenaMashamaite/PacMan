@@ -37,11 +37,11 @@ namespace pm {
 
         // Container for all pause menu widgets
         auto* pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlPauseMenu");
-        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour("#2828284d"));
+        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
 
         // Container for pause menu buttons container
         auto* pnlInnerContainer = pnlContainer->addWidget<Panel>(Panel::create("40%", "40%"), "pnlSubContainer");
-        pnlInnerContainer->getRenderer()->setBackgroundColour(ime::Colour("#121212"));
+        pnlInnerContainer->getRenderer()->setBackgroundColour(ime::Colour("#0D0D0DE6"));
         pnlInnerContainer->getRenderer()->setBorders({1.5f, 1.5f, 1.5f, 1.5f});
         pnlInnerContainer->getRenderer()->setBorderColour(ime::Colour("#212121"));
         pnlInnerContainer->setOrigin(0.5f, 0.5f);
@@ -74,12 +74,15 @@ namespace pm {
             auto btn = Button::create(btnData.first);
             btn->getRenderer()->setFont("DejaVuSans.ttf");
             btn->setTextSize(14.0f);
-            btn->getRenderer()->setRoundedBorderRadius(18);
-            btn->getRenderer()->setHoverTextStyle(ime::TextStyle::Italic);
-            btn->getRenderer()->setBackgroundColour(ime::Colour("#4d4dff"));
-            btn->getRenderer()->setBackgroundHoverColour(ime::Colour("#32CD32"));
+            btn->getRenderer()->setFont("DejaVuSans.ttf");
+            btn->getRenderer()->setBorderColour(ime::Colour::Transparent);
+            btn->getRenderer()->setHoverTextStyle(ime::TextStyle::Bold);
+            btn->getRenderer()->setBackgroundColour(ime::Colour("#1F1F1F59"));
+            btn->getRenderer()->setBackgroundHoverColour(ime::Colour("#1F1F1F"));
+            btn->getRenderer()->setBorders({0.6f, 1.0f, 0.6f, 1.0f});
+            btn->getRenderer()->setBorderHoverColour(ime::Colour("#1F1F1F"));
             btn->getRenderer()->setTextColour(ime::Colour::White);
-            btn->getRenderer()->setTextHoverColour(ime::Colour::Black);
+            btn->getRenderer()->setTextHoverColour(ime::Colour::Yellow);
             btn->getRenderer()->setFocusedBorderColour(ime::Colour::Transparent);
             vlBtnContainer->addWidget(std::move(btn), btnData.second);
         }

@@ -352,6 +352,10 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onResume() {
+        engine().getWindow().onClose([this] {
+            pauseGame();
+        });
+
         initEngineEvents();
         setOnPauseAction(ime::Scene::OnPauseAction::Default);
         audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));

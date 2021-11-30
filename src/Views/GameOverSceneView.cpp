@@ -36,7 +36,7 @@ namespace pm {
     void GameOverSceneView::init(ime::ui::GuiContainer &gui) {
         gui.setFont("ChaletLondonNineteenSixty.ttf");
 
-        auto pnlContainer = gui.addWidget<Panel>(Panel::create("93%", "40%"), "pnlContainer");
+        auto pnlContainer = gui.addWidget<Panel>(Panel::create("93%", "50%"), "pnlContainer");
         pnlContainer->getRenderer()->setBackgroundColour(ime::Colour("#0D0D0DCC"));
         pnlContainer->getRenderer()->setBorders({0.6f, 1.0f, 0.6f, 1.0f});
         pnlContainer->getRenderer()->setBorderColour(ime::Colour(128, 128, 128, 60));
@@ -51,7 +51,7 @@ namespace pm {
         lblHeading->getRenderer()->setTextColour(ime::Colour::Red);
         lblHeading->setTextSize(45.0f);
         lblHeading->setOrigin(0.5f, 0.0f);
-        lblHeading->setPosition("50%", "1%");
+        lblHeading->setPosition("50%", "5%");
 
         // Container for action buttons
         auto vlContainer = VerticalLayout::create("63%", "50%");
@@ -62,12 +62,12 @@ namespace pm {
         // Create action buttons
         auto btnRetryLevel = Button::create("Retry Level");
         btnRetryLevel->getRenderer()->setFont("DejaVuSans.ttf");
-        btnRetryLevel->getRenderer()->setBorderColour(ime::Colour::Transparent);
+        btnRetryLevel->getRenderer()->setBorderColour(ime::Colour("#00000066"));
         btnRetryLevel->getRenderer()->setHoverTextStyle(ime::TextStyle::Bold);
         btnRetryLevel->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
         btnRetryLevel->getRenderer()->setBackgroundHoverColour(ime::Colour::Transparent);
-        btnRetryLevel->getRenderer()->setBorders({0.6f, 1.0f, 0.6f, 1.0f});
-        btnRetryLevel->getRenderer()->setBorderHoverColour(ime::Colour("#1F1F1F"));
+        btnRetryLevel->getRenderer()->setBorders({0.0f, 0.0f, 0.0f, 1.0f});
+        btnRetryLevel->getRenderer()->setBorderHoverColour(ime::Colour("#1D1D1D"));
         btnRetryLevel->getRenderer()->setTextColour(ime::Colour::White);
         btnRetryLevel->getRenderer()->setTextHoverColour(ime::Colour::Yellow);
         btnRetryLevel->getRenderer()->setFocusedBorderColour(ime::Colour::Transparent);

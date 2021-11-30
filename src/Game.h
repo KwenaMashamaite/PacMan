@@ -49,8 +49,7 @@ namespace pm {
         void start();
 
     private:
-        std::string settingsFilename_; //!< The name of the file with the engine settings
-        ime::Engine engine_;           //!< Runs the main game loop
+        ime::Engine engine_;
     };
 }
 

@@ -37,7 +37,7 @@ namespace pm {
     void StartUpScene::onEnter() {
         StartUpSceneView().init(gui());
 
-        if (cache().hasProperty("PLAYER_NAME")) {
+        if (sCache().hasPref("PLAYER_NAME")) {
             startCountdown();
             enableSceneSkip();
         } else
@@ -96,18 +96,9 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::save() {
-        auto name = gui().getWidget<EditBox>("txtName")->getText();
+        std::string name = gui().getWidget<EditBox>("txtName")->getText();
+        sCache().addPref(ime::Preference{"PLAYER_NAME", ime::PrefType::String, name, " The name of the player"});
 
-        // Save name to engine cache (So that other Scenes can get access to it)
-        cache().addProperty(ime::Property{"PLAYER_NAME", name});
-
-        // Save player name to the disk so that it can be accessed on next game run
-        ime::Preference preference("PLAYER_NAME", ime::PrefType::String);
-        preference.setValue(name);
-        preference.setDescription("The name of the player");
-        ime::savePref(preference, cache().getValue<std::string>("SETTINGS_FILENAME"));
-
-        // Display game disclaimer and initiate scene pop countdown
         gui().getWidget<Panel>("pnlContainer")->setVisible(true);
         gui().getWidget<Panel>("pnlNamePrompt")->setVisible(false);
         startCountdown();

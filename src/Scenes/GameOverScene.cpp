@@ -46,7 +46,7 @@ namespace pm {
         score.value_ = cache().getValue<int>("CURRENT_SCORE");
         score.level_ = cache().getValue<int>("CURRENT_LEVEL");
 
-        auto name = cache().getValue<std::string>("PLAYER_NAME");
+        auto name = sCache().getPref("PLAYER_NAME").getValue<std::string>();
         name.copy(score.owner_, name.length() + 1);
 
         auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");

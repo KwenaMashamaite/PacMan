@@ -29,9 +29,29 @@
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
+    ime::PrefContainer getEngineSettings() {
+        ime::PrefContainer settings;
+        settings.addPref(ime::Preference{"WINDOW_TITLE", ime::PrefType::String, std::string("Pac-Man")});
+        settings.addPref(ime::Preference{"WINDOW_WIDTH", ime::PrefType::Int, 493});
+        settings.addPref(ime::Preference{"WINDOW_HEIGHT", ime::PrefType::Int, 600});
+        settings.addPref(ime::Preference{"WINDOW_ICON", ime::PrefType::String, std::string("res/Images/window_icon.png")});
+        settings.addPref(ime::Preference{"FULLSCREEN", ime::PrefType::Bool, false});
+        settings.addPref(ime::Preference{"V_SYNC", ime::PrefType::Bool, false});
+        settings.addPref(ime::Preference{"FPS_LIMIT", ime::PrefType::Int, 120});
+        settings.addPref(ime::Preference{"FONTS_DIR", ime::PrefType::String, std::string("res/Fonts/")});
+        settings.addPref(ime::Preference{"TEXTURES_DIR", ime::PrefType::String, std::string("res/Images/")});
+        settings.addPref(ime::Preference{"MUSIC_DIR", ime::PrefType::String, std::string("res/Music/")});
+        settings.addPref(ime::Preference{"SOUND_EFFECTS_DIR", ime::PrefType::String, std::string("res/SoundEffects/")});
+        settings.addPref(ime::Preference{"HIGH_SCORES_DIR", ime::PrefType::String, std::string("res/TextFiles/")});
+        settings.addPref(ime::Preference{"MAZE_DIR", ime::PrefType::String, std::string("res/TextFiles/")});
+        settings.addPref(ime::Preference{"CONFIGS_DIR", ime::PrefType::String, std::string("res/TextFiles/")});
+
+        return settings;
+    }
+
+    ///////////////////////////////////////////////////////////////
     Game::Game() :
-        settingsFilename_("res/TextFiles/settings.txt"),
-        engine_{"Pac-Man", settingsFilename_}
+        engine_{"Pac-Man", getEngineSettings()}
     {}
 
     ///////////////////////////////////////////////////////////////
@@ -39,16 +59,15 @@ namespace pm {
         // Make game window unresizable
         engine_.getWindow().setStyle(ime::WindowStyle::Close);
 
-        // Initialize the game engine
+        // Initialize default values and cache them for later access and modification
         engine_.initialize();
         ime::PrefContainer& settings = engine_.getConfigs();
 
-        // Initialize data that must be accessible in all states
-        auto scoreboard = std::make_shared<Scoreboard>("res/Textfiles/highscores.pcmg");
+        auto scoreboard = std::make_shared<Scoreboard>(settings.getPref("HIGH_SCORES_DIR").getValue<std::string>().append("/highscores.pcmg"));
         scoreboard->load();
 
-        engine_.getPersistentData().addProperty({"SETTINGS_FILENAME", settingsFilename_});
         engine_.getPersistentData().addProperty({"SCOREBOARD", scoreboard});
+        engine_.getPersistentData().addProperty({"SETTINGS_FILENAME", settings.getPref("CONFIGS_DIR").getValue<std::string>().append("/configs.txt")});
         engine_.getPersistentData().addProperty({"HIGH_SCORE", scoreboard->getTopScore().value_});
         engine_.getPersistentData().addProperty({"CURRENT_LEVEL", 1});
         engine_.getPersistentData().addProperty({"CURRENT_SCORE", 0});
@@ -56,15 +75,18 @@ namespace pm {
         engine_.getPersistentData().addProperty({"MASTER_VOLUME", 100.0f});
         engine_.getPersistentData().addProperty({"LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS});
 
-        // If not found in settings file, player will be prompted for name in StartUpScene
-        if (settings.hasPref("PLAYER_NAME"))
-            engine_.getPersistentData().addProperty({"PLAYER_NAME",settings.getPref("PLAYER_NAME").getValue<std::string>()});
+        // Load disk configs
+        engine_.getSavablePersistentData().load(engine_.getPersistentData().getValue<std::string>("SETTINGS_FILENAME"));
 
-        engine_.pushScene(std::make_unique<StartUpScene>());
+        // Update file on disk with new player preferences if any
+        engine_.onShutDown([this] {
+            engine_.getSavablePersistentData().save();
+        });
     }
 
     ///////////////////////////////////////////////////////////////
     void Game::start() {
+        engine_.pushScene(std::make_unique<StartUpScene>());
         engine_.run();
     }
 

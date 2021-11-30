@@ -118,6 +118,7 @@ namespace pm {
         } else {
             game_.updateScore(Constants::Points::DOT);
             static auto wakkawakkaSfx = ime::audio::SoundEffect();
+            wakkawakkaSfx.setVolume(game_.audio().getMasterVolume());
 
             if (wakkawakkaSfx.getSource().empty())
                 wakkawakkaSfx.setSource("WakkaWakka.ogg");

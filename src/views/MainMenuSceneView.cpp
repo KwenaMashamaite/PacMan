@@ -253,12 +253,19 @@ namespace pm {
         // Player controls widgets container
         auto vlPlayerControls = VerticalLayout::create("95%", "40%");
         vlPlayerControls->setOrigin(0.5f, 0.0f);
-        vlPlayerControls->setPosition("50%", "5%");
+        vlPlayerControls->setPosition("50%", "1%");
 
         vlPlayerControls->addSpace(0.1f);
         vlPlayerControls->setRatio(std::size_t{0}, 0.20f);
         vlPlayerControls->addWidget(std::move(hlControlsContainer), "hlControls");
         pnlControlsSettings->addWidget(std::move(vlPlayerControls), "playerControls");
+
+        auto lblHint = Label::create("To change a key binding, click the button and press the new key");
+        lblHint->getRenderer()->setTextColour(ime::Colour{255, 250, 250, 150});
+        lblHint->getRenderer()->setTextStyle(ime::TextStyle::Italic);
+        lblHint->setOrigin(0.5f, 1.0f);
+        lblHint->setPosition("50%", "100%");
+        pnlControlsSettings->addWidget(std::move(lblHint));
 
         tbsOptions->addPanel(std::move(pnlControlsSettings), "Controls");
     }

@@ -70,6 +70,7 @@ namespace pm {
 
         // 7. Misc
         static constexpr auto FIRST_EXTRA_LIFE_MIN_SCORE = 10000;    //!< The number of points the player must score before being awarded the first extra life
+        static constexpr auto SECOND_EXTRA_LIFE_MIN_SCORE = 50000;   //!< The number of points the player must score before being awarded the second extra life
         static constexpr auto GRID_TILE_SIZE = 16;                   //!< The size of each grid cell
         static constexpr auto LEVEL_START_DELAY = 2.0f;              //!< The time (in seconds) the player must wait before they can control pacman
         static constexpr auto GHOST_VULNERABILITY_LEVEL_CUTOFF = 19; //!< From this level onwards, ghosts can no longer turn blue and be eaten by pacman

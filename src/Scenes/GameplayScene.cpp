@@ -392,7 +392,9 @@ namespace pm {
             view_.setHighScore(newScore);
         }
 
-        if (newScore > Constants::FIRST_EXTRA_LIFE_MIN_SCORE && extraLivesGiven_ == 0) {
+        if (newScore >= Constants::FIRST_EXTRA_LIFE_MIN_SCORE && extraLivesGiven_ == 0 ||
+            newScore >= Constants::SECOND_EXTRA_LIFE_MIN_SCORE && extraLivesGiven_ == 1)
+        {
             extraLivesGiven_++;
             auto* pacman = gameObjects().findByTag<PacMan>("pacman");
             pacman->addLife();

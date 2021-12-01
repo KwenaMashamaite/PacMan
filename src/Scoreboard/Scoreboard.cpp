@@ -89,16 +89,16 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void Scoreboard::loadDefaultScores() {
         auto defaultScores = std::vector<Score>{
-            {"Brandon Jnr", 150000, 17},
-            {"Kyle Jenkins", 125000, 15},
-            {"Megan Bever", 120000, 13},
-            {"Paul Martinez", 85000, 12},
-            {"Sydney Willis", 55000, 10},
-            {"Kate Watts", 35000, 8},
-            {"Micheal Craig", 22700, 7},
-            {"Jake Martins", 150000, 4},
-            {"Tommy Shelby", 9800, 2},
-            {"John Merc", 4500, 1},
+            Score{"Brandon Jnr", 150000, 17},
+            Score{"Kyle Jenkins", 125000, 15},
+            Score{"Megan Bever", 120000, 13},
+            Score{"Paul Martinez", 85000, 12},
+            Score{"Sydney Willis", 55000, 10},
+            Score{"Kate Watts", 35000, 8},
+            Score{"Micheal Craig", 22700, 7},
+            Score{"Jake Martins", 150000, 4},
+            Score{"Tommy Shelby", 9800, 2},
+            Score{"John Merc", 4500, 1}
         };
 
         highScores_.swap(defaultScores);

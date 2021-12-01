@@ -8,7 +8,7 @@ You can check out another similar clone of mine; [Super Pac-Man clone](https://g
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v1.0.0)
+1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v1.1.0)
    the game
 2. Extract the zip archive
 3. Run _PacMan.exe_
@@ -18,12 +18,16 @@ You can check out another similar clone of mine; [Super Pac-Man clone](https://g
 
 ![](docs/screenshots/gameplay.gif)
 
+## User Interface
+
+![](docs/screenshots/ui.gif)
+
 ## Build
 
 ###### *Read this section if you want to build the game yourself, otherwise you may skip it.*
 
 This project is a CMake project, therefore you must download and install [CMake](https://cmake.org/). 
-You also need to download [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME) _v2.4.0_ or higher,
+You also need to download [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME) _v2.4.0_,
 then:
 
 1. Clone the repository

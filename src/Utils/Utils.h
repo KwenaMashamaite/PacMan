@@ -25,7 +25,7 @@
 #ifndef PACMAN_UTILS_H
 #define PACMAN_UTILS_H
 
-#include <IME/core/tilemap/TileMap.h>
+#include <IME/core/grid/Grid2D.h>
 #include <IME/core/physics/grid/GridMover.h>
 #include <unordered_map>
 #include <vector>

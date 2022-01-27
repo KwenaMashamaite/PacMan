@@ -51,7 +51,6 @@ namespace pm {
         // Pause menu heading
         auto lblHeading = Label::create("PAUSED");
         lblHeading->getRenderer()->setTextStyle(ime::TextStyle::Bold);
-        lblHeading->setHorizontalAlignment(Label::HorizontalAlignment::Center);
         lblHeading->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
         lblHeading->getRenderer()->setTextColour(ime::Colour::Red);
         lblHeading->setOrigin(0.5f, 0.0f);

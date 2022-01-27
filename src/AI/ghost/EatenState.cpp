@@ -53,7 +53,7 @@ namespace pm {
         gridMover->setTargetTile(Constants::EATEN_GHOST_RESPAWN_TILE);
         gridMover->startMovement();
 
-        destFoundHandler_ = gridMover->onAdjacentMoveEnd([this](ime::Index index) {
+        destFoundHandler_ = gridMover->onMoveEnd([this](ime::Index index) {
             if (index == Constants::EATEN_GHOST_RESPAWN_TILE)
                 fsm_->pop();
         });
@@ -69,7 +69,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void EatenState::onExit() {
-        ghost_->getGridMover()->unsubscribe(destFoundHandler_);
+        ghost_->getGridMover()->removeEventListener(destFoundHandler_);
 
         if (nextState_ == Ghost::State::Chase)
             fsm_->push(std::make_unique<ChaseState>(fsm_, ghost_));

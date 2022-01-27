@@ -27,7 +27,7 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     Sensor::Sensor(ime::Scene &scene) :
-        ime::GameObject(scene)
+        ime::GridObject(scene)
     {
         setCollisionGroup("sensors");
     }

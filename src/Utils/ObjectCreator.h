@@ -26,7 +26,6 @@
 #define PACMAN_OBJECTCREATOR_H
 
 #include "Grid2D/Grid.h"
-#include <IME/core/physics/PhysicsWorld.h>
 
 namespace pm {
     /**

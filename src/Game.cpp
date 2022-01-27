@@ -61,25 +61,26 @@ namespace pm {
 
         // Initialize default values and cache them for later access and modification
         engine_.initialize();
+        engine_.setPhysicsUpdateFrameRate(120);
         ime::PrefContainer& settings = engine_.getConfigs();
 
         auto scoreboard = std::make_shared<Scoreboard>(settings.getPref("HIGH_SCORES_DIR").getValue<std::string>().append("/highscores.pcmg"));
         scoreboard->load();
 
-        engine_.getPersistentData().addProperty({"SCOREBOARD", scoreboard});
-        engine_.getPersistentData().addProperty({"SETTINGS_FILENAME", settings.getPref("CONFIGS_DIR").getValue<std::string>().append("/configs.txt")});
-        engine_.getPersistentData().addProperty({"HIGH_SCORE", scoreboard->getTopScore().value_});
-        engine_.getPersistentData().addProperty({"CURRENT_LEVEL", 1});
-        engine_.getPersistentData().addProperty({"CURRENT_SCORE", 0});
-        engine_.getPersistentData().addProperty({"PLAYER_LIVES", Constants::PLAYER_LiVES});
-        engine_.getPersistentData().addProperty({"LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS});
+        engine_.getCache().addProperty(ime::Property{"SCOREBOARD", scoreboard});
+        engine_.getCache().addProperty(ime::Property{"SETTINGS_FILENAME", settings.getPref("CONFIGS_DIR").getValue<std::string>().append("/configs.txt")});
+        engine_.getCache().addProperty(ime::Property{"HIGH_SCORE", scoreboard->getTopScore().value_});
+        engine_.getCache().addProperty(ime::Property{"CURRENT_LEVEL", 1});
+        engine_.getCache().addProperty(ime::Property{"CURRENT_SCORE", 0});
+        engine_.getCache().addProperty(ime::Property{"PLAYER_LIVES", Constants::PLAYER_LiVES});
+        engine_.getCache().addProperty(ime::Property{"LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS});
 
         // Load disk configs
-        engine_.getSavablePersistentData().load(engine_.getPersistentData().getValue<std::string>("SETTINGS_FILENAME"));
+        engine_.getSavableCache().load(engine_.getCache().getValue<std::string>("SETTINGS_FILENAME"));
 
         // Update file on disk with new player preferences if any
         engine_.onShutDown([this] {
-            engine_.getSavablePersistentData().save();
+            engine_.getSavableCache().save();
         });
     }
 

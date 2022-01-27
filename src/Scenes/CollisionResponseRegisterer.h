@@ -26,7 +26,7 @@
 #define PACMAN_COLLISIONRESPONSEREGISTRE_H
 
 #include "Scenes/GameplayScene.h"
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace pm {
     /**
@@ -39,31 +39,31 @@ namespace pm {
          * @brief Register a fruit collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithFruit(ime::GameObject* gameObject);
+        void registerCollisionWithFruit(ime::GridObject* gameObject);
 
         /**
          * @brief Register a pellet collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithPellets(ime::GameObject* gameObject);
+        void registerCollisionWithPellets(ime::GridObject* gameObject);
 
         /**
          * @brief Register a ghost collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithGhost(ime::GameObject* gameObject);
+        void registerCollisionWithGhost(ime::GridObject* gameObject);
 
         /**
          * @brief Register a teleportation sensor handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithTeleportationSensor(ime::GameObject* gameObject);
+        void registerCollisionWithTeleportationSensor(ime::GridObject* gameObject);
 
         /**
          * @brief Register a speed slow down sensor handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithSlowDownSensor(ime::GameObject* gameObject);
+        void registerCollisionWithSlowDownSensor(ime::GridObject* gameObject);
 
     private:
         /**
@@ -71,27 +71,27 @@ namespace pm {
          * @param fruit The fruit in collision with another game object
          * @param otherGameObject The game object in collision with the fruit
          */
-        void resolveFruitCollision(ime::GameObject* fruit, ime::GameObject* otherGameObject);
+        void resolveFruitCollision(ime::GridObject* fruit, ime::GridObject* otherGameObject);
 
         /**
          * @brief Resolve a collision between a pellet object and another game object
          * @param pellet The pellet in collision with another game object
          */
-        void resolvePelletCollision(ime::GameObject* pellet);
+        void resolvePelletCollision(ime::GridObject* pellet);
 
         /**
          * @brief Resolve the collision between a ghost and another game object
          * @param ghost The ghost in collision with another game object
          * * @param otherGameObject The game object in collision with the ghost
          */
-        void resolveGhostCollision(ime::GameObject* ghost, ime::GameObject* otherGameObject);
+        void resolveGhostCollision(ime::GridObject* ghost, ime::GridObject* otherGameObject);
 
         /**
          * @brief Resolve the collision between a teleportation sensor and its trigger
          * @param sensor The triggered teleportation sensor
          * @param objectOnSensor The game object that triggered the sensor
          */
-        void resolveTeleportationSensorCollision(ime::GameObject* sensor, ime::GameObject* objectOnSensor);
+        void resolveTeleportationSensorCollision(ime::GridObject* sensor, ime::GridObject* objectOnSensor);
 
     private:
         /**
@@ -101,7 +101,7 @@ namespace pm {
          *
          * The fruit will remain on the screen for some time before it disappears
          */
-        void replaceFruitWithScore(ime::GameObject* fruit);
+        void replaceFruitWithScore(ime::GridObject* fruit);
 
         /**
          * @brief Convert an eaten ghost and the game object that ate it into a single score texture
@@ -113,7 +113,7 @@ namespace pm {
          * combined into a single score texture which corresponds to the number
          * of points the player earned for eating the ghost
          */
-        void replaceGhostWithScore(ime::GameObject* ghost, ime::GameObject* otherGameObject);
+        void replaceGhostWithScore(ime::GridObject* ghost, ime::GridObject* otherGameObject);
 
         /**
          * @brief Spawn a fruit

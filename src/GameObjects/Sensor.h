@@ -25,7 +25,7 @@
 #ifndef PACMAN_SENSOR_H
 #define PACMAN_SENSOR_H
 
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace pm {
     /**
@@ -35,7 +35,7 @@ namespace pm {
      * enters it. For example, it is used to detect when PacMan or a Ghost
      * reaches the end of the tunnel
      */
-    class Sensor : public ime::GameObject {
+    class Sensor : public ime::GridObject {
     public:
         /**
          * @brief Constructor

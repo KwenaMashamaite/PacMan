@@ -25,7 +25,7 @@
 #ifndef PACMAN_OBJECTREFERENCEKEEPER_H
 #define PACMAN_OBJECTREFERENCEKEEPER_H
 
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 #include <IME/common/Vector2.h>
 #include <string>
 #include <unordered_map>
@@ -43,14 +43,14 @@ namespace pm {
          *
          * @warning @a gameObject must not be @a nullptr
          */
-        static void registerActor(ime::GameObject* gameObject);
+        static void registerActor(ime::GridObject* gameObject);
 
         /**
          * @brief Get access to an actor
          * @param tag The tag of the game ob
          * @return A pointer to the actor if it exists otherwise a nullptr
          */
-        static ime::GameObject* getActor(const std::string& tag);
+        static ime::GridObject* getActor(const std::string& tag);
 
         /**
          * @brief Clear the records
@@ -58,7 +58,7 @@ namespace pm {
         static void clear();
 
     private:
-        inline static std::unordered_map<std::string, ime::GameObject*> gameObjects_{};
+        inline static std::unordered_map<std::string, ime::GridObject*> gameObjects_{};
     };
 }
 

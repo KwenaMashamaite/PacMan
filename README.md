@@ -27,8 +27,9 @@ You can check out another similar clone of mine; [Super Pac-Man clone](https://g
 ###### *Read this section if you want to build the game yourself, otherwise you may skip it.*
 
 This project is a CMake project, therefore you must download and install [CMake](https://cmake.org/). 
-You also need to download [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME) _v2.4.0_,
-then:
+You also need to download [Infinite Motion Engine v3.0.0](https://github.com/KwenaMashamaite/IME/releases/tag/v3.0.0).
+
+Then:
 
 1. Clone the repository
 ```git
@@ -52,8 +53,7 @@ cmake ..
 cmake --build .
 ```
 
-After the build process completes, you will find the game executable in `PacMan/bin`
-folder
+The executable can be found in the `bin` folder
 
 ## Platform
 

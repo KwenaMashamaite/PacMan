@@ -28,7 +28,7 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     Pellet::Pellet(ime::Scene& scene, Type type) :
-        ime::GameObject(scene),
+        ime::GridObject(scene),
         type_{type}
     {
         setCollisionGroup(type == Type::Energizer ? "energizers" : "dots");

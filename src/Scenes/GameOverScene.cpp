@@ -43,66 +43,66 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void GameOverScene::updateLeaderboard() {
         Score score;
-        score.value_ = cache().getValue<int>("CURRENT_SCORE");
-        score.level_ = cache().getValue<int>("CURRENT_LEVEL");
+        score.value_ = getCache().getValue<int>("CURRENT_SCORE");
+        score.level_ = getCache().getValue<int>("CURRENT_LEVEL");
 
-        auto name = sCache().getPref("PLAYER_NAME").getValue<std::string>();
+        auto name = getSCache().getPref("PLAYER_NAME").getValue<std::string>();
         name.copy(score.owner_, name.length() + 1);
 
-        auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
+        auto scoreboard = getCache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
         scoreboard->addScore(score);
         scoreboard->updateHighScoreFile();
     }
 
     ///////////////////////////////////////////////////////////////
     void GameOverScene::initGui() {
-        view_.init(gui());
+        view_.init(getGui());
     }
 
     ///////////////////////////////////////////////////////////////
     void GameOverScene::initButtonEvents() {
-        if (cache().getValue<int>("LEVEL_RESTART_COUNT") > 0) {
+        if (getCache().getValue<int>("LEVEL_RESTART_COUNT") > 0) {
             // Replenish pacmans lives and restart level when "Restart Level" button is clicked
-            gui().getWidget("btnRetryLevel")->on("click", ime::Callback<>([this] {
-                cache().setValue("LEVEL_RESTART_COUNT", cache().getValue<int>("LEVEL_RESTART_COUNT") - 1);
-                cache().setValue("PLAYER_LIVES", Constants::PLAYER_LiVES);
-                engine().removeAllScenesExceptActive();
-                engine().popScene(); // Destroy this scene
-                engine().pushScene(std::make_unique<GameplayScene>());
+            getGui().getWidget("btnRetryLevel")->on("click", ime::Callback<>([this] {
+                getCache().setValue("LEVEL_RESTART_COUNT", getCache().getValue<int>("LEVEL_RESTART_COUNT") - 1);
+                getCache().setValue("PLAYER_LIVES", Constants::PLAYER_LiVES);
+                getEngine().removeAllScenesExceptActive();
+                getEngine().popScene(); // Destroy this scene
+                getEngine().pushScene(std::make_unique<GameplayScene>());
             }));
         } else {
-            gui().removeWidget("btnRetryLevel");
+            getGui().removeWidget("btnRetryLevel");
 
             // Reduce vertical size of container to accommodate only two buttons instead of three
-            gui().getWidget("vlButtonsContainer")->setHeight("40%");
+            getGui().getWidget("vlButtonsContainer")->setHeight("40%");
         }
 
         // Restart the game from the beginning
-        gui().getWidget("btnStartOver")->on("click", ime::Callback<>([this] {
-            cache().setValue("LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS);
-            cache().setValue("PLAYER_LIVES", Constants::PLAYER_LiVES);
-            cache().setValue("CURRENT_LEVEL", 1);
-            cache().setValue("CURRENT_SCORE", 0);
-            engine().removeAllScenesExceptActive();
-            engine().popScene();
-            engine().pushScene(std::make_unique<GameplayScene>());
+        getGui().getWidget("btnStartOver")->on("click", ime::Callback<>([this] {
+            getCache().setValue("LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS);
+            getCache().setValue("PLAYER_LIVES", Constants::PLAYER_LiVES);
+            getCache().setValue("CURRENT_LEVEL", 1);
+            getCache().setValue("CURRENT_SCORE", 0);
+            getEngine().removeAllScenesExceptActive();
+            getEngine().popScene();
+            getEngine().pushScene(std::make_unique<GameplayScene>());
         }));
 
         // Exit to the games main menu when "Exit to Main Menu" is clicked
-        gui().getWidget("btnExitMainMenu")->on("click", ime::Callback<>([this] {
-            cache().setValue("LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS);
-            cache().setValue("CURRENT_LEVEL", 1);
-            cache().setValue("CURRENT_SCORE", 0);
-            cache().setValue("PLAYER_LIVES", Constants::PLAYER_LiVES);
+        getGui().getWidget("btnExitMainMenu")->on("click", ime::Callback<>([this] {
+            getCache().setValue("LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS);
+            getCache().setValue("CURRENT_LEVEL", 1);
+            getCache().setValue("CURRENT_SCORE", 0);
+            getCache().setValue("PLAYER_LIVES", Constants::PLAYER_LiVES);
 
-            engine().removeAllScenesExceptActive();
-            engine().popScene(); // Destroy this scene
-            engine().pushScene(std::make_unique<MainMenuScene>());
+            getEngine().removeAllScenesExceptActive();
+            getEngine().popScene(); // Destroy this scene
+            getEngine().pushScene(std::make_unique<MainMenuScene>());
         }));
 
         // Exit to desktop when "Exit Game" button is clicked
-        gui().getWidget("btnExitGame")->on("click", ime::Callback<>([this] {
-            engine().quit();
+        getGui().getWidget("btnExitGame")->on("click", ime::Callback<>([this] {
+            getEngine().quit();
         }));
     }
 

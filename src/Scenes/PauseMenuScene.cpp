@@ -34,61 +34,61 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     void PauseMenuScene::onEnter() {
-        PauseMenuSceneView::init(gui());
+        PauseMenuSceneView::init(getGui());
         initEventHandlers();
     }
 
     ///////////////////////////////////////////////////////////////
     void PauseMenuScene::initEventHandlers() {
-        // 1. Resume button click handler
-        gui().getWidget("btnResume")->on("click", ime::Callback<>([this] {
-            engine().popScene();
+        // Resume button click handler
+        getGui().getWidget("btnResume")->on("click", ime::Callback<>([this] {
+            getEngine().popScene();
         }));
 
-        // 2. Restart button click handler
-        if (cache().getValue<int>("LEVEL_RESTART_COUNT") > 0) {
-            gui().getWidget("btnRestart")->on("click", ime::Callback<>([this] {
-                cache().setValue("LEVEL_RESTART_COUNT", cache().getValue<int>("LEVEL_RESTART_COUNT") - 1);
-                engine().removeAllScenesExceptActive(); // Popping scene twice will call GamePlayScene::onResume(), which we don't want to do
-                engine().popScene();
-                engine().pushScene(std::make_unique<GameplayScene>());
+        // Restart button click handler
+        if (getCache().getValue<int>("LEVEL_RESTART_COUNT") > 0) {
+            getGui().getWidget("btnRestart")->on("click", ime::Callback<>([this] {
+                getCache().setValue("LEVEL_RESTART_COUNT", getCache().getValue<int>("LEVEL_RESTART_COUNT") - 1);
+                getEngine().removeAllScenesExceptActive(); // Popping scene twice will call GamePlayScene::onResume(), which we don't want to do
+                getEngine().popScene();
+                getEngine().pushScene(std::make_unique<GameplayScene>());
             }));
         } else {
-            gui().removeWidget("btnRestart");
-            gui().getWidget("vlPauseMenu")->setHeight("35%");
+            getGui().removeWidget("btnRestart");
+            getGui().getWidget("vlPauseMenu")->setHeight("35%");
         }
 
-        // 3. Main menu button click handler
-        gui().getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
-            cache().setValue("LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS);
-            cache().setValue("PLAYER_LIVES", Constants::PLAYER_LiVES);
-            cache().setValue("CURRENT_LEVEL", 1);
-            cache().setValue("CURRENT_SCORE", 0);
-            engine().removeAllScenesExceptActive();
-            engine().popScene();
-            engine().pushScene(std::make_unique<MainMenuScene>());
+        // Main menu button click handler
+        getGui().getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
+            getCache().setValue("LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS);
+            getCache().setValue("PLAYER_LIVES", Constants::PLAYER_LiVES);
+            getCache().setValue("CURRENT_LEVEL", 1);
+            getCache().setValue("CURRENT_SCORE", 0);
+            getEngine().removeAllScenesExceptActive();
+            getEngine().popScene();
+            getEngine().pushScene(std::make_unique<MainMenuScene>());
         }));
 
-        // 4. Exit button click handler
-        gui().getWidget("btnExit")->on("click", ime::Callback<>([this] {
-            engine().quit();
+        // Exit button click handler
+        getGui().getWidget("btnExit")->on("click", ime::Callback<>([this] {
+            getEngine().quit();
         }));
 
-        // 5. Volume slider
-        auto* slMasterVolume = gui().getWidget<ime::ui::Slider>("slMasterVolume");
-        auto masterVolume = sCache().getPref("MASTER_VOLUME").getValue<float>();
+        // Volume slider value change handler
+        auto* slMasterVolume = getGui().getWidget<ime::ui::Slider>("slMasterVolume");
+        auto masterVolume = getSCache().getPref("MASTER_VOLUME").getValue<float>();
         slMasterVolume->setValue(masterVolume);
-        gui().getWidget<ime::ui::Label>("lblMasterVolume")->setText(std::to_string((int) masterVolume));
+        getGui().getWidget<ime::ui::Label>("lblMasterVolume")->setText(std::to_string((int) masterVolume));
 
         slMasterVolume->on("valueChange", ime::Callback<float>([this](float value) {
-            gui().getWidget<ime::ui::Label>("lblMasterVolume")->setText(std::to_string((int) value));
-            sCache().getPref("MASTER_VOLUME").setValue( value);
+            getGui().getWidget<ime::ui::Label>("lblMasterVolume")->setText(std::to_string((int) value));
+            getSCache().getPref("MASTER_VOLUME").setValue( value);
         }));
 
-        // Return to game when escape is pressed
-        input().onKeyUp([this](ime::Keyboard::Key key) {
+        // Key press handler
+        getInput().onKeyUp([this](ime::Keyboard::Key key) {
             if (key == ime::Keyboard::Key::Escape || key == ime::Keyboard::Key::P)
-                engine().popScene();
+                getEngine().popScene();
         });
     }
 

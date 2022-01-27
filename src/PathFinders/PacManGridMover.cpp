@@ -29,7 +29,7 @@
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    PacManGridMover::PacManGridMover(ime::TileMap &grid, PacMan* pacman) :
+    PacManGridMover::PacManGridMover(ime::Grid2D &grid, PacMan* pacman) :
         ime::KeyboardGridMover(grid, pacman),
         pacmanStateChangeId_{-1},
         pendingDirection_{ime::Unknown}
@@ -48,12 +48,12 @@ namespace pm {
             setMovementRestriction(ime::GridMover::MoveRestriction::All);
 
         // Keep pacman moving until he collides with a wall
-        onAdjacentMoveEnd([this, pacman](ime::Index) {
+        onMoveEnd([this, pacman](ime::Index) {
             if (pendingDirection_ != ime::Unknown && !(getCurrentTileIndex() == Constants::BLINKY_SPAWN_TILE && pendingDirection_ == ime::Down) && !isBlockedInDirection(pendingDirection_).first) {
-                requestDirectionChange(pendingDirection_);
+                requestMove(pendingDirection_);
                 pendingDirection_ = ime::Unknown;
             } else
-                requestDirectionChange(pacman->getDirection());
+                requestMove(pacman->getDirection());
         });
 
         // Prevent pacman from turning into a direction that causes a collision with an obstacle
@@ -88,24 +88,25 @@ namespace pm {
                     setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
 
                     // In case his speed was reset while his PathFinders was restricted
-                    setMaxLinearSpeed({Constants::PACMAN_SPEED, Constants::PACMAN_SPEED});
-                    requestDirectionChange(pacman->getDirection());
+                    setSpeed(ime::Vector2f{Constants::PACMAN_SPEED, Constants::PACMAN_SPEED});
+                    requestMove(pacman->getDirection());
                     break;
                 case PacMan::State::Dying:
                     setMovementRestriction(ime::GridMover::MoveRestriction::All);
                     break;
+                default:
+                    break;
             }
         });
 
-        // Update pacmans direction when the grid mover turns him
-        onPropertyChange("direction", [pacman](const ime::Property& property) {
-            pacman->setDirection(property.getValue<ime::Direction>());
+        onDirectionChange([pacman](ime::Vector2i dir) {
+            pacman->setDirection(dir);
         });
     }
 
     ///////////////////////////////////////////////////////////////
     PacManGridMover::~PacManGridMover() {
         if (getTarget())
-            getTarget()->unsubscribe("state", pacmanStateChangeId_);
+            getTarget()->removeEventListener("state", pacmanStateChangeId_);
     }
 }

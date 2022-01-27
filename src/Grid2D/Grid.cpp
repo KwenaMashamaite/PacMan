@@ -24,38 +24,39 @@
 
 #include "Grid.h"
 #include "Animations/GridAnimation.h"
+#include <IME/core/grid/Grid2D.h>
+#include <IME/core/scene/Scene.h>
 #include <cassert>
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    Grid::Grid(ime::TileMap &tileMap, ime::Scene& scene, ime::GameObjectContainer& objects) :
-        grid_{tileMap},
-        scene_{scene},
-        actors_{objects}
+    Grid::Grid(ime::Grid2D &grid) :
+        grid_{grid}
     {
         // Set render layers for different game object. Note that by default, IME sorts
-        // layers by the order in which they are created so there is no need to reorder 
-        // if the creation order matches the render order
-        grid_.renderLayers().removeByName("default"); // This layer is replaced by the background layer
-        grid_.renderLayers().create("background");
-        grid_.renderLayers().create("Walls");
-        grid_.renderLayers().create("Sensors");
-        grid_.renderLayers().create("Fruits");
-        grid_.renderLayers().create("Pellets");
-        grid_.renderLayers().create("PacMans");
-        grid_.renderLayers().create("Ghosts");
+        // render layers by the order in which they are created
+        ime::RenderLayerContainer& renderLayers = grid.getScene().getRenderLayers();
+        renderLayers.removeByName("default"); // This layer is replaced by the background layer
+        renderLayers.create("background");
+        renderLayers.create("Walls");
+        renderLayers.create("Sensors");
+        renderLayers.create("Fruits");
+        renderLayers.create("Pellets");
+        renderLayers.create("PacMans");
+        renderLayers.create("Ghosts");
 
         // Instead of creating the visual grid ourself we will use a pre-made one
         // from an image file and render our game objects on top of it.
         ime::Animation::Ptr animation = GridAnimation().get();
-        background_ = animation.get()->getSpriteSheet().getSprite(ime::Index{0, 0});
-        grid_.renderLayers().add(background_, 0, "background");
-        background_.getAnimator().addAnimation(std::move(animation));
 
-        background_.getAnimator().on(ime::Animator::Event::AnimationComplete, [this] {
+        animation->onComplete([this](ime::Animation*) {
             if (onAnimFinish_)
                 onAnimFinish_();
         });
+
+        background_ = animation->getSpriteSheet().getSprite(ime::Index{0, 0});
+        renderLayers.add(background_, 0, "background");
+        background_.getAnimator().addAnimation(std::move(animation));
 
         background_.setOrigin(background_.getLocalBounds().width / 2.0f, background_.getLocalBounds().height / 2.0f);
         background_.scale(2.14f, 2.1f);
@@ -82,17 +83,17 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::addActor(ime::GameObject::Ptr object, ime::Index index) {
+    void Grid::addActor(ime::GridObject::Ptr object, ime::Index index) {
         assert(object && "Object must not be a nullptr");
         std::string renderLayer = object->getClassName() + "s";
 
         grid_.addChild(object.get(), index);
-        auto group = object->getClassName();
-        actors_.add(group, std::move(object), 0, renderLayer);
+        std::string group = object->getClassName();
+        grid_.getScene().getGameObjects().add(group, std::move(object), 0, renderLayer);
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::GameObject* Grid::getActorById(int id) const {
+    ime::GridObject* Grid::getActorById(int id) const {
         return grid_.getChildWithId(id);
     }
 
@@ -109,8 +110,8 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::forEachActor(const ime::Callback<ime::GameObject*> &callback) {
-        grid_.forEachChild([&callback](ime::GameObject* actor) {
+    void Grid::forEachActor(const ime::Callback<ime::GridObject*> &callback) {
+        grid_.forEachChild([&callback](ime::GridObject* actor) {
             callback(actor);
         });
     }
@@ -138,7 +139,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     ime::Scene& Grid::getScene() {
-        return scene_;
+        return grid_.getScene();
     }
 
 } // namespace pm

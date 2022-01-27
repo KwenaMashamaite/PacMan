@@ -47,8 +47,8 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    GhostGridMover::GhostGridMover(ime::TileMap& tileMap, Ghost* ghost) :
-        ime::GridMover(tileMap, ghost),
+    GhostGridMover::GhostGridMover(ime::Grid2D& grid, Ghost* ghost) :
+        ime::GridMover(grid, ghost),
         movementStarted_{false},
         moveStrategy_{Strategy::Random},
         targetTile_{0, 0}
@@ -56,11 +56,11 @@ namespace pm {
         ghost_ = dynamic_cast<Ghost*>(ghost);
         assert(ghost_ && "spm::GhostGridMover target must not be a nullptr");
 
-        onPropertyChange("direction", [ghost](const ime::Property& property) {
-            ghost->setDirection(property.getValue<ime::Direction>());
+        onDirectionChange([ghost](ime::Direction dir) {
+            ghost->setDirection(dir);
         });
 
-        onAdjacentMoveEnd(std::bind(&GhostGridMover::move, this));
+        onMoveEnd(std::bind(&GhostGridMover::move, this));
         setTargetTile(ime::Index{0, 0});
     }
 
@@ -76,16 +76,16 @@ namespace pm {
             return;
         else {
             if (possibleDirections_.empty()) // Ghost is in a dead end, only option is backwards (special case)
-                requestDirectionChange(reverseGhostDir);
+                requestMove(reverseGhostDir);
             else if (possibleDirections_.size() == 1) // Going forward is the only option
-                requestDirectionChange(possibleDirections_.front());
+                requestMove(possibleDirections_.front());
             else { // Multiple directions to move in
                 if (isInGhostPen && !allowedInGhostHouse) // Kick it out to the front door
-                    requestDirectionChange(getMinDistanceDirection(Constants::BLINKY_SPAWN_TILE));
+                    requestMove(getMinDistanceDirection(Constants::BLINKY_SPAWN_TILE));
                 else if (moveStrategy_ == Strategy::Random)
-                    requestDirectionChange(getRandomDirection());
+                    requestMove(getRandomDirection());
                 else
-                    requestDirectionChange(getMinDistanceDirection(targetTile_));
+                    requestMove(getMinDistanceDirection(targetTile_));
             }
 
             possibleDirections_.clear();
@@ -107,9 +107,9 @@ namespace pm {
         if (!movementStarted_) {
             if (ghost_->isLockedInGhostHouse()) {
                 if (ghost_->getDirection() != ime::Up && ghost_->getDirection() != ime::Down)
-                    requestDirectionChange(ime::Up);
+                    requestMove(ime::Up);
                 else
-                    requestDirectionChange(ghost_->getDirection());
+                    requestMove(ghost_->getDirection());
             }
 
             movementStarted_ = true;
@@ -173,9 +173,9 @@ namespace pm {
         if (ghost_->isLockedInGhostHouse()) {
             // Regardless of state, when locked in ghost house we override the PathFinders strategy to up and down PathFinders
             if (getCurrentTileIndex().row == 15 || getCurrentTileIndex().row == 17)
-                requestDirectionChange(ghost_->getDirection() * -1);
+                requestMove(ghost_->getDirection() * -1);
             else
-                requestDirectionChange(ghost_->getDirection());
+                requestMove(ghost_->getDirection());
 
             possibleDirections_.clear();
 

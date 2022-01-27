@@ -25,7 +25,8 @@
 #ifndef PACMAN_GRID_H
 #define PACMAN_GRID_H
 
-#include <IME/core/tilemap/TileMap.h>
+#include <IME/core/grid/Grid2D.h>
+#include <IME/core/object/GridObject.h>
 
 namespace pm {
     /**
@@ -35,11 +36,9 @@ namespace pm {
     public:
         /**
          * @brief Constructor
-         * @param tileMap Tilemap to base grid on
-         * @param scene The scene in which the object is in
-         * @param objects The Scenes game object container
+         * @param grid Third party grid
          */
-        Grid(ime::TileMap& tileMap, ime::Scene& scene, ime::GameObjectContainer& objects);
+        Grid(ime::Grid2D& grid);
 
         /**
          * @brief Create the grid
@@ -82,14 +81,14 @@ namespace pm {
          * @param actor The actor to be added to the grid
          * @param index The index of the cell to add the actor to
          */
-        void addActor(ime::GameObject::Ptr actor, ime::Index index);
+        void addActor(ime::GridObject::Ptr actor, ime::Index index);
 
         /**
          * @brief Get an actor from the grid by
          * @param id The id of the actor to retrieve
          * @return The actor with the given id if it exists, otherwise a nullptr
          */
-        ime::GameObject* getActorById(int id) const;
+        ime::GridObject* getActorById(int id) const;
 
         /**
          * @brief Remove an actor from the grid
@@ -107,7 +106,7 @@ namespace pm {
          * @brief Apply a callback to each actor in the grid
          * @param callback The function to be applied
          */
-        void forEachActor(const ime::Callback<ime::GameObject*>& callback);
+        void forEachActor(const ime::Callback<ime::GridObject*>& callback);
 
         /**
          * @brief Play a flashing grid animation
@@ -149,9 +148,7 @@ namespace pm {
         ime::Scene& getScene();
 
     private:
-        ime::TileMap& grid_;
-        ime::Scene& scene_;
-        ime::GameObjectContainer& actors_;
+        ime::Grid2D& grid_;
         ime::Sprite background_;
         ime::Callback<> onAnimFinish_;
     };

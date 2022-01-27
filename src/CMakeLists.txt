@@ -53,7 +53,7 @@ add_executable(PacMan ${SRC_FILES} ${RES_FILES})
 
 # Find and link IME
 list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/extlibs")
-find_package(ime 2.4.0 REQUIRED)
+find_package(ime 3.0.0 REQUIRED)
 target_link_libraries (PacMan PRIVATE ime)
 
 # Add <project>/ as include directory

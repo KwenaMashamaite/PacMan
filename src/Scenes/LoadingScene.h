@@ -54,6 +54,14 @@ namespace pm {
         void onEnter() override;
 
         /**
+         * @brief Check if the asset loading thread is complete
+         *
+         * This function is called by the game engine at the end of the
+         * current frame
+         */
+        void onFrameEnd() override;
+
+        /**
          * @brief Perform post scene actions
          *
          * This function is called by the game engine before the scene

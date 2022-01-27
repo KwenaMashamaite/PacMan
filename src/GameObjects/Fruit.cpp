@@ -27,7 +27,7 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     Fruit::Fruit(ime::Scene& scene, Type type) :
-        ime::GameObject(scene)
+        ime::GridObject(scene)
     {
         setCollisionGroup("fruits");
 

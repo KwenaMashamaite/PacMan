@@ -29,7 +29,7 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void ObjectCreator::createObjects(Grid &grid) {
         grid.forEachCell([&grid](const ime::Tile& tile) {
-            ime::GameObject::Ptr actor;
+            ime::GridObject::Ptr actor;
 
             if (tile.getId() == 'X') {
                 actor = std::make_unique<PacMan>(grid.getScene());

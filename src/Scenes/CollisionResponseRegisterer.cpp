@@ -34,28 +34,28 @@ namespace pm {
     {}
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithFruit(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveFruitCollision, this, std::placeholders::_2, std::placeholders::_1));
+    void CollisionResponseRegisterer::registerCollisionWithFruit(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveFruitCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithPellets(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolvePelletCollision, this, std::placeholders::_2));
+    void CollisionResponseRegisterer::registerCollisionWithPellets(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolvePelletCollision, this, std::placeholders::_2));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithGhost(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveGhostCollision, this, std::placeholders::_2, std::placeholders::_1));
+    void CollisionResponseRegisterer::registerCollisionWithGhost(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveGhostCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithTeleportationSensor(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveTeleportationSensorCollision, this, std::placeholders::_2, std::placeholders::_1));
+    void CollisionResponseRegisterer::registerCollisionWithTeleportationSensor(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveTeleportationSensorCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithSlowDownSensor(ime::GameObject *gameObject) {
-        gameObject->onCollision([this](ime::GameObject* target, ime::GameObject* sensor) {
+    void CollisionResponseRegisterer::registerCollisionWithSlowDownSensor(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision([this](ime::GridObject* target, ime::GridObject* sensor) {
             if (sensor->getClassName() != "Sensor")
                 return;
 
@@ -68,7 +68,7 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveFruitCollision(ime::GameObject* fruit, ime::GameObject* otherGameObject) {
+    void CollisionResponseRegisterer::resolveFruitCollision(ime::GridObject* fruit, ime::GridObject* otherGameObject) {
         if (fruit->getClassName() != "Fruit")
             return;
 
@@ -92,18 +92,18 @@ namespace pm {
             game_.updateScore(Constants::Points::KEY);
 
         replaceFruitWithScore(fruit);
-        game_.audio().play(ime::audio::Type::Sfx, "fruitEaten.wav");
+        game_.getAudio().play(ime::audio::Type::Sfx, "fruitEaten.wav");
 
         // Indefinitely suspend collisions with the fruit as it is destroyed after a delay
         // to prevent subsequent collisions with an eaten fruit
         otherGameObject->getCollisionExcludeList().add("fruits");
-        game_.timer().setTimeout(ime::seconds(Constants::EATEN_FRUIT_DESTRUCTION_DELAY), [otherGameObject] {
+        game_.getTimer().setTimeout(ime::seconds(Constants::EATEN_FRUIT_DESTRUCTION_DELAY), [otherGameObject] {
             otherGameObject->getCollisionExcludeList().remove("fruits");
         });
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolvePelletCollision(ime::GameObject* pellet) {
+    void CollisionResponseRegisterer::resolvePelletCollision(ime::GridObject* pellet) {
         if (pellet->getClassName() != "Pellet")
             return;
 
@@ -114,11 +114,11 @@ namespace pm {
             game_.updateScore(Constants::Points::ENERGIZER);
             game_.startGhostFrightenedMode();
 
-            game_.audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
+            game_.getAudio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
         } else {
             game_.updateScore(Constants::Points::DOT);
             static auto wakkawakkaSfx = ime::audio::SoundEffect();
-            wakkawakkaSfx.setVolume(game_.audio().getMasterVolume());
+            wakkawakkaSfx.setVolume(game_.getAudio().getMasterVolume());
 
             if (wakkawakkaSfx.getSource().empty())
                 wakkawakkaSfx.setSource("WakkaWakka.ogg");
@@ -135,7 +135,7 @@ namespace pm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveGhostCollision(ime::GameObject *ghost, ime::GameObject *pacman) {
+    void CollisionResponseRegisterer::resolveGhostCollision(ime::GridObject *ghost, ime::GridObject *pacman) {
         if (ghost->getClassName() != "Ghost" )
             return;
 
@@ -159,7 +159,7 @@ namespace pm {
 
             game_.frightenedModeTimer_.pause();
             game_.uneatenFruitTimer_.pause();
-            game_.timer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [this, ghost] {
+            game_.getTimer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [this, ghost] {
                 game_.setMovementFreeze(false);
                 game_.frightenedModeTimer_.start();
 
@@ -169,7 +169,7 @@ namespace pm {
                 static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
             });
 
-            game_.audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
+            game_.getAudio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
         } else if ((pacmanState == PacMan::State::Idle || pacmanState == PacMan::State::Moving) &&
                    (ghostState != Ghost::State::Eaten))
         {
@@ -177,31 +177,31 @@ namespace pm {
 
             game_.onPrePacmanDeathAnim();
 
-            ime::Animator& pacmanAnimator = pacman->getSprite().getAnimator();
-            pacmanAnimator.startAnimation("dying");
-            auto deathAnimDuration = pacmanAnimator.getActiveAnimation()->getDuration();
+            ime::Animation::Ptr pacmanDeathAnim = pacman->getSprite().getAnimator().getAnimation("dying");
 
-            pacmanAnimator.on(ime::Animator::Event::AnimationStart, "dying", [=] {
-                game_.gameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
+            pacmanDeathAnim->onStart([this] (ime::Animation* animation) {
+                game_.getGameObjects().forEachInGroup("Ghost", [](ime::GameObject *gameObject) {
                     gameObject->getSprite().setVisible(false);
                 });
 
-                game_.timer().setTimeout(deathAnimDuration + ime::milliseconds(400), [this] {
+                game_.getTimer().setTimeout(animation->getDuration() + ime::milliseconds(400), [this] {
                     game_.onPostPacmanDeathAnim();
                 });
 
-                game_.audio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
+                game_.getAudio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
             }, true);
+
+            pacman->getSprite().getAnimator().startAnimation("dying");
         }
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveTeleportationSensorCollision(ime::GameObject* sensor, ime::GameObject* objectOnSensor) {
+    void CollisionResponseRegisterer::resolveTeleportationSensorCollision(ime::GridObject* sensor, ime::GridObject* objectOnSensor) {
         if (sensor->getClassName() == "Sensor" && sensor->getTag() == "teleportationSensor") {
             assert(objectOnSensor->getGridMover() && "Teleportation sensor trigger resolution cannot occur without a grid mover");
 
             ime::GridMover* gridMover = objectOnSensor->getGridMover();
-            ime::TileMap& grid = gridMover->getGrid();
+            ime::Grid2D& grid = gridMover->getGrid();
             const ime::Tile& currentTile = grid.getTileOccupiedByChild(objectOnSensor);
             grid.removeChild(objectOnSensor);
 
@@ -211,12 +211,12 @@ namespace pm {
                 grid.addChild(objectOnSensor, {currentTile.getIndex().row, 0});
 
             gridMover->resetTargetTile();
-            gridMover->requestDirectionChange(gridMover->getDirection());
+            gridMover->requestMove(gridMover->getDirection());
         }
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::replaceFruitWithScore(ime::GameObject* fruit) {
+    void CollisionResponseRegisterer::replaceFruitWithScore(ime::GridObject* fruit) {
         fruit->getSprite().setTexture("spritesheet.png");
 
         if (fruit->getTag() == "cherry")
@@ -237,14 +237,14 @@ namespace pm {
             fruit->getSprite().setTextureRect(ime::UIntRect{120, 116, 16, 16}); // 5000
 
         // Destroy fruit after some seconds have passed since it was replaced by score texture
-        game_.timer().setTimeout(ime::seconds(Constants::EATEN_FRUIT_DESTRUCTION_DELAY), [this, id = fruit->getObjectId()] {
-            if (auto* fruit = game_.gameObjects().findById(id))
+        game_.getTimer().setTimeout(ime::seconds(Constants::EATEN_FRUIT_DESTRUCTION_DELAY), [this, id = fruit->getObjectId()] {
+            if (auto* fruit = game_.getGameObjects().findById(id))
                 fruit->setActive(false);
         });
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::replaceGhostWithScore(ime::GameObject* ghost, ime::GameObject* otherGameObject) {
+    void CollisionResponseRegisterer::replaceGhostWithScore(ime::GridObject* ghost, ime::GridObject* otherGameObject) {
         // Freeze Animations to prevent texture changes while score texture is displayed
         otherGameObject->getSprite().getAnimator().setTimescale(0.0f);
         ghost->getSprite().getAnimator().setTimescale(0.0f);
@@ -261,7 +261,7 @@ namespace pm {
         else
             ghost->getSprite().setTextureRect(ime::UIntRect{188, 116, 16, 16}); // 1600
 
-        game_.timer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [otherGameObject, ghost] {
+        game_.getTimer().setTimeout(ime::seconds(Constants::ACTOR_FREEZE_DURATION), [otherGameObject, ghost] {
             otherGameObject->getSprite().getAnimator().setTimescale(1.0f);
             ghost->getSprite().getAnimator().setTimescale(1.0f);
 
@@ -292,7 +292,7 @@ namespace pm {
         auto fruit = std::make_unique<Fruit>(game_, fruitType);
 
         // Destroy fruit if left uneaten for some time
-        game_.uneatenFruitTimer_.setTimeoutCallback([fruitPtr = fruit.get()] {
+        game_.uneatenFruitTimer_.onTimeout([fruitPtr = fruit.get()] {
             fruitPtr->setActive(false);
         });
 

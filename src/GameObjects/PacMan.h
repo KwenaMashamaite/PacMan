@@ -25,13 +25,13 @@
 #ifndef PACMAN_PACMAN_H
 #define PACMAN_PACMAN_H
 
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace pm {
     /**
      * @brief Player controlled actor
      */
-    class PacMan : public ime::GameObject {
+    class PacMan : public ime::GridObject {
     public:
         /**
          * @brief The different states pacman can be in (one state at a time)
@@ -93,20 +93,6 @@ namespace pm {
          */
         State getState() const;
 
-        /**
-         * @brief Set current direction
-         * @param direction New direction
-         *
-         * By default, the direction is ime::Left
-         */
-        void setDirection(const ime::Vector2i& direction);
-
-        /**
-         * @brief Get the current direction
-         * @return The current direction
-         */
-        ime::Vector2i getDirection() const;
-
     private:
         /**
          * @brief Change pacmans current animation
@@ -121,7 +107,6 @@ namespace pm {
 
     private:
         int livesCount_;             //!< The GameObjects current number of lives
-        ime::Vector2i direction_;    //!< Pacmans current direction
         State state_;                //!< Pacmans current state
     };
 }

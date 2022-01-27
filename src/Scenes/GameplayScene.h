@@ -74,7 +74,12 @@ namespace pm {
          * This function is called by the game engine when it is time to
          * update. Note that @a deltaTime is frame rate dependent
          */
-        void update(ime::Time deltaTime) override;
+        void onUpdate(ime::Time deltaTime) override;
+
+        /**
+         * @brief Initialize third party engine events
+         */
+        void onFrameEnd() override;
 
         /**
          * @brief Pre-scene destruction handler
@@ -114,11 +119,6 @@ namespace pm {
          * @brief Initialize game events
          */
         void intiGameEvents();
-
-        /**
-         * @brief Initialize third party engine events
-         */
-        void initEngineEvents();
 
         /**
          * @brief Initialize movable GameObjects collision responses
@@ -183,13 +183,13 @@ namespace pm {
          * @brief Set the speed of pacman
          * @param pacmam PacMan
          */
-        void updatePacmanSpeed(ime::GameObject* pacmam) const;
+        void updatePacmanSpeed(ime::GridObject* pacmam) const;
 
         /**
          * @brief Set the speed of a ghost
          * @param ghost The Ghost
          */
-        void updateGhostSpeed(ime::GameObject* ghost) const;
+        void updateGhostSpeed(ime::GridObject* ghost) const;
 
         /**
          * @brief Start the ghost frightened mode timer
@@ -219,7 +219,7 @@ namespace pm {
          * @brief Attempt to lock a ghost in the ghost house
          * @param ghost The ghost to be locked inside
          */
-        void lockGhostInHouse(ime::GameObject* ghost);
+        void lockGhostInHouse(ime::GridObject* ghost);
 
         /**
          * @brief Start the timer that controls when a ghost leaves the ghost
@@ -276,6 +276,7 @@ namespace pm {
         unsigned int chaseModeWaveLevel_;   //!< Stores the current ghost chase wave level (up to 5)
         unsigned int scatterModeWaveLevel_; //!< Stores the current scatter mode level (up to 4)
         unsigned int numGhostsInHouse_;     //!< The number of ghosts currently in the ghost house
+        int onWindowCloseId_;               //!< The id number of the 'onClose' event handler
         static inline bool isBoot_ = true;  //!< A flag indicating whether the game just booted or not (is set to false after the first countdown)
         std::unique_ptr<CollisionResponseRegisterer> collisionResponseRegisterer_;
 

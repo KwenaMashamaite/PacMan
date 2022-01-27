@@ -96,8 +96,7 @@ namespace pm {
         lblGetReady->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Center);
         lblGetReady->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
         lblGetReady->getRenderer()->setTextColour(ime::Colour::Yellow);
-        lblGetReady->setOrigin(0.5f, 0.5f);
-        lblGetReady->setPosition(247, 332);
+        lblGetReady->setPosition(247, 326);
         pnlContainer->addWidget(std::move(lblGetReady), "lblReady");
     }
 

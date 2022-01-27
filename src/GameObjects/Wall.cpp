@@ -27,10 +27,10 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     Wall::Wall(ime::Scene& scene) :
-        ime::GameObject(scene)
+        ime::GridObject(scene)
     {
         setCollisionGroup("walls");
-        setAsObstacle(true);
+        setObstacle(true);
 
         // The wall uses the grid image as its texture. The texture rect is only
         // set so that the wall sprite has dimensions

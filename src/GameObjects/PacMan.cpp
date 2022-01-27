@@ -30,7 +30,7 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     PacMan::PacMan(ime::Scene& scene) :
-        ime::GameObject(scene),
+        ime::GridObject(scene),
         livesCount_{Constants::PLAYER_LiVES},
         state_{State::Unknown}
     {
@@ -76,31 +76,18 @@ namespace pm {
     void PacMan::setState(PacMan::State state) {
         if (state_ != state) {
             state_ = state;
-            ime::GameObject::setState(static_cast<int>(state));
+            ime::GridObject::setState(static_cast<int>(state));
 
             if (state_ == State::Dying)
                 getSprite().getAnimator().startAnimation("dying");
             else
-                switchAnimation(direction_);
+                switchAnimation(getDirection());
         }
     }
 
     ///////////////////////////////////////////////////////////////
     PacMan::State PacMan::getState() const {
-        return static_cast<State>(ime::GameObject::getState());
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void PacMan::setDirection(const ime::Vector2i &direction) {
-        if (direction_ != direction) {
-            direction_ = direction;
-            switchAnimation(direction_);
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////
-    ime::Vector2i PacMan::getDirection() const {
-        return direction_;
+        return static_cast<State>(ime::GridObject::getState());
     }
 
     ///////////////////////////////////////////////////////////////
@@ -111,6 +98,11 @@ namespace pm {
 
         for (const auto& animation : animations.getAll())
             getSprite().getAnimator().addAnimation(animation);
+
+        // Automatically change animations when the direction changes
+        onPropertyChange("direction", [this](const ime::Property& property) {
+            switchAnimation(property.getValue<ime::Vector2i>());
+        });
     }
 
     ///////////////////////////////////////////////////////////////

@@ -35,36 +35,34 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     MainMenuScene::MainMenuScene() :
-        view_{gui()}
+        view_{getGui()}
     {}
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::onEnter() {
-        engine().getWindow().onClose(nullptr); // Let window be closed with exit button only
-
         initGui();
         initLeaderboard();
         initEventHandlers();
-        gui().setTabKeyUsageEnabled(false);
+        getGui().setTabKeyUsageEnabled(false);
     }
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::initGui() {
         view_.init();
 
-        ime::ui::Panel* pnlControlsContainer = gui().getWidget<ime::ui::TabsContainer>("tbsOptions")->getPanel("pnlControls");
-        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveLeft")->setText(sCache().getPref("MOVE_LEFT_BUTTON").getValue<std::string>());
-        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveRight")->setText(sCache().getPref("MOVE_RIGHT_BUTTON").getValue<std::string>());
-        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveUp")->setText(sCache().getPref("MOVE_UP_BUTTON").getValue<std::string>());
-        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveDown")->setText(sCache().getPref("MOVE_DOWN_BUTTON").getValue<std::string>());
+        ime::ui::Panel* pnlControlsContainer = getGui().getWidget<ime::ui::TabsContainer>("tbsOptions")->getPanel("pnlControls");
+        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveLeft")->setText(getSCache().getPref("MOVE_LEFT_BUTTON").getValue<std::string>());
+        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveRight")->setText(getSCache().getPref("MOVE_RIGHT_BUTTON").getValue<std::string>());
+        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveUp")->setText(getSCache().getPref("MOVE_UP_BUTTON").getValue<std::string>());
+        pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveDown")->setText(getSCache().getPref("MOVE_DOWN_BUTTON").getValue<std::string>());
     }
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::initLeaderboard() {
-        auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
-        auto namesContainer = gui().getWidget<ime::ui::VerticalLayout>("vlNames");
-        auto scoreContainer = gui().getWidget<ime::ui::VerticalLayout>("vlScores");
-        auto levelContainer = gui().getWidget<ime::ui::VerticalLayout>("vlLevels");
+        auto scoreboard = getCache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
+        auto namesContainer = getGui().getWidget<ime::ui::VerticalLayout>("vlNames");
+        auto scoreContainer = getGui().getWidget<ime::ui::VerticalLayout>("vlScores");
+        auto levelContainer = getGui().getWidget<ime::ui::VerticalLayout>("vlLevels");
 
         // Replace placeholder text with actual Scoreboard data
         scoreboard->forEachScore([&, count = 1] (const Score& score) mutable {
@@ -80,31 +78,31 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::initEventHandlers() {
-        gui().getWidget("btnPlay")->on("leftMouseDown", ime::Callback<>([this] {
-            engine().popScene();
-            engine().pushScene(std::make_unique<GameplayScene>());
+        getGui().getWidget("btnPlay")->on("leftMouseDown", ime::Callback<>([this] {
+            getEngine().popScene();
+            getEngine().pushScene(std::make_unique<GameplayScene>());
         }));
 
-        gui().getWidget("btnQuit")->on("click", ime::Callback<>([this] {
-            engine().quit();
+        getGui().getWidget("btnQuit")->on("click", ime::Callback<>([this] {
+            getEngine().quit();
         }));
 
-        input().onKeyUp([this](ime::Keyboard::Key key) {
+        getInput().onKeyUp([this](ime::Keyboard::Key key) {
             if (view_.getActivePanel() == SubView::OptionsMenu && key != ime::Keyboard::Key::Unknown) {
-                ime::ui::Panel* pnlControlsContainer = gui().getWidget<ime::ui::TabsContainer>("tbsOptions")->getPanel("pnlControls");
+                ime::ui::Panel* pnlControlsContainer = getGui().getWidget<ime::ui::TabsContainer>("tbsOptions")->getPanel("pnlControls");
 
                 if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveLeft")->isFocused()) {
                     pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveLeft")->setText(ime::Keyboard::keyToString(key));
-                    sCache().getPref("MOVE_LEFT_BUTTON").setValue(ime::Keyboard::keyToString(key));
+                    getSCache().getPref("MOVE_LEFT_BUTTON").setValue(ime::Keyboard::keyToString(key));
                 }else if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveRight")->isFocused()) {
                     pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveRight")->setText(ime::Keyboard::keyToString(key));
-                    sCache().getPref("MOVE_RIGHT_BUTTON").setValue(ime::Keyboard::keyToString(key));
+                    getSCache().getPref("MOVE_RIGHT_BUTTON").setValue(ime::Keyboard::keyToString(key));
                 } else if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveUp")->isFocused()) {
                     pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveUp")->setText(ime::Keyboard::keyToString(key));
-                    sCache().getPref("MOVE_UP_BUTTON").setValue(ime::Keyboard::keyToString(key));
+                    getSCache().getPref("MOVE_UP_BUTTON").setValue(ime::Keyboard::keyToString(key));
                 } else if (pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveDown")->isFocused()) {
                     pnlControlsContainer->getWidget<ime::ui::Button>("btnMoveDown")->setText(ime::Keyboard::keyToString(key));
-                    sCache().getPref("MOVE_DOWN_BUTTON").setValue(ime::Keyboard::keyToString(key));
+                    getSCache().getPref("MOVE_DOWN_BUTTON").setValue(ime::Keyboard::keyToString(key));
                 }
             }
         });

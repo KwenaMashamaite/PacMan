@@ -47,10 +47,10 @@ namespace pm {
 
         /**
          * @brief Constructor
-         * @param tileMap The grid the target is in
-         * @param ghost Ghost to be moved in the tilemap
+         * @param grid The grid the target is in
+         * @param ghost Ghost to be moved in the grid
          */
-        GhostGridMover(ime::TileMap& tileMap, Ghost* ghost);
+        GhostGridMover(ime::Grid2D& grid, Ghost* ghost);
 
         /**
          * @brief Set the PathFinders strategy

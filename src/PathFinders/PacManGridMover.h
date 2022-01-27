@@ -42,7 +42,7 @@ namespace pm {
          *
          * @warning @a pacman must not be a nullptr
          */
-        PacManGridMover(ime::TileMap& grid, PacMan* pacman);
+        PacManGridMover(ime::Grid2D& grid, PacMan* pacman);
 
         /**
          * @brief Initialize the grid mover

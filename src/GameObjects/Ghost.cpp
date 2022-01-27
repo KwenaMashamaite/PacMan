@@ -32,22 +32,24 @@
 namespace pm {
     ///////////////////////////////////////////////////////////////
     Ghost::Ghost(ime::Scene& scene, Colour colour) :
-        ime::GameObject(scene),
-        direction_{ime::Up},
+        ime::GridObject(scene),
         isLockedInHouse_{false}
     {
         setCollisionGroup("ghosts");
 
         if (colour == Colour::Red) {
-            direction_ = ime::Right;
+            setDirection(ime::Right);
             setTag("blinky");
         } else if (colour == Colour::Pink) {
-            direction_ = ime::Down;
+            setDirection(ime::Down);
             setTag("pinky");
-        } else if (colour == Colour::Cyan)
+        } else if (colour == Colour::Cyan) {
+            setDirection(ime::Up);
             setTag("inky");
-        else if (colour == Colour::Orange)
+        } else if (colour == Colour::Orange) {
+            setDirection(ime::Up);
             setTag("clyde");
+        }
 
         initAnimations();
     }
@@ -66,30 +68,7 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     Ghost::State Ghost::getState() const {
-        return static_cast<Ghost::State>(ime::GameObject::getState());
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void Ghost::setDirection(ime::Vector2i dir) {
-        if (direction_ != dir) {
-            direction_ = dir;
-
-            // Frightened animation is the same in all directions
-            if (getState() == State::Frightened)
-                return;
-
-            std::string newAnimation = "going" + utils::convertToString(direction_);
-
-            if (getState() == State::Eaten)
-                newAnimation += "Eaten";
-
-            getSprite().getAnimator().startAnimation(newAnimation);
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////
-    ime::Vector2i Ghost::getDirection() const {
-        return direction_;
+        return static_cast<Ghost::State>(ime::GridObject::getState());
     }
 
     ///////////////////////////////////////////////////////////////
@@ -100,7 +79,7 @@ namespace pm {
             if (getState() == State::Frightened)
                 getSprite().getAnimator().startAnimation("frightened");
             else
-                getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_));
+                getSprite().getAnimator().startAnimation("going" + utils::convertToString(getDirection()));
         }
     }
 
@@ -122,7 +101,7 @@ namespace pm {
     ///////////////////////////////////////////////////////////////
     void Ghost::update(ime::Time deltaTime) {
         assert(fsm_.top() && "A ghost FSM must have at least one state before an updated");
-        ime::GameObject::update(deltaTime);
+        ime::GridObject::update(deltaTime);
         fsm_.top()->update(deltaTime);
     }
 
@@ -144,7 +123,21 @@ namespace pm {
 
         getSprite().scale(2.0f, 2.0f);
         resetSpriteOrigin();
-        getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_));
+        getSprite().getAnimator().startAnimation("going" + utils::convertToString(getDirection()));
+
+        // Automatically switch animations on direction change
+        onPropertyChange("direction", [this](const ime::Property& property) {
+            // Frightened animation is the same in all directions
+            if (getState() == State::Frightened)
+                return;
+
+            std::string newAnimation = "going" + utils::convertToString(property.getValue<ime::Vector2i>());
+
+            if (getState() == State::Eaten)
+                newAnimation += "Eaten";
+
+            getSprite().getAnimator().startAnimation(newAnimation);
+        });
     }
 
     ///////////////////////////////////////////////////////////////

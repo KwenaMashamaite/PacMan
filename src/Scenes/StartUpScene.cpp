@@ -35,9 +35,9 @@ using namespace ime::ui;
 namespace pm {
     ///////////////////////////////////////////////////////////////
     void StartUpScene::onEnter() {
-        StartUpSceneView().init(gui());
+        StartUpSceneView().init(getGui());
 
-        if (sCache().hasPref("PLAYER_NAME")) {
+        if (getSCache().hasPref("PLAYER_NAME")) {
             startCountdown();
             enableSceneSkip();
         } else
@@ -46,26 +46,26 @@ namespace pm {
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::startCountdown() {
-        auto pnlContainer = gui().getWidget<ime::ui::Panel>("pnlContainer");
+        auto pnlContainer = getGui().getWidget<ime::ui::Panel>("pnlContainer");
         pnlContainer->showWithEffect(ime::ui::AnimationType::Fade, ime::seconds(3));
 
         // Exit the scene with an effect after a couple of seconds
-        timer().setTimeout(ime::seconds(13), [this, pnlContainer] {
+        getTimer().setTimeout(ime::seconds(13), [this, pnlContainer] {
             pnlContainer->hideWithEffect(ime::ui::AnimationType::Fade, ime::seconds(2));
             pnlContainer->on("animationFinish", ime::Callback<>([this] {
-                engine().popScene();
+                getEngine().popScene();
             }));
         });
     }
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::promptName() {
-        gui().getWidget<Panel>("pnlContainer")->setVisible(false);
-        gui().getWidget<Panel>("pnlNamePrompt")->setVisible(true);
+        getGui().getWidget<Panel>("pnlContainer")->setVisible(false);
+        getGui().getWidget<Panel>("pnlNamePrompt")->setVisible(true);
 
         // Disable continue button when player input is less than required and enable when input size is valid
-        gui().getWidget("txtName")->on("textChange", ime::Callback<std::string>([this](const std::string& text) {
-            auto* btnContinue = gui().getWidget<Button>("btnContinue");
+        getGui().getWidget("txtName")->on("textChange", ime::Callback<std::string>([this](const std::string& text) {
+            auto* btnContinue = getGui().getWidget<Button>("btnContinue");
             if (!text.empty())
                 btnContinue->setEnabled(true);
             else
@@ -73,41 +73,41 @@ namespace pm {
         }));
 
         // Save player name and continue to gameplay
-        gui().getWidget("txtName")->on("enterKeyPress", ime::Callback<std::string>([this](const std::string& text) {
+        getGui().getWidget("txtName")->on("enterKeyPress", ime::Callback<std::string>([this](const std::string& text) {
             if (!text.empty()) {
-                gui().setMouseCursor(ime::CursorType::Arrow);
+                getGui().setMouseCursor(ime::CursorType::Arrow);
                 save();
             }
         }));
 
         // Save player name and continue to gameplay
-        gui().getWidget("btnContinue")->on("click", ime::Callback<>([this] {
+        getGui().getWidget("btnContinue")->on("click", ime::Callback<>([this] {
             save();
         }));
     }
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::enableSceneSkip() {
-        input().onKeyUp([this](ime::Keyboard::Key key) {
+        getInput().onKeyUp([this](ime::Keyboard::Key key) {
             if (key == ime::Keyboard::Key::Space)
-                engine().popScene();
+                getEngine().popScene();
         });
     }
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::save() {
-        std::string name = gui().getWidget<EditBox>("txtName")->getText();
-        sCache().addPref(ime::Preference{"PLAYER_NAME", ime::PrefType::String, name, " The name of the player"});
+        std::string name = getGui().getWidget<EditBox>("txtName")->getText();
+        getSCache().addPref(ime::Preference{"PLAYER_NAME", ime::PrefType::String, name, " The name of the player"});
 
-        gui().getWidget<Panel>("pnlContainer")->setVisible(true);
-        gui().getWidget<Panel>("pnlNamePrompt")->setVisible(false);
+        getGui().getWidget<Panel>("pnlContainer")->setVisible(true);
+        getGui().getWidget<Panel>("pnlNamePrompt")->setVisible(false);
         startCountdown();
         enableSceneSkip();
     }
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::onExit() {
-        engine().pushScene(std::make_unique<LoadingScene>());
+        getEngine().pushScene(std::make_unique<LoadingScene>());
     }
 
 } // namespace pm

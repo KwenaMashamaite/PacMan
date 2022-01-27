@@ -27,13 +27,13 @@
 
 namespace pm {
     ///////////////////////////////////////////////////////////////
-    void ObjectReferenceKeeper::registerActor(ime::GameObject *gameObject) {
+    void ObjectReferenceKeeper::registerActor(ime::GridObject *gameObject) {
         assert(gameObject);
         gameObjects_.insert({gameObject->getTag(), gameObject});
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::GameObject* ObjectReferenceKeeper::getActor(const std::string &tag) {
+    ime::GridObject* ObjectReferenceKeeper::getActor(const std::string &tag) {
         auto found = gameObjects_.find(tag);
         return found != gameObjects_.end() ? found->second : nullptr;
     }

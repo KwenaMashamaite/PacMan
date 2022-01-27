@@ -25,13 +25,13 @@
 #ifndef PACMAN_PELLET_H
 #define PACMAN_PELLET_H
 
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace pm {
     /**
      * @brief A pellet that can be eaten by Pacman
      */
-    class Pellet : public ime::GameObject {
+    class Pellet : public ime::GridObject {
     public:
         /**
          * @brief Pellet type

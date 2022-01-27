@@ -26,7 +26,7 @@
 #define PACMAN_GHOST_H
 
 #include "AI/ActorStateFSM.h"
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace pm {
     class GhostGridMover;
@@ -34,7 +34,7 @@ namespace pm {
     /**
      * @brief Ghost actor
      */
-    class Ghost : public ime::GameObject {
+    class Ghost : public ime::GridObject {
     public:
         /**
          * @brief The colour of the ghost
@@ -86,18 +86,6 @@ namespace pm {
          * @see initFSM
          */
         State getState() const;
-
-        /**
-         * @brief Set the direction of the ghost
-         * @param dir The new direction of the ghost
-         */
-        void setDirection(ime::Vector2i dir);
-
-        /**
-         * @brief Get the current direction
-         * @return The current direction
-         */
-        ime::Vector2i getDirection() const;
 
         /**
          * @brief Start or stop the flash animation
@@ -156,7 +144,6 @@ namespace pm {
 
     private:
         ActorStateFSM fsm_;          //!< Ghosts finite state machine
-        ime::Vector2i direction_;    //!< The direction of the ghost
         bool isLockedInHouse_;       //!< A flag indicating whether or not the ghost is locked in the ghost pen
     };
 }

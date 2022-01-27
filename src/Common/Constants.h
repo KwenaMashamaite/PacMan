@@ -25,7 +25,7 @@
 #ifndef PACMAN_CONSTANTS_H
 #define PACMAN_CONSTANTS_H
 
-#include <IME/core/tilemap/Index.h>
+#include <IME/core/grid/Index.h>
 
 namespace pm {
     /**

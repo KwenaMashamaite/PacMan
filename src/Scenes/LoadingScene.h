@@ -26,7 +26,6 @@
 #define PACMAN_LOADINGSCENE_H
 
 #include <IME/core/scene/Scene.h>
-#include <atomic>
 
 namespace pm {
     /**
@@ -34,17 +33,12 @@ namespace pm {
      *
      * In this state the game loads all the required assets (textures, sounds,
      * fonts and music) from the disk. Once all assets have been loaded, the
-     * scene removes itself from the engine and transitions to the IntroScene
+     * scene removes itself from the engine and transitions to the next scene
      *
      * Note that the game cannot be exited while in this state
      */
     class LoadingScene : public ime::Scene {
     public:
-        /**
-         * @brief Constructor
-         */
-        LoadingScene();
-
         /**
          * @brief Enter the scene
          *
@@ -54,14 +48,6 @@ namespace pm {
         void onEnter() override;
 
         /**
-         * @brief Check if the asset loading thread is complete
-         *
-         * This function is called by the game engine at the end of the
-         * current frame
-         */
-        void onFrameEnd() override;
-
-        /**
          * @brief Perform post scene actions
          *
          * This function is called by the game engine before the scene
@@ -69,18 +55,6 @@ namespace pm {
          * parties that assets loaded successfully
          */
         void onExit() override;
-
-    private:
-        /**
-         * @brief Load assets from the disk
-         *
-         * This function will load all the textures, fonts, music and sfx
-         * required by the game from the disk
-         */
-        void loadGameAssets();
-
-    private:
-        std::atomic_bool loadingFinished_; //!< A flag indicating whether or not all assets have been loaded from the disk
     };
 }
 

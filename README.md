@@ -1,4 +1,4 @@
-## Overview
+# Pac-Man clone
 
 This project is a clone of the 1980 Pac-Man arcade game using my 2D game engine, [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME). 
 I tried to make the game as close to the [original game](https://www.gamasutra.com/view/feature/3938/the_pacman_dossier.php?print=1) as 
@@ -8,7 +8,7 @@ You can check out another similar clone of mine; [Super Pac-Man clone](https://g
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v1.1.0)
+1. [Download](https://github.com/KwenaMashamaite/PacMan/releases/tag/v1.1.1)
    the game
 2. Extract the zip archive
 3. Run _PacMan.exe_
